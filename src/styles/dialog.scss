@@ -1,0 +1,274 @@
+//弹框底部样式
+.footer-center{
+    text-align: center;
+}
+//弹窗中心部分样式
+.form-center{
+    width:500px;
+    margin: 0 auto;
+}
+//添加部门弹框
+.addDepartDialog{
+    .el-dialog{
+        width:618px;
+        height:464px;
+    }
+}
+//批量导入员工
+.batchExportEmpDialog{
+    .el-dialog{
+        width:618px;
+        height:272px;
+        .el-dialog__header{
+            background: #F0F0F0;
+        }
+        .el-dialog__body{
+            padding-top:0;
+            padding-bottom:20px;
+            .tishititle{
+                font-size: 16px;
+                color: #3A4D62;
+                letter-spacing: 0;
+                line-height: 25px;
+                width: 255px;
+                margin: 40px auto 30px;
+            }
+            .uploaddemo{
+                display: inline-block;
+            }
+        }
+    }
+}
+//二维码弹窗
+.erweima{
+    .el-dialog{
+        width:400px;
+        height:380px;
+        .el-dialog__body{
+            padding:0 !important;
+        }
+        .qrcode{
+            width:180px;
+            height:180px;
+            margin:10px auto;
+            border: 1px solid #A8A9AB;
+        }
+        .txt{
+            text-align: center;
+            font-size: 16px;
+            color: #3A4D62;
+            margin-bottom:10px;
+        }
+    }
+}
+//福利卷弹框
+.welfareRollDialog{
+    .el-dialog{
+        width:600px;
+        height:668px;
+        .el-dialog__body{
+            padding:0 !important;
+        }
+    }
+}
+// 选择员工弹框
+.selectEmpDialog{
+    .el-dialog{
+        width:932px;
+        height:571px;
+        .el-dialog__header{
+            background: #F0F0F0;
+        }
+        .el-dialog__body{
+            padding: 20px 0;
+        }
+        .el-dialog__footer{
+            padding:0;
+        }
+    }
+}
+//选择员工弹窗（简单）
+.selectEmpSimpleDialog{
+    .el-dialog{
+        width:670px;
+        height:512px;
+        .el-dialog__header{
+            background: #F0F0F0;
+        }
+        .el-dialog__body{
+            padding: 20px 0;
+        }
+        .el-dialog__footer{
+            padding:0;
+        }
+    }
+}
+// 设置$alert弹框的样式
+.el-message-box{
+    width:260px;
+    .el-message-box__header{
+        border-bottom: 1px solid #eee;
+        background-color: #F8F8F8;
+    }
+    .el-message-box__content{
+        padding:20px;
+    }
+}
+.excelMsg{
+    .el-message-box{
+        width:360px;
+    }
+}
+//分页底部样式
+.toolbar{
+    margin-top: 10px;
+    background-color: #f1f2f7;
+    text-align: right;
+    padding:10px 0;
+}
+// 帮助中心弹框
+.helpCeterDialog{
+    .el-dialog{
+        width:650px;
+        height:500px;
+        .el-dialog__body{
+            padding: 10px 20px;
+        }
+        .el-dialog__footer{
+            padding: 0 15px;
+        }
+    }
+}
+//单个添加员工弹框
+.addEmpDialog{
+    .el-dialog{
+        width:700px;
+        height:650px;
+        .el-dialog__body{
+            padding: 30px 20px 0;
+        }
+    }
+}
+//福利订单弹框
+.orderDetailDialog{
+    .el-dialog{
+        width:650px;
+        height:736px;
+    }
+}
+//移至部门弹框
+.moveToDepartDialog{
+    .el-dialog{
+        width:400px;
+        height:200px;
+        // .el-dialog__header{
+        //     .el-dialog__title{
+        //         font-size:16px;
+        //     }
+        // }
+        .el-dialog__body{
+            padding:25px 20px;
+            .select_center{
+                text-align: center;
+            }
+        }
+    }
+}
+// 审批查看详情弹窗
+.examineDetail{
+    .el-dialog{
+        width:350px;
+        height:400px;
+        .el-dialog__header{
+            background: #F8F8F8;
+            .el-dialog__title{
+                font-size: 16px;
+            }
+        }
+        .el-dialog__body{
+            padding:0;
+            padding-top:8px;
+            .row{
+                margin-bottom:15px;
+                overflow: hidden;
+                .title{
+                    float: left;
+                    text-align: right;
+                    width: 100px;
+                    margin-right: 10px;
+                    font-weight: bold;
+                    font-size: 14px;
+                }
+                .info{
+                    float: left;
+                    text-align: left;
+                    font-size: 14px;
+                    width: 200px;
+                }
+            }
+        }
+    }
+}
+.examineDialog{
+    .el-dialog{
+        width:500px;
+        height:289px;
+        .el-dialog__body{
+            padding:30px 20px 0;
+        }
+    }
+}
+//添加账号弹窗
+.addAccountDialog{
+    .el-dialog{
+        width:618px;
+        height:583px;
+        .el-dialog__header{
+            background: #F0F0F0;
+        }
+        .el-dialog__body{
+            padding:20px 20px;
+            .el-form-item{
+                margin-bottom:8px;
+            }
+        }
+        .el-dialog__footer{
+            padding:0 15px 15px;
+        }
+    }
+}
+//修改密码
+.updateAccountPwdDialog{
+    .el-dialog{
+        width:618px;
+        height:430px;
+        .el-dialog__header{
+            background: #F0F0F0;
+        }
+        .el-dialog__body{
+            padding:20px 20px;
+            .el-form-item{
+                margin-bottom:8px;
+            }
+        }
+        .el-dialog__footer{
+            padding:0 15px 15px;
+        }
+    }
+}
+//移至部门弹窗
+.moveToDepDialog{
+    .el-dialog{
+        width: 400px;
+        height:200px;
+        .el-dialog__header{
+            background: #F8F8F8;
+        }
+        .el-dialog__body{
+            text-align: center;
+        }
+        .el-dialog__footer{
+            padding:0 15px;
+        }
+    }
+}

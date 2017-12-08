@@ -1,0 +1,74 @@
+h1,h2,h3,h4,h5,h6,p,ul,li,body,aside{
+    font-weight: normal;
+    margin: 0;
+}
+ul li{
+    list-style: none;
+}
+em,i{
+    font-style: normal
+}
+$font-12:12px;
+$font-14:14px;
+$font-16:16px;
+$font-18:18px;
+$font-20:20px;
+$font-22:22px;
+$font-24:24px;
+$font-26:26px;
+
+$padding-10: 20px 0;
+$padding-20: 20px 0;
+$padding-30: 30px 0;
+$padding-40: 40px 0;
+$padding-50: 40px 0;
+
+$margin-10:10px;
+$margin-20:20px;
+$margin-30:30px;
+$margin-40:40px;
+$margin-50:50px;
+
+
+.col-margin-20{
+    margin-bottom: $margin-20
+}
+.col-padding-20{
+    padding: $padding-20;
+}
+.col-padding-30{
+    padding: $padding-30;
+}
+.col-padding-50{
+    padding: $padding-50;
+}
+
+
+$left:left;
+$center:center;
+$right:right;
+
+.clearfix::after{
+    content: '';
+    clear: both;
+    display: block;
+    height: 0;
+    zoom: 1;
+    font-size: 0
+}
+a{
+ text-decoration:none;
+ color: $white;
+}
+.col-text-left{
+    text-align: $left
+}
+.col-text-center{
+    text-align: $center
+}
+.col-text-right{
+    text-align: $right
+}
+html,body{
+    height:100%;
+}

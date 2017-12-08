@@ -1,0 +1,45 @@
+// Color
+$blue:#20A0FF;
+$light-blue:#58B7FF;
+$red:#C03639;
+$pink: #E65D6E;
+$green: #30B08F;
+$tiffany: #4AB7BD;
+$yellow:#FEC171;
+$warning:#F7BA2A;
+$grayness:#f8f8f8;
+$white:#fff;
+$ymnColor:#A4AABE;
+$textDefaultColor:#48576a;
+
+@mixin colorBtn($color) {
+    background: $color
+}
+
+.blue-btn{
+    @include colorBtn($blue);
+}
+.light-btn{
+    @include colorBtn($light-blue);
+}
+.green-btn{
+    @include colorBtn($green);
+}
+.pink-btn{
+    @include colorBtn($pink);
+}
+.tiffany-btn{
+    @include colorBtn($tiffany);
+}
+.red-btn{
+    @include colorBtn($red);
+}
+.ymnColor{
+    @include colorBtn($ymnColor);
+}
+.textYmnColor{
+    color: $ymnColor
+}
+.TextDefaultColor{
+    color: $textDefaultColor
+}
