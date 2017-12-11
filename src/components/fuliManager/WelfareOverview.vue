@@ -4,10 +4,10 @@
             <div class="default-data">
                 <div class="title">
                     消费分析
-                    <el-select class="month" v-model="month">
+                    <el-select class="month" v-model="month" @change="changeBaseData">
                         <el-option v-for="item in months" :value="item" :label="item" :key="item"></el-option>
                     </el-select>
-                    <el-select class="year" v-model="year">
+                    <el-select class="year" v-model="year" @change="changeBaseData">
                         <el-option v-for="item in years" :value="item" :label="item" :key="item"></el-option>
                     </el-select>
                 </div>
@@ -58,8 +58,8 @@
                         <a class="indextitle-btn" @click="modifyEnterprise">修改</a>
                     </div>
                     <div class="center">
-                        <div class="enterprise-name">上海汇展人力资源有限公司</div>
-                        <div class="enterprise-id">ID 20170428781647</div>
+                        <div class="enterprise-name">{{enterpriseInfo.enterpriseName}}</div>
+                        <div class="enterprise-id">ID {{enterpriseInfo.enterpriseCode}}</div>
                     </div>
                 </div>                   
             </div>
@@ -91,7 +91,8 @@ export default{
             consumeData:[],
             rechargeData:[],
             baseData:{},//基础数据
-            newNoticeContent:""
+            newNoticeContent:"",
+            enterpriseInfo:{}
         }
     },
     methods:{
@@ -212,10 +213,10 @@ export default{
             this.getPointRecords(this.currentYear)
         },
         // 基础数据
-        getBaseData(){
+        getBaseData(year,month){
             this.$axios.post("/api/api/enterprise/getBaseData",qs.stringify({
-                year:this.year,
-                month:parseInt(this.month)
+                year:year,
+                month:month
             }),{
                 headers:{
                     "Authorization":authUnils.getToken()
@@ -233,6 +234,9 @@ export default{
                     }
                 }
             })
+        },
+        changeBaseData(){
+            this.getBaseData(this.year,parseInt(this.month))
         },
         //显示最新公告信息
         showNewNotice(){
@@ -257,12 +261,13 @@ export default{
         },
     },
     mounted(){
+        this.enterpriseInfo=JSON.parse(localStorage.getItem("enterpriseInfo"))
         let date=new Date()
         this.year=date.getFullYear().toString()
         this.currentYear=date.getFullYear().toString()
         this.month=date.getMonth()+1+"月"
         this.getPointRecords(this.currentYear)
-        this.getBaseData()
+        this.getBaseData(this.year,parseInt(this.month))
         this.showNewNotice()
     }
 }

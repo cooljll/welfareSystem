@@ -1,10 +1,5 @@
 <template>
     <div class="main">
-        <div class="page-header">
-            <div class="header-inner">
-                <img class="header-img" src="http://192.168.1.197:8082/assets/img/secondindexlogo.png">
-            </div>
-        </div>
         <div class="page-center">
             <div class="inner-left"><img src="http://192.168.1.197:8082/assets/img/errorandnonotic.png"></div>
             <div class="inner-right">
@@ -186,30 +181,38 @@ export default{
             }else if(this.userInfo.password==""){
                 this.$alert("密码不能为空","信息")
             }else{
-                this.$axios({
-                    method:"post",
-                    url:"/api/oauth/token",
-                    data:'grant_type=client_credentials',
-                    headers:{
-                        "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
-                    }
-                }).then(res=>{
-                    if(res){
-                        authUnils.setToken(res.data.token_type+" "+res.data.access_token)
-                        this.$axios({
-                            method:"post",
-                            url:"/api/api/user/login",
-                            data:this.userInfo,
-                            headers:{
-                                "Authorization":authUnils.getToken()
-                            }
-                        }).then(res=>{
-                            if(res.data.success){
-                                this.$router.push("/EnterpriseOverview")
-                            }
-                        })
-                    }
-                })
+                if(!authUnils.getToken()){
+                    this.$axios({
+                        method:"post",
+                        url:"/api/oauth/token",
+                        data:'grant_type=client_credentials',
+                        headers:{
+                            "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
+                        }
+                    }).then(res=>{
+                        if(res){
+                            authUnils.setToken(res.data.token_type+" "+res.data.access_token)
+                            // localStorage.setItem("expirseTime",res.data.expires_in)
+                            this.$axios({
+                                method:"post",
+                                url:"/api/api/user/login",
+                                data:this.userInfo,
+                                headers:{
+                                    "Authorization":authUnils.getToken()
+                                }
+                            }).then(res=>{
+                                if(res.data.code==0){
+                                    //保存当前的登陆信息
+                                    localStorage.setItem("loginName",this.userInfo.username)
+                                    this.$router.push("/EnterpriseOverview")
+                                }
+                            })
+                        }
+                    })
+                }else{
+                    console.log("token已存在")
+                    return false
+                }
             }
         },
         handleReset(){

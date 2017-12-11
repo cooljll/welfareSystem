@@ -1,9 +1,14 @@
 <template>
   <div id="app">
-		<el-row class="page-header">
+		<div class="page-header" v-show="isShowLogin">
+				<div class="header-inner">
+						<img class="header-img" src="http://192.168.1.197:8082/assets/img/secondindexlogo.png">
+				</div>
+		</div>
+		<el-row class="page-header" v-show="isShowMain">
 			<el-col :lg="7" :md="5" :sm="6" :xs="12" class="imgbox">
 				<div class="imgboxcell" @click="goBack">
-					<img id="logoimg" src="http://192.168.1.11:8095/images/thumbs//2017-05-11/636300938107658744.jpeg">
+					<img id="logoimg" :src="enterpriseLogoUrl">
 				</div>
 			</el-col>
 			<el-col :lg="8" :md="8" :sm="18" :xs="12" class="header-links">
@@ -20,11 +25,11 @@
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner1">
 						<img src="./assets/common/Customer.png" alt="">
-						金划算科技股份有限公司
+						{{enterpriseBaseInfo.enterpriseName}}
 					</span>
-					<el-dropdown-menu slot="dropdown" style="width:220px;">
-						<el-dropdown-item>企业编号：001</el-dropdown-item>
-						<el-dropdown-item>登录账号：Admin</el-dropdown-item>
+					<el-dropdown-menu slot="dropdown" style="width:230px;">
+						<el-dropdown-item>企业编号：{{enterpriseBaseInfo.enterpriseCode}}</el-dropdown-item>
+						<el-dropdown-item>登录账号：{{loginName}}</el-dropdown-item>
 					</el-dropdown-menu>
 				</el-dropdown>
 				<!-- 客服 -->
@@ -100,7 +105,16 @@ export default {
   name: 'app',
   data(){
     return{
-			activeIndex:""
+			isShowLogin:false,
+			isShowMain:true,
+			activeIndex:"",
+			//企业基础信息
+			enterpriseBaseInfo:{
+				enterpriseName:"",
+				enterpriseCode:""
+			},
+			loginName:"",
+			enterpriseLogoUrl:""
     }
   },
   methods:{
@@ -125,6 +139,45 @@ export default {
 		},
 		goBack(){
 			this.$router.push("/EnterpriseOverview")
+		},
+		//企业信息
+		getEnterpriseInfo(){
+			this.$axios.post("/api/api/enterprise/entInfo",{},{
+				headers:{
+					"Authorization":authUnils.getToken()
+				}
+			}).then(res=>{
+				if(res.status==200){
+					if(res.data.code==0){
+						this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
+						this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
+						localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
+						this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
+					}
+				}
+			})
+		}
+	},
+	mounted(){
+		if(this.$route.path=="/"){
+			this.isShowLogin=true
+			this.isShowMain=false
+		}else{
+			this.getEnterpriseInfo()
+		}
+		this.loginName=localStorage.getItem("loginName")
+	},
+	watch:{
+		'$route'(to, from) {
+			if(to.path!="/"&&from.path=="/"){//非登陆页
+				this.isShowLogin=false
+				this.isShowMain=true
+				this.getEnterpriseInfo()
+			}
+			if(to.path=="/"&&from.path!="/"){//登陆页
+				this.isShowLogin=true
+				this.isShowMain=false
+			}
 		}
 	}
 }

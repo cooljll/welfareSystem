@@ -56,8 +56,8 @@
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">
-                <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                 </el-pagination>
             </el-col>
         </div>
@@ -77,6 +77,7 @@ export default{
                 pageNum:1,
                 pageSize:10
             },
+            totalSize:0,
             currentPage:1
         }
     },
@@ -93,7 +94,14 @@ export default{
             this.filters.startTime=this.formatDate(this.value[0])
             this.filters.lastTime=this.formatDate(this.value[1])
         },
-        handleCurrentChange(){},
+        handleSizeChange(val){
+            this.filters.pageSize=val
+            this.getRechargeOrderList()
+        },
+        handleCurrentChange(val){
+            this.filters.pageNum=val
+            this.getRechargeOrderList()
+        },
         //导出excel
         exportExcel() {
             require.ensure([],()=>{
@@ -114,10 +122,10 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                console.log(res)
                 if(res.status==200){
                     if(res.data.code==0){
                         this.tableData=res.data.data.content
+                        this.totalSize=res.data.data.totalSize
                     }
                 }
             })

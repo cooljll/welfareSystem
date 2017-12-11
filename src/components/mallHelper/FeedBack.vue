@@ -18,7 +18,7 @@
                             <el-input placeholder="请概述你的意见"></el-input>
                         </el-form-item>
                         <el-form-item label="意见描述">
-                            <el-input type="textarea" placeholder="请再次留下您宝贵意见，让有米拿弹性福利平台不断进步，谢谢！"></el-input>
+                            <el-input type="textarea" class="descInfo" placeholder="请再次留下您宝贵意见，让有米拿弹性福利平台不断进步，谢谢！"></el-input>
                         </el-form-item>
                         <el-form-item label="相关截图">
                             <el-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/"
@@ -59,7 +59,14 @@
 export default{
     data(){
         return{
-            fileList:[]
+            fileList:[],
+            feedbackParams:{
+                content:"",
+                feedbackEmail:"",
+                feedbackName:"",
+                feedbackPhone:"",
+                feedbackUser:""
+            }
         }
     },
     methods:{

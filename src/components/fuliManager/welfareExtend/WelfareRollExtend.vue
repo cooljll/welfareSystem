@@ -22,10 +22,10 @@
         <div class="page-center">
             <el-row class="layer-title">
                 <el-col class="layer-tag" :name="step?'active':''" @click="handleStep">1 选购福利卷</el-col>
-                <el-col class="layer-tag" :name="step1?'active':''" @click="handleStep1">2 选择福利类型</el-col>
-                <el-col class="layer-tag" :name="step2?'active':''" @click="handleStep2">3 福利卷发放配置</el-col>
-                <el-col class="layer-tag" :name="step3?'active':''" @click="handleStep3">4 支付订单</el-col>
-                <el-col class="layer-tag" :name="step4?'active':''">5 创建订单完成</el-col>
+                <el-col class="layer-tag" v-show="isShowTag1" :name="step1?'active':''" @click="handleStep1">2 选择福利类型</el-col>
+                <el-col class="layer-tag" v-show="isShowTag2" :name="step2?'active':''" @click="handleStep2">3 福利卷发放配置</el-col>
+                <el-col class="layer-tag" v-show="isShowTag3" :name="step3?'active':''" @click="handleStep3">4 支付订单</el-col>
+                <el-col class="layer-tag hidden-md-and-down" :name="step4?'active':''">5 创建订单完成</el-col>
             </el-row>
             <div class="layer-center" v-show="step">
                 <div class="voucherlist">
@@ -329,6 +329,9 @@ import qs from 'queryString'
 export default{
     data(){
         return{
+            isShowTag1:true,
+            isShowTag2:true,
+            isShowTag3:true,
             enterpriseName:"",
             welfareRollList:[],
             productList:[],
@@ -374,6 +377,7 @@ export default{
             rollDescription:"",
             rollInvalidtime:"",
             productName:"",//福利卷名称
+            sku:"",
             rollScores:0,//福利卷积分
             totalScores:0,//总积分数
             totalEmployee:0,//总人数（正常）
@@ -384,7 +388,8 @@ export default{
                 deptId:"",
                 text:""
             },
-            selectedDepArr:[]//选中的部门
+            selectedDepArr:[],//选中的部门
+            screenWidth:document.body.clientWidth
         }
     },
     methods:{
@@ -453,9 +458,6 @@ export default{
             }else{
                 if(this.allEmp){
                     this.getNormalEmps()
-                    // console.log(this.totalEmployee)
-                    // console.log(this.rollScores)
-                    this.totalScores=this.totalEmployee*this.rollScores
                 }
                 if(this.specialEmp){
                     this.totalEmployee=this.extendEmpArr.length
@@ -565,6 +567,7 @@ export default{
                 if(res.status==200){
                     if(res.data.code==0){
                         this.totalEmployee=res.data.data
+                        this.totalScores=this.totalEmployee*this.rollScores
                     }
                 }
             })
@@ -602,9 +605,9 @@ export default{
             this.$axios.post("/api/api/voucher/postVoucherByAll",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
-                nums:"",
-                productName:"",
-                productPrice:"",
+                nums:this.totalEmployee.toString(),
+                productName:this.productName,
+                productPrice:this.rollScores.toString(),
                 sku:"",
                 tolPoint:this.totalScores.toString()
             },{
@@ -612,13 +615,14 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==0){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
-                }
+                console.log(res)
+                // if(res.status==200){
+                //     if(res.data.code==0){
+                //         this.$alert(res.data.message,"信息").then(()=>{
+                //             this.handleStep4()
+                //         })
+                //     }
+                // }
             })
         },
         //特定员工发放福利卷
@@ -630,10 +634,10 @@ export default{
             this.$axios.post("/api/api/voucher/postVoucherBySpecial",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
-                nums:"",
-                productName:"",
-                productPrice:"",
-                sku:"",
+                nums:this.totalEmployee.toString(),
+                productName:this.productName,
+                productPrice:this.rollScores.toString(),
+                sku:this.sku,
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
             },{
@@ -641,13 +645,14 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==0){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
-                }
+                console.log(res)
+                // if(res.status==200){
+                //     if(res.data.code==0){
+                //         this.$alert(res.data.message,"信息").then(()=>{
+                //             this.handleStep4()
+                //         })
+                //     }
+                // }
             })
         },
         //特定人员不发放福利卷
@@ -659,12 +664,12 @@ export default{
             this.$axios.post("/api/api/voucher/postVoucherBySpecialNot",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
-                nums:"",
-                productName:"",
-                productPrice:"",
-                sku:"",
-                tolPoint:this.totalScores,
-                empCodes:tempArr
+                nums:this.totalEmployee.toString(),
+                productName:this.productName,
+                productPrice:this.rollScores.toString(),
+                sku:this.sku,
+                tolPoint:this.totalScores.toString(),
+                empCodes:this.specialEmpCodes
             },{
                 headers:{
                     "Authorization":authUnils.getToken()
@@ -684,10 +689,10 @@ export default{
             this.$axios.post("/api/api/voucher/postVoucherByDep",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
-                nums:"",
-                productName:"",
-                productPrice:"",
-                sku:"",
+                nums:this.totalEmployee.toString(),
+                productName:this.productName,
+                productPrice:this.rollScores.toString(),
+                sku:this.sku,
                 tolPoint:this.totalScores.toString(),
                 depts:arr
             },{
@@ -853,6 +858,11 @@ export default{
                         this.rollInvalidtime=res.data.data.invalidtime
                         this.rollScores=res.data.data.score
                         this.productName=res.data.data.name
+                        if(res.data.data.sku==null){
+                            this.sku=""
+                        }else{
+                            this.sku=res.data.data.sku
+                        }
                         this.welfareRollDialogTitle=res.data.data.name
                         this.productList=res.data.data.list
                         this.welfareRollDemoVisible=true
@@ -891,10 +901,42 @@ export default{
                     this.deportEmpExtendRolls()
                 }
             })
+        },
+        //处理屏幕宽度变化
+        handleScreenWidthChange(width){
+            if(width<980){
+                this.isShowTag3=false
+            }else{
+                this.isShowTag3=true
+            }
+            if(width<800){
+                this.isShowTag2=false
+            }else{
+                this.isShowTag2=true
+            }
+            if(width<620){
+                this.isShowTag1=false
+            }else{
+                this.isShowTag1=true
+            }
         }
     },
     mounted(){
         this.getProduct()
+        const that = this
+        window.onresize = () => {
+            return (() => {
+                window.screenWidth = document.body.clientWidth
+                that.screenWidth = window.screenWidth
+            })()
+        }
+        this.handleScreenWidthChange(this.screenWidth)
+    },
+    watch: {
+        screenWidth (val) {
+            this.screenWidth = val
+            this.handleScreenWidthChange(this.screenWidth)
+        }
     }
 }
 </script>
@@ -913,6 +955,28 @@ export default{
                 .el-button{
                     margin:0 10px 15px 0;
                 }
+            }
+            .checkedbox{
+                margin-bottom: 40px;
+                div{
+                    display: inline-block;
+                    padding:12px 20px;
+                    border: 1px solid #9ACC6A;
+                    color: #5a5e66;
+                    font-size: 14px;
+                    border-radius: 5px;
+                    position: relative;
+                    background:#9ACC6A;
+                    color:#fff;
+                    span{
+                        position: absolute;
+                        top:0;
+                        right:5px;
+                        opacity: 0.4;
+                        cursor: pointer;
+                        font-size: 16px;
+                    }
+                }  
             }
         }
         .layer-center2{

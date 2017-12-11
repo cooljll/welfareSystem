@@ -286,7 +286,7 @@
         .layer-tag{
             float: left;
             height: 42px;
-            width: 140px;
+            width: 170px;
             line-height: 42px;
             margin-top: 10px;
             cursor: pointer;
@@ -691,5 +691,12 @@
         .el-menu-item-group__title{
             padding:0;
         }
+    }
+}
+
+//反馈需求请求textarea样式
+.descInfo{
+    .el-textarea__inner{
+        height: 200px;
     }
 }

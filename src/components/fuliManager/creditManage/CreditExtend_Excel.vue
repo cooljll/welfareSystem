@@ -20,12 +20,12 @@
             {{$route.name}}
         </div>
         <div class="page-center">
-            <div class="layer-title">
-                <div class="layer-tag" :name="step1?'active':''">1 选择福利类型</div>
-                <div class="layer-tag" :name="step2?'active':''" @click="errorMessage">2 人员名单检查</div>
-                <div class="layer-tag" :name="step3?'active':''" @click="errorMessage">3 支付订单</div>
-                <div class="layer-tag" :name="step4?'active':''" @click="errorMessage">4 订单支付完成</div>
-            </div>
+            <el-row class="layer-title">
+                <el-col class="layer-tag" :name="step1?'active':''">1 选择福利类型</el-col>
+                <el-col class="layer-tag" v-show="isShowTag1" :name="step2?'active':''" @click="errorMessage">2 人员名单检查</el-col>
+                <el-col class="layer-tag" v-show="isShowTag2" :name="step3?'active':''" @click="errorMessage">3 支付订单</el-col>
+                <el-col class="layer-tag" v-show="isShowTag3" :name="step4?'active':''" @click="errorMessage">4 订单支付完成</el-col>
+            </el-row>
             <div class="layer-center1" v-show="step1">
                 <!-- 福利类型 -->
                 <div class="row">
@@ -253,6 +253,9 @@ import authUnils from '../../../common/authUnils'
 export default{
     data(){
         return{
+            isShowTag1:true,
+            isShowTag2:true,
+            isShowTag3:true,
             isShowDeclare:false,
             isShow:false,//显示已选中的福利类型
             step1:true,
@@ -308,6 +311,7 @@ export default{
             selectedDeparts:[],
             selectedEmpTags:[],//标签数组
             enterpriseBalance:0,//积分余额
+            screenWidth:document.body.clientWidth
         }
     },
     methods:{
@@ -507,10 +511,42 @@ export default{
                     }
                 }
             })
+        },
+         //处理屏幕宽度变化
+        handleScreenWidthChange(width){
+            if(width<980){
+                this.isShowTag3=false
+            }else{
+                this.isShowTag3=true
+            }
+            if(width<800){
+                this.isShowTag2=false
+            }else{
+                this.isShowTag2=true
+            }
+            if(width<620){
+                this.isShowTag1=false
+            }else{
+                this.isShowTag1=true
+            }
         }
     },
     mounted(){
         this.showFestival()
+        const that = this
+        window.onresize = () => {
+            return (() => {
+                window.screenWidth = document.body.clientWidth
+                that.screenWidth = window.screenWidth
+            })()
+        }
+        this.handleScreenWidthChange(this.screenWidth)
+    },
+    watch: {
+        screenWidth (val) {
+            this.screenWidth = val
+            this.handleScreenWidthChange(this.screenWidth)
+        }
     }
 }
 </script>

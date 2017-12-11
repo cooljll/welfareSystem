@@ -89,6 +89,7 @@
     </div>
 </template>
 <script>
+import authUnils from "../../../common/authUnils"
 export default{
     data(){
         return{
@@ -101,7 +102,8 @@ export default{
             },
             creditExtendData:[],
             extendEmpArr:["张三","李四","王五","赵六","田七"],
-            postType:"2"
+            postType:"2",
+            orderId:""
         }
     },
     methods:{
@@ -134,6 +136,21 @@ export default{
             this.specialEmp=false
             this.deportExtend=true
         }
+        this.orderId=this.$route.params.id
+        this.$axios.post("/api/api/integral/showOrder",{orderId:this.orderId},{
+            headers:{
+                "Authorization":authUnils.getToken()
+            }
+        }).then(res=>{
+            console.log(res)
+            if(res.status==200){
+                if(res.data.code==0){
+                    
+                }else{
+                    this.$alert(res.data.message,"信息")
+                }
+            }
+        })
     }
 }
 </script>

@@ -4,8 +4,8 @@ class AuthUtils {
     // 设置token
     setToken(token) {
         let tokenObj = {
-            token,
-            expireTime: Date.now() + 60 * 60 * 4 * 1e3 // 2小时过期
+            token
+            // expireTime: expireTime.toString() // 2小时过期
         }
         localStorage.setItem(TOKENKEY, JSON.stringify(tokenObj))
     }

@@ -119,8 +119,8 @@
                     </el-table-column>
                 </el-table>
                 <el-col :span="24" class="toolbar">
-                    <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                        :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                        :page-sizes="[10,20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                     </el-pagination>
                 </el-col>
             </el-row>
@@ -165,8 +165,8 @@
                     </el-table-column>
                 </el-table>
                 <el-col :span="24" class="toolbar">
-                    <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                        :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                    <el-pagination @size-change="handleLeaveSizeChange" @current-change="handleLeaveCurrentChange" :current-page="currentPage"
+                        :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSizeDel">
                     </el-pagination>
                 </el-col>
             </el-row>
@@ -232,8 +232,8 @@
                     </el-table-column>
                 </el-table>
                 <el-col :span="24" class="toolbar">
-                    <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                        :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                    <el-pagination @size-change="handleExaSizeChange" @current-change="handleExaCurrentChange" :current-page="currentPage"
+                        :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSizeExamine">
                     </el-pagination>
                 </el-col>
             </el-row>
@@ -243,6 +243,7 @@
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="所属部门">
                     <el-select v-model.number="addDepParams.deptId_sup">
+                        <el-option value="0" label="设为一级部门"></el-option>
                         <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -257,7 +258,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="primary" @click="addDepartmentSubmit">保存</el-button>
+                <el-button type="primary" @click="addDepartmentSubmit" v-show="isShowAddDept">保存</el-button>
+                <el-button type="primary" @click="updateDepartmentSubmit" v-show="isShowUpdateDept">保存</el-button>
                 <el-button @click.native="handleDepartmentVisible = false">取消</el-button>
             </div>
         </el-dialog>
@@ -348,11 +350,11 @@
             </div>
             <div class="row">
                 <div class="title">入职时间</div>
-                <div class="info">{{this.employeeInfo.joinedDate|filterTime}}</div>
+                <div class="info">{{this.employeeInfo.joinedDate}}</div>
             </div>
             <div class="row">
                 <div class="title">申请时间</div>
-                <div class="info">{{this.employeeInfo.joinedDate|filterTime}}</div>
+                <div class="info">{{this.employeeInfo.joinedDate}}</div>
             </div>
             <div class="row">
                 <div class="title">状态</div>
@@ -464,6 +466,7 @@ export default{
                 pageNum:1,
                 pageSize:10
             },
+            totalSize:0,
             // 离职列表
             leaveTableData:[],
             filtersDel:{
@@ -471,6 +474,7 @@ export default{
                 pageNum:1,
                 pageSize:10
             },
+            totalSizeDel:0,
             //审批列表
             examineTableData:[],
             value:[],//日期
@@ -481,6 +485,7 @@ export default{
                 pageNum:1,
                 pageSize:10
             },
+            totalSizeExamine:0,
             currentPage:1,
             departmentList:[],//部门序列表
             handleDepartmentVisible:false,
@@ -490,9 +495,12 @@ export default{
                 deptId_sup: 0,
                 deptName_cur: "",
                 remark: "",
-                sortId: 0
+                sortId: 50
             },
             addEmployeeVisible:false,
+            isShowAddDept:true,
+            isShowUpdateDept:false,
+            deptId_pre:0,
             //添加员工参数
             addEmployeeParams:{
                 department: "",
@@ -582,7 +590,6 @@ export default{
             }
             return !ext || !ext1
         },
-        handleCurrentChange(){},
         //部门序列表
         getDepartmentList(){
             this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true}),{
@@ -591,6 +598,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.data.code==0){
+                    this.departmentList=[]
                     res.data.data.forEach(item=>{
                         let tempObj={}
                         tempObj["value"]=item.organizationUnitId
@@ -604,20 +612,11 @@ export default{
         addDepartment(){
             this.departmentDialog="添加部门"
             this.handleDepartmentVisible=true
+            this.isShowAddDept=true
+            this.isShowUpdateDept=false
             this.getDepartmentList()
         },
         addDepartmentSubmit(){
-            // this.$axios.post("/api/api/organize/exitDep",{
-            //     headers:{
-            //         "Authorization":authUnils.getToken()
-            //     }
-            // }).then(res=>{
-            //     if(res.code==0){
-            //         this.$alert(res.message,"提示").then(res=>{
-
-            //         })
-            //     }
-            // })
             this.$axios.post("/api/api/organize/addDep",this.addDepParams,{
                 headers:{
                     "Authorization":authUnils.getToken()
@@ -632,17 +631,52 @@ export default{
         },
         // 编辑部门
         editDepartment(id){
+            this.getDepartmentList()
             this.departmentDialog="部门编辑"
+            this.handleDepartmentVisible=true
+            this.isShowAddDept=false
+            this.isShowUpdateDept=true
             this.$axios.post("/api/api/organize/depInfo",qs.stringify({depId:id}),{
                 headers:{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.data.code==0){
-                    console.log(res.data.data)
+                if(res.status==200){
+                    if(res.data.code==0){
+                        this.deptId_pre=res.data.data.organizationUnitId
+                        if(res.data.data.parentOrganizationUnitId){
+                            this.addDepParams.deptId_sup="0"
+                        }else{
+                            this.addDepParams.deptId_sup=res.data.data.parentOrganizationUnitId
+                        }
+                        this.addDepParams.deptName_cur=res.data.data.displayName
+                        this.addDepParams.sortId=res.data.data.displayOrder
+                        this.addDepParams.remark=res.data.data.remark
+                    }
                 }
             })
-            this.handleDepartmentVisible=true
+        },
+        updateDepartmentSubmit(){
+            this.$axios.post("/api/api/organize/updateDep",{
+                deptId_pre:this.deptId_pre,
+                deptName_cur:this.addDepParams.deptName_cur,
+                parentId:this.addDepParams.deptId_sup,
+                remark:this.addDepParams.remark,
+                sortId:this.addDepParams.sortId
+            },{
+                headers:{
+                    "Authorization":authUnils.getToken()
+                }
+            }).then(res=>{
+                if(res.status==200){
+                    if(res.data.code==0){
+                       this.$alert(res.data.message,"信息").then(()=>{
+                           this.handleDepartmentVisible=false
+                           this.$router.go(0)
+                       })   
+                    }
+                }
+            })
         },
         //部门删除
         deleteDepartment(id){
@@ -652,8 +686,12 @@ export default{
                         "Authorization":authUnils.getToken()
                     }
                 }).then(res=>{
-                    if(res.code==0){
-                        this.$message({message:res.message,type:"success"})
+                    if(res.status==200){
+                        if(res.data.code==0){
+                            this.$alert(res.data.message,"信息").then(()=>{
+                                this.$router.push("/EnterpriseOverview")
+                            })
+                        }
                     }
                 })
             })
@@ -676,32 +714,6 @@ export default{
             //     console.log(res)
             // })
             this.qrcodeVisible=true
-        },
-        pickerOptions:{
-            disabledDate(time) {
-                return time.getTime() > Date.now();
-            }
-        },
-        visibleHandleInfo(){
-            this.isShowHandleInfo=true
-        },
-        displayHandleInfo(){
-            this.isShowHandleInfo=false
-        },
-        visibleHandle(){
-            this.isShowHandle=true
-        },
-        displayHandle(){
-            this.isShowHandle=false
-        },
-        visibleAddHandle(){
-            this.isShowAddHandle=true
-        },
-        displayAddHandle(){
-            this.isShowAddHandle=false
-        },
-        handleSelectionChange(val){
-            this.selectedEmployee=val
         },
         //处理判断
         handleJudge(){
@@ -843,19 +855,6 @@ export default{
         getBeInJobResult(){
             this.showEmployee(Number(this.$route.params.depId))
         },
-        //获取离职列表
-        getleaveOfficeList(){
-            this.showDelEmployee()
-        },
-        // 获取审批列表
-        getSearchResult(){
-            this.showExmineLists()
-        },
-        //查看详情
-        seeDetails(obj){
-            this.seeDetailsVisible=true
-            this.employeeInfo=obj
-        },
         //查询员工信息
         showEmployee(id){
             this.filters.depId=id
@@ -867,6 +866,7 @@ export default{
                 if(res.status==200){
                     if(res.data.code==0){
                         this.tableData=res.data.data.content
+                        this.totalSize=res.data.data.totalSize
                     }
                     // if(res.data.code==2001){
                     //     this.$alert("登陆超时，请重新登陆","信息").then(()=>{
@@ -879,6 +879,19 @@ export default{
                 }
             })
         },
+        //在职人员分页操作
+        handleSizeChange(val){
+            this.filters.pageSize=val
+            this.showEmployee(Number(this.$route.params.depId))
+        },
+        handleCurrentChange(val){
+            this.filters.pageNum=val
+            this.showEmployee(Number(this.$route.params.depId))
+        },
+        //获取离职列表
+        getleaveOfficeList(){
+            this.showDelEmployee()
+        },
         //查询离职列表
         showDelEmployee(){
             this.$axios.post("/api/api/employee/hasDelEmps",this.filtersDel,{
@@ -888,6 +901,7 @@ export default{
             }).then(res=>{
                 if(res.status==200){
                     this.leaveTableData=res.data.data.content
+                    this.totalSizeDel=res.data.data.totalSize
                     // if(res.data.code==2001){
                     //     this.$alert("登陆超时，请重新登陆","信息").then(()=>{
                     //         authUnils.removeToken()
@@ -899,6 +913,19 @@ export default{
                 }
             })
         },
+        //离职人员分页操作
+        handleLeaveSizeChange(val){
+            this.filtersDel.pageSize=val
+            this.showDelEmployee()
+        },
+        handleLeaveCurrentChange(val){
+            this.filtersDel.pageNum=val
+            this.showDelEmployee()
+        },
+        // 获取审批列表
+        getSearchResult(){
+            this.showExmineLists()
+        },
         //查询审批列表
         showExmineLists(){
             this.filtersExamine.auditStatus=Number(this.filtersExamine.auditStatus)
@@ -907,7 +934,9 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
+                console.log(res)
                 if(res.data.code==0){
+                    this.totalSizeExamine=res.data.data.totalSize
                     res.data.data.content.forEach(item=>{
                         if(item.gender==1){
                             item.gender="男"
@@ -926,14 +955,45 @@ export default{
                 }
             })
         },
-        //时间转化
-        transferTime(time){
-            return new Date(time).getFullYear()+"-"+(new Date(time).getMonth()+1)+"-"+new Date(time).getDate()+" "+new Date(time).getHours()+":"+new Date(time).getMinutes()+":"+new Date(time).getSeconds()
-        }
-    },
-    filters:{
-        filterTime(){
-            // return transferTime(this.employeeInfo.joinedDate)
+        //审批列表分页操作
+        handleExaSizeChange(val){
+            this.filtersExamine.pageSize=val
+            this.showExmineLists()
+        },
+        handleExaCurrentChange(val){
+            this.filtersExamine.pageNum=val
+            this.showExmineLists()
+        },
+        //查看详情
+        seeDetails(obj){
+            this.seeDetailsVisible=true
+            this.employeeInfo=obj
+        },
+        pickerOptions:{
+            disabledDate(time) {
+                return time.getTime() > Date.now();
+            }
+        },
+        visibleHandleInfo(){
+            this.isShowHandleInfo=true
+        },
+        displayHandleInfo(){
+            this.isShowHandleInfo=false
+        },
+        visibleHandle(){
+            this.isShowHandle=true
+        },
+        displayHandle(){
+            this.isShowHandle=false
+        },
+        visibleAddHandle(){
+            this.isShowAddHandle=true
+        },
+        displayAddHandle(){
+            this.isShowAddHandle=false
+        },
+        handleSelectionChange(val){
+            this.selectedEmployee=val
         }
     },
     mounted(){

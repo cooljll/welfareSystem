@@ -88,7 +88,7 @@ export default new Router({
           { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },
           { path: '/CreditExtend_Excel', component: CreditExtend_Excel, name: 'Excel积分发放' },
           { path: '/CreditExtend_Order', component: CreditExtend_Order, name: '积分发放订单' },
-          { path: '/CreditOrder_Detail', component: CreditOrder_Detail, name: '' },
+          { path: '/CreditOrder_Detail/:id?', component: CreditOrder_Detail, name: '' },
           { path: '/WelfareRollExtend', component: WelfareRollExtend, name: '福利卷发放' },
           { path: '/WelfareRollOrder', component: WelfareRollOrder, name: '福利卷订单' },
           { path: '/OrderExtend_Detail', component: OrderExtend_Detail, name: '' },
