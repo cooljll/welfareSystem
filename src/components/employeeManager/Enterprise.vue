@@ -99,7 +99,7 @@
                             </el-form-item>
                         </el-form>
                     </el-col>
-                    <el-table  v-loading="loading" :data="tableData" border resizable highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange">
+                    <el-table v-loading="loading" :data="tableData" border resizable highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange">
                         <el-table-column type="selection" align="center">
                         </el-table-column>
                         <el-table-column prop="name" label="姓名" align="center">
@@ -140,12 +140,12 @@
                                             <el-input placeholder="姓名" v-model="employeeInfo.name"></el-input>
                                         </el-form-item>
                                         <el-form-item label="出生年月：">
-                                            <el-input placeholder="出生年月" v-model="employeeInfo.birthday"></el-input>
+                                            <el-input placeholder="出生年月" v-model="employeeInfo.birthday" :disabled="true"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col>
                                         <el-form-item label="年龄：">
-                                            <el-input placeholder="年龄" v-model="employeeInfo.age"></el-input>
+                                            <el-input placeholder="年龄" v-model="employeeInfo.age" :disabled="true"></el-input>
                                         </el-form-item>
                                         <el-form-item label="身份证号：">
                                             <el-input placeholder="身份证号" v-model="employeeInfo.identifyNumber"></el-input>
@@ -185,16 +185,14 @@
                                             <el-input v-model="employeeInfo.job_Number"></el-input>
                                         </el-form-item>
                                         <el-form-item label="部门：">
-                                            <el-select placeholder="请选择部门" v-model="employeeInfo.department">
-                                                <el-option label="市场部" value="1"></el-option>
-                                                <el-option label="采购部" value="2"></el-option>
-                                                <el-option label="客户" value="3"></el-option>
+                                            <el-select v-model.number="departId">
+                                                <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                             </el-select>
                                         </el-form-item>
                                     </el-col>
                                     <el-col>
                                         <el-form-item label="在职状态：">
-                                            <el-input v-model="employeeInfo.isFrozen"></el-input>
+                                            <el-input v-model="employeeInfo.isFrozen" :disabled="true"></el-input>
                                         </el-form-item>
                                         <el-form-item label="入职时间：">
                                             <el-date-picker v-model="employeeInfo.joinedDate" type="date" placeholder="选择日期" :picker-options="pickerOptions"></el-date-picker>
@@ -400,8 +398,8 @@
         <el-dialog title="批量导入员工" :visible.sync="exportEmployeeVisible" :close-on-click-modal="false" style="top:15%" class="batchExportEmpDialog">
             <div class="tishititle"> 请上传编辑好的员工个人信息EXCEL格式请按模板，顶行内容勿修改！</div>
             <div class="footer-center">
-                <el-upload class="uploaddemo" :file-list="fileList" action="https://jsonplaceholder.typicode.com/posts/" :headers="requestHeader"
-                :show-file-list="false" :on-change="uploadChange" :on-error="uploadError" :before-upload="beforeFileUpload">
+                <el-upload class="uploaddemo" :file-list="fileList" action="https://jsonplaceholder.typicode.com/posts/"
+                :show-file-list="false" :on-error="uploadError" :before-upload="beforeFileUpload">
                     <el-button type="primary">上传</el-button>
                 </el-upload>
                 <el-button>下载excel模板</el-button>
@@ -547,13 +545,6 @@ export default{
         return {
             isShowEmpList:true,
             isShowEmpDetail:false,
-            rABS:false,//是否将文件读取为二进制字符串
-            requestHeader:{
-                "Content-Type": "text/html; charset=UTF-8",
-                "Access-Control-Allow-Origin":'*',
-                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-                'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type'
-            },
             tableData:[],
             simpleEmpInfo:{},
             //查询条件
@@ -640,51 +631,18 @@ export default{
             value1:'',
             empCodes:[],
             employeeInfo:{},
-            //移至部门参数
-            moveToDepParams:{
-                depId_next:0,
-                list:[]
-            },
             loading:false,
             leaveLoading:false,
             examineLoading:false,
             departId:"",
-
-
             handleBtn:true,
             confirmBtn:false,
             isShowFrozenBtn:true,
             isShowReleaseBtn:false,
-            companyName:"上海汇展人力资源有限公司",
+            companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName
         }
     },
     methods:{
-        uploadChange(file){
-            var f=file.raw
-            var fileReader = new FileReader()
-            fileReader.onload = function(ev){
-                console.log(ev)
-                var data = ev.target.result
-                var wd;//读取完成的数据
-                if(this.rABS) {
-                    wb = XLSX.read(btoa(fixdata(data)), {//手动转化
-                        type: 'base64'
-                    });
-                } else {
-                    wb = XLSX.read(data, {
-                        type: 'binary'
-                    });
-                }
-                //wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
-                //wb.Sheets[Sheet名]获取第一个Sheet的数据
-                console.log(JSON.stringify(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])))
-            }
-            if(this.rABS){
-                fileReader.readAsBinaryString(f)
-            }else{
-                fileReader.readAsArrayBuffer(f)
-            }
-        },
         uploadError (response, file, fileList) {
             this.$alert("上传失败，请重试！","信息")
         },
@@ -819,7 +777,6 @@ export default{
         },
         //移至部门确定
         moveToDepSubmit(){
-            this.moveToDepParams.depId_next=this.departId
             // 批量
             if(this.isShowEmpList){
                 var tempList=[]
@@ -971,7 +928,9 @@ export default{
                 this.isShowReleaseBtn=true
                 this.isShowFrozenBtn=false
             }
+            this.getDepartmentList()
             this.employeeInfo=obj
+            this.departId=this.employeeInfo.department
             this.isShowEmpList=false
             this.isShowEmpDetail=true
         },
@@ -1066,7 +1025,7 @@ export default{
         handleSelectionChange(val){
             this.selectedEmployee=val
         },
-        // *******************************************员工详情*************************************************
+        // ******************************************************员工详情*************************************************
         //修改员工信息
         modifyEmployeeInfo(){
             this.handleBtn=false
@@ -1074,9 +1033,26 @@ export default{
         },
         // 员工修改提交
         modifyEmpInfoSubmit(){
-            this.handleBtn=true
-            this.confirmBtn=false
-            this.$message({message:"修改成功",type:"success"})
+            this.$axios.post("/api/api/employee/updateEmployee",{
+                dep_cur:this.departId,
+                dep_pre:this.employeeInfo.deptId,
+                email:this.employeeInfo.email,
+                empCode:this.employeeInfo.empCode,
+                identifyNo:this.employeeInfo.identifyNumber,
+                jobNumber:this.employeeInfo.job_Number,
+                joinedTime:this.employeeInfo.joinedDate,
+                name:this.employeeInfo.name,
+                phone:this.employeeInfo.phone,
+                sex:this.employeeInfo.sex
+            }).then((res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleBtn=true
+                        this.confirmBtn=false
+                        this.$router.go(0)
+                    })
+                }
+            }))
         },
         cancel(){
             this.handleBtn=true
