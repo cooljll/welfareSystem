@@ -23,7 +23,7 @@
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" @click="modifyPassword(scope.row)">查看</el-button>
-                        <el-button type="text" v-show="scope.row.accountType=='主账号'?false:true" @click="frozenAccount(scope.row.userGuid)">冻结</el-button>
+                        <el-button type="text" v-show="scope.row.state=='冻结'||scope.row.accountType=='主账号'?false:true" @click="frozenAccount(scope.row.userGuid)">冻结</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -159,6 +159,7 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
+                console.log(res)
                 if(res.status==200){
                     if(res.data.code==0){
                         this.tableData=res.data.data
@@ -227,6 +228,7 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
+                console.log(res)
                 if(res.status==200){
                     if(res.data.code==0){
                         this.$alert(res.data.message,"信息").then(()=>{

@@ -136,11 +136,6 @@ export default{
                         if(res.status==200){
                             if(res.data.code==0){
                                 this.$refs.requireData.resetFields()
-                            }else if(res.data.code==2001){
-                                this.$alert("登陆超时，请重新登陆","信息").then(()=>{
-                                    this.$router.push("/")
-                                    authUnils.removeToken()
-                                })
                             }
                         }
                     })

@@ -19,10 +19,10 @@ import CreditExtend from '@/components/fuliManager/creditManage/CreditExtend'
 import CreditExtend_Excel from '@/components/fuliManager/creditManage/CreditExtend_Excel'
 import CreditExtend_Order from '@/components/fuliManager/creditManage/CreditExtend_Order'
 import CreditOrder_Detail from '@/components/fuliManager/creditManage/CreditOrder_Detail'
+import OrderExtend_Detail from '@/components/fuliManager/creditManage/OrderExtend_Detail'//福利发放人员详情
 // 福利发放
 import WelfareRollExtend from '@/components/fuliManager/welfareExtend/WelfareRollExtend'
 import WelfareRollOrder from '@/components/fuliManager/welfareExtend/WelfareRollOrder'
-import OrderExtend_Detail from '@/components/fuliManager/OrderExtend_Detail'//福利发放人员详情
 // 福利采购
 import WelfarePick from '@/components/fuliManager/welfarePurchase/WelfarePick'
 import PurchaseOrder from '@/components/fuliManager/welfarePurchase/PurchaseOrder'
@@ -91,7 +91,7 @@ export default new Router({
           { path: '/CreditOrder_Detail/:id?', component: CreditOrder_Detail, name: '' },
           { path: '/WelfareRollExtend', component: WelfareRollExtend, name: '福利卷发放' },
           { path: '/WelfareRollOrder', component: WelfareRollOrder, name: '福利卷订单' },
-          { path: '/OrderExtend_Detail', component: OrderExtend_Detail, name: '' },
+          { path: '/OrderExtend_Detail/:id?/:type?', component: OrderExtend_Detail, name: '' },
           { path: '/WelfarePick', component: WelfarePick, name: '福利挑选' },
           { path: '/PurchaseOrder', component: PurchaseOrder, name: '采购订单' },
           { path: '/WelfareData', component: WelfareData, name: '福利数据' },

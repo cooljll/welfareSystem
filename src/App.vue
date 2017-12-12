@@ -2,7 +2,7 @@
   <div id="app">
 		<div class="page-header" v-show="isShowLogin">
 				<div class="header-inner">
-						<img class="header-img" src="http://192.168.1.197:8082/assets/img/secondindexlogo.png">
+					<img class="header-img" src="http://192.168.1.197:8082/assets/img/secondindexlogo.png">
 				</div>
 		</div>
 		<el-row class="page-header" v-show="isShowMain">

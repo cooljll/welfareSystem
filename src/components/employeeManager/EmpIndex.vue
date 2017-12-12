@@ -351,16 +351,11 @@ export default {
             data:true,
             headers:{
                 "Content-Type":"application/json",
-                "Authorization":authUnils.getToken()
+                // "Authorization":authUnils.getToken()
             }
         }).then(res=>{
             if(res.status==200){
-                if(res.data.code==2001){
-                    this.$alert("登陆超时，请重新登陆","信息").then(()=>{
-                        authUnils.removeToken()
-                        this.$router.push("/")
-                    })
-                }else if(res.data.code==0){
+                if(res.data.code==0){
                     this.data.push(this.transferData(res.data.data))
                 }
             }

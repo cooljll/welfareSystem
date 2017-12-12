@@ -28,37 +28,43 @@ Vue.use(ElementUI)
 //     next()
 //   } 
 // })
-// // 请求拦截器
-// axios.interceptors.request.use(
-//   config => {
-//     请求之前做什么
-//     if(authUtil.getToken()){// 判断是否存在token，如果存在的话，则每个http header都加上token
-//       config.headers.Authorization = authUtil.getToken()
-//     }
-//     return config
-//   },
-//   err => {
-//       return Promise.reject(err)
-//   })
-// // 响应拦截器
-// axios.interceptors.response.use(
-//   response => {
-//        对响应结果做点什么
-//       return response
-//   },
-//   error => {
-//       if (error.response) {
-//           switch (error.response.status) {
-//               case 401:
-//                   authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
-//                   router.replace({
-//                       path: '/',
-//                       query: {redirect: router.currentRoute.fullPath}
-//                   })
-//           }
-//       }
-//       return Promise.reject(error.response.data)   // 返回接口返回的错误信息
-//   })
+// 请求拦截器
+axios.interceptors.request.use(
+  config => {
+    if(authUtil.getToken()){ // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
+      config.headers.Authorization = authUtil.getToken()
+    }
+    return config
+  },
+  err => {
+      return Promise.reject(err)
+  })
+// 响应拦截器
+axios.interceptors.response.use(
+  response => {
+      return response
+  },
+  error => {
+    if (error.response) {
+        switch (error.response.status) {
+            case 401: 
+                authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
+                router.replace({
+                    path: '/',
+                    query: {redirect: router.currentRoute.fullPath}
+                })
+            case 2001:
+                this.$alert("登陆超时，请重新登陆","信息").then(()=>{
+                    authUtil.removeToken()
+                    router.replace({
+                        path: '/',
+                        query: {redirect: router.currentRoute.fullPath}
+                    })
+                })
+        }
+    }
+      return Promise.reject(error.response.data)   // 返回接口返回的错误信息
+  })
 
 new Vue({
   el: '#app',

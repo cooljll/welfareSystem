@@ -868,14 +868,6 @@ export default{
                         this.tableData=res.data.data.content
                         this.totalSize=res.data.data.totalSize
                     }
-                    // if(res.data.code==2001){
-                    //     this.$alert("登陆超时，请重新登陆","信息").then(()=>{
-                    //         authUnils.removeToken()
-                    //         this.$router.push("/")
-                    //     })
-                    // }else if(res.data.code==0){
-                    //     this.tableData=res.data.data.content
-                    // }
                 }
             })
         },
@@ -902,14 +894,6 @@ export default{
                 if(res.status==200){
                     this.leaveTableData=res.data.data.content
                     this.totalSizeDel=res.data.data.totalSize
-                    // if(res.data.code==2001){
-                    //     this.$alert("登陆超时，请重新登陆","信息").then(()=>{
-                    //         authUnils.removeToken()
-                    //         this.$router.push("/")
-                    //     })
-                    // }else if(res.data.code==0){
-                    //     this.leaveTableData=res.data.data.content
-                    // }
                 }
             })
         },

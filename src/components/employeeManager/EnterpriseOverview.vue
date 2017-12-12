@@ -186,7 +186,7 @@ export default {
 			this.$axios.post("/api/api/employee/selEmpCount",false,{
                 headers:{
                     "Content-Type":"application/json",
-                    "Authorization":authUnils.getToken()
+                    // "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
                 if(res.status==200){
@@ -201,7 +201,7 @@ export default {
 		getGenderNums(){
 			this.$axios.post("/api/api/service/genderScope",{},{
 				headers:{
-					"Authorization":authUnils.getToken()
+					// "Authorization":authUnils.getToken()
 				}
 			}).then(res=>{
 				if(res.data.code==0){
@@ -214,7 +214,7 @@ export default {
 		getAgeNums(){
 			this.$axios.post("/api/api/service/ageScope",{},{
 				headers:{
-					"Authorization":authUnils.getToken()
+					// "Authorization":authUnils.getToken()
 				}
 			}).then(res=>{
 				if(res.data.code==0){
@@ -246,7 +246,7 @@ export default {
 			})
 			this.$axios.post("/api/api/service/qrcode",{},{
 				headers:{
-					"Authorization":authUnils.getToken()
+					// "Authorization":authUnils.getToken()
 				}
 			}).then(res=>{
 				if(res.status==200){

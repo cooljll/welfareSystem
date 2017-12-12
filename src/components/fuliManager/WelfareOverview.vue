@@ -190,14 +190,14 @@ export default{
         getPointRecords(yearParams){
             this.$axios.post("/api/api/enterprise/getPostPointRecords",qs.stringify({year:yearParams}),{
                 headers:{
-                    "Authorization":authUnils.getToken()
+                    // "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
                 if(res.data.code==0){
                     this.consumeData=res.data.data
                     this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams}),{
                         headers:{
-                            "Authorization":authUnils.getToken()
+                            // "Authorization":authUnils.getToken()
                         }
                     }).then(res=>{
                         if(res.data.code==0){
@@ -219,16 +219,11 @@ export default{
                 month:month
             }),{
                 headers:{
-                    "Authorization":authUnils.getToken()
+                    // "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==2001){
-                        this.$alert(res.data.message+",请登陆","信息").then(()=>{
-                            authUnils.removeToken()
-                            this.$router.push("/")
-                        })
-                    }else{
+                    if(res.data.code==0){
                         this.baseData=res.data.data
                         this.drawPie()
                     }
@@ -242,18 +237,11 @@ export default{
         showNewNotice(){
             this.$axios.post("/api/api/announcement/newNotice",{},{
                 headers:{
-                    "Authorization":authUnils.getToken()
+                    // "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==2001){
-                        this.$alert(res.data.message+",请登陆","信息").then(()=>{
-                            authUnils.removeToken()
-                            // $.cookie('SESSION', null)
-                            // $.cookie('accessToken', null)
-                            this.$router.push("/")
-                        })
-                    }else{
+                    if(res.data.code==0){
                         this.newNoticeContent=res.data.data.content
                     }
                 }

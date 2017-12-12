@@ -31,8 +31,8 @@
                 </el-table-column>
             </el-table>
             <div class="toolbar">
-                <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                 </el-pagination>
             </div>
         </div>
@@ -52,11 +52,19 @@ export default{
             },
             value:[],//发布时间
             currentPage:1,
+            totalSize:0,
             tableData:[]
         }
     },
     methods:{
-        handleCurrentChange(){},
+        handleSizeChange(val){
+            this.filters.pageSize=val
+            this.showPageLog()
+        },
+        handleCurrentChange(val){
+            this.filters.pageNum=val
+            this.showPageLog()
+        },
         //格式化时间
         formatDate(time){
             var d=new Date(time)
@@ -77,7 +85,10 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    this.tableData=res.data.rows
+                    if(res.data.code==0){
+                        this.tableData=res.data.data.content
+                        this.totalSize=res.data.data.totalSize
+                    }
                 }
             })
         },

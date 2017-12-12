@@ -5,75 +5,57 @@
                 <div class="center-top">
                     <div class="scorecountbox">
                         <div class="title">积分统计</div>
-                        <div class="scoreallcount">1</div>
-                        <div class="scorecount">每人发放<span>1</span></div>
+                        <div class="scoreallcount">{{creditOrderDesc.consume_point}}</div>
+                        <div class="scorecount">每人发放<span>{{creditOrderDesc.consume_point/creditOrderDesc.totalNums}}</span></div>
                     </div>
                     <div class="staffcountbox">
                         <div class="title">人员分布</div>
                         <div class="staffcount">
-                            <div>总人数: <span>1</span></div>
+                            <div>总人数: <span>{{creditOrderDesc.totalNums}}</span></div>
                         </div>
                     </div>
                 </div>
                 <div class="center-content">
                     <div>
                         <div class="title">福利类型</div>
-                        <div class="content textright">元旦</div>
+                        <div class="content textright">{{creditOrderDesc.welfareType}}</div>
                     </div>
                     <div>
                         <div class="title">发放时间</div>
-                        <div class="content textright">2017-11-24 16:00</div>
+                        <div class="content textright">{{creditOrderDesc.createTime}}</div>
                     </div>
                     <div>
                         <div class="title">邮件寄语</div>
                         <div class="content">
-                            元旦快到了！我把收藏好的一月的喜庆，二月的春风，三月的花开，四月的快乐，五月的温馨，六月的纯真，
-                            七月的热情，八月的桂香，九月的骄阳，十月的收获，十一月的感恩，十二月的纯洁装进诚意的盒子里，用关怀的蝴蝶结装饰送给你，元旦快乐！
+                            {{creditOrderDesc.blessMsg}}
                         </div>
                     </div>
-                    <!-- 全体员工 -->
-                    <div v-show="allEmp"> 
+                    <div> 
+                        <!-- 全体员工 -->
                         <div class="title">发放对象</div>
-                        <div class="content textright">全体员工
-                            <router-link to="/OrderExtend_Detail">
+                        <div class="content textright">
+                            {{creditOrderDesc.postTypeName}}
+                            <router-link :to="{path:'/OrderExtend_Detail/'+creditOrderDesc.orderId+'/'+creditOrderDesc.welfareType}">
                                 <el-button type="primary">详细发放人员</el-button>
                             </router-link>
                         </div>
-                    </div>
-                    <!-- 特定人员 -->
-                    <div v-show="specialEmp">
-                        <div class="title">发放对象</div>
-                        <div class="content textright">特定人员发放
-                            <router-link to="/OrderExtend_Detail">
-                                <el-button type="primary">详细发放人员</el-button>
-                            </router-link>
-                        </div>
-                        <div class="listbox">
+                        <!-- 特定人员 -->
+                        <div class="listbox" v-show="specialEmp">
                             <div class="stafflist">
-                                <el-tag v-for="tag in extendEmpArr" :key="tag" closable
+                                <el-tag v-for="tag in extendEmpArr" :key="tag" closable class="tagStyle"
                                     :disable-transitions="false" @close="handleClose(tag)">
                                     {{tag}}
                                 </el-tag>
                             </div>
                         </div>
-                    </div>
-                    <!-- 部门发放 -->
-                    <div v-show="deportExtend">
-                        <div class="title">发放对象</div>
-                        <div class="content textright">部门发放
-                            <router-link to="/OrderExtend_Detail">
-                                <el-button type="primary">详细发放人员</el-button>
-                            </router-link>
-                        </div>
-                        <div class="listbox">
+                        <!-- excel发放 -->
+
+                        <!-- 部门发放 -->
+                        <div class="listbox" v-show="deportExtend">
                             <el-table style="width:100%" :data="creditExtendData" :header-row-style="tableHeader">
-                                <el-table-column prop="name" label="部门名称" align="center"></el-table-column>
+                                <el-table-column prop="depName" label="部门名称" align="center"></el-table-column>
                                 <el-table-column prop="nums" label="部门人数" align="center"></el-table-column>
-                                <el-table-column label="发放积分数" align="center">
-                                    <template slot-scope="scope">
-                                        <el-input v-model="scores"></el-input>
-                                    </template>
-                                </el-table-column>
+                                <el-table-column prop="point" label="发放积分数" align="center"></el-table-column>
                             </el-table>
                         </div>
                     </div>
@@ -93,7 +75,6 @@ import authUnils from "../../../common/authUnils"
 export default{
     data(){
         return{
-            allEmp:true,
             specialEmp:false,
             deportExtend:false,
             tableHeader:{
@@ -101,9 +82,15 @@ export default{
                 color:"#fff"
             },
             creditExtendData:[],
-            extendEmpArr:["张三","李四","王五","赵六","田七"],
+            extendEmpArr:[],
             postType:"2",
-            orderId:""
+            creditDescParams:{
+                orderId: "",
+                pageNum: 1,
+                pageSize: 10,
+                state: ""
+            },
+            creditOrderDesc:{}
         }
     },
     methods:{
@@ -123,21 +110,8 @@ export default{
         }
     },
     mounted(){
-        if(this.postType=="1"){
-            this.allEmp=true
-            this.specialEmp=false
-            this.deportExtend=false
-        }else if(this.postType=="2"){
-            this.allEmp=false
-            this.specialEmp=true
-            this.deportExtend=false
-        }else if(this.postType=="3"){
-            this.allEmp=false
-            this.specialEmp=false
-            this.deportExtend=true
-        }
-        this.orderId=this.$route.params.id
-        this.$axios.post("/api/api/integral/showOrder",{orderId:this.orderId},{
+        this.creditDescParams.orderId=this.$route.params.id
+        this.$axios.post("/api/api/integral/orderDetail",this.creditDescParams,{
             headers:{
                 "Authorization":authUnils.getToken()
             }
@@ -145,9 +119,23 @@ export default{
             console.log(res)
             if(res.status==200){
                 if(res.data.code==0){
-                    
-                }else{
-                    this.$alert(res.data.message,"信息")
+                    this.creditOrderDesc=res.data.data
+                    this.postType=res.data.data.postType
+                    if(this.postType=="1"){
+                        this.specialEmp=false
+                        this.deportExtend=false
+                    }else if(this.postType=="2"){
+                        this.specialEmp=true
+                        this.deportExtend=false
+                        this.extendEmpArr=JSON.parse(res.data.data.msg)
+                    }else if(this.postType=="7"){
+                        // this.specialEmp=false
+                        // this.deportExtend=true
+                    }else if(this.postType=="4"){
+                        this.specialEmp=false
+                        this.deportExtend=true
+                        this.creditExtendData=JSON.parse(res.data.data.msg)
+                    }
                 }
             }
         })
