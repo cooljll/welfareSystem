@@ -188,18 +188,10 @@ export default{
         },
         //积分消费充值记录
         getPointRecords(yearParams){
-            this.$axios.post("/api/api/enterprise/getPostPointRecords",qs.stringify({year:yearParams}),{
-                headers:{
-                    // "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/enterprise/getPostPointRecords",qs.stringify({year:yearParams})).then(res=>{
                 if(res.data.code==0){
                     this.consumeData=res.data.data
-                    this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams}),{
-                        headers:{
-                            // "Authorization":authUnils.getToken()
-                        }
-                    }).then(res=>{
+                    this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams})).then(res=>{
                         if(res.data.code==0){
                             this.rechargeData=res.data.data
                             this.drawBrokenLine()
@@ -217,11 +209,8 @@ export default{
             this.$axios.post("/api/api/enterprise/getBaseData",qs.stringify({
                 year:year,
                 month:month
-            }),{
-                headers:{
-                    // "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            })).then(res=>{
+                console.log(res)
                 if(res.status==200){
                     if(res.data.code==0){
                         this.baseData=res.data.data
@@ -235,11 +224,7 @@ export default{
         },
         //显示最新公告信息
         showNewNotice(){
-            this.$axios.post("/api/api/announcement/newNotice",{},{
-                headers:{
-                    // "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/announcement/newNotice",{}).then(res=>{
                 if(res.status==200){
                     if(res.data.code==0){
                         this.newNoticeContent=res.data.data.content

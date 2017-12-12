@@ -350,8 +350,7 @@ export default {
             url:"/api/api/organize/showTreeDep",
             data:true,
             headers:{
-                "Content-Type":"application/json",
-                // "Authorization":authUnils.getToken()
+                "Content-Type":"application/json"
             }
         }).then(res=>{
             if(res.status==200){

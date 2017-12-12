@@ -5,7 +5,6 @@ import Login from '@/components/Login'
 import EmpIndex from '@/components/employeeManager/EmpIndex'
 import EnterpriseOverview from '@/components/employeeManager/EnterpriseOverview'
 import Enterprise from '@/components/employeeManager/Enterprise'
-import Employee_Detail from '@/components/employeeManager/Employee_Detail'
 // 福利管理
 import WelfareIndex from '@/components/fuliManager/WelfareIndex'
 import WelfareOverview from '@/components/fuliManager/WelfareOverview' 
@@ -13,7 +12,6 @@ import WelfareOverview from '@/components/fuliManager/WelfareOverview'
 import CreditRecharge from '@/components/fuliManager/rechargeManage/CreditRecharge' 
 import OrderRecharge from '@/components/fuliManager/rechargeManage/OrderRecharge'
 import WechatRecharge from '@/components/fuliManager/rechargeManage/WechatRecharge' 
-import CreditRecharge_Success from '@/components/fuliManager/rechargeManage/CreditRecharge_Success'   
 //积分管理
 import CreditExtend from '@/components/fuliManager/creditManage/CreditExtend' 
 import CreditExtend_Excel from '@/components/fuliManager/creditManage/CreditExtend_Excel'
@@ -67,8 +65,7 @@ export default new Router({
       },    
       children: [
           { path: '/EnterpriseOverview', component: EnterpriseOverview, name: '' },
-          { path: '/Enterprise/:currentVal?/:id?/:depId?', component: Enterprise, name: '' },
-          { path: '/Employee_Detail/:currentVal?/:id?/:obj?', component: Employee_Detail, name: '' }
+          { path: '/Enterprise/:currentVal?/:id?/:depId?', component: Enterprise, name: '' }
       ]
     },
     {
@@ -83,7 +80,6 @@ export default new Router({
           { path: '/WelfareOverview', component: WelfareOverview, name: '福利总览' },
           { path: '/CreditRecharge', component: CreditRecharge, name: '积分充值' },
           { path: '/WechatRecharge', component: WechatRecharge, name: '积分充值 ' },
-          { path: '/CreditRecharge_Success', component: CreditRecharge_Success, name: '积分充值  ' },
           { path: '/OrderRecharge', component: OrderRecharge, name: '订单充值' },
           { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },
           { path: '/CreditExtend_Excel', component: CreditExtend_Excel, name: 'Excel积分发放' },

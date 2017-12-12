@@ -16,18 +16,6 @@ Vue.prototype.$axios=axios
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 /* eslint-disable no-new */
-//路由拦截
-// router.beforeEach((to, from, next)=>{
-//   if(to.meta.requireAuth){//判断路由是否登陆权限
-//     if(authUtil.getToken()){
-//         next()
-//     }else {
-//         next({ path: '/' })// 将跳转的路由path作为参数，登录成功后跳转到该路由
-//     }
-//   }else{
-//     next()
-//   } 
-// })
 // 请求拦截器
 axios.interceptors.request.use(
   config => {
@@ -42,6 +30,15 @@ axios.interceptors.request.use(
 // 响应拦截器
 axios.interceptors.response.use(
   response => {
+      switch(response.data.code){
+            case 2001:
+                authUtil.removeToken()
+                localStorage.removeItem("enterpriseInfo")
+                localStorage.removeItem("loginName")
+                router.replace({
+                    path: '/'
+                })
+      }
       return response
   },
   error => {
@@ -50,16 +47,7 @@ axios.interceptors.response.use(
             case 401: 
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
                 router.replace({
-                    path: '/',
-                    query: {redirect: router.currentRoute.fullPath}
-                })
-            case 2001:
-                this.$alert("登陆超时，请重新登陆","信息").then(()=>{
-                    authUtil.removeToken()
-                    router.replace({
-                        path: '/',
-                        query: {redirect: router.currentRoute.fullPath}
-                    })
+                    path: '/'
                 })
         }
     }

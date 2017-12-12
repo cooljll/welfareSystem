@@ -38,91 +38,186 @@
                 </div>
             </div>
             <el-row class="content-wrapper">
-                <el-col class="searchBar">
-                    <div class="handleBar" @mouseenter="visibleAddHandle" @mouseleave="displayAddHandle">
-                        <i class="iconfont icon-tianjia"></i>
-                        <span>添加员工</span>
-                        <div class="subhandle" v-show="isShowAddHandle">
-                            <el-menu>
-                                <el-menu-item index="1" @click="addEmployee">单个添加</el-menu-item>
-                                <el-menu-item index="2" @click="batchExportEmp">导入</el-menu-item>
-                            </el-menu>
+                <!-- 员工信息列表 -->
+                <div v-show="isShowEmpList">
+                    <el-col class="searchBar">
+                        <div class="handleBar" @mouseenter="visibleAddHandle" @mouseleave="displayAddHandle">
+                            <i class="iconfont icon-tianjia"></i>
+                            <span>添加员工</span>
+                            <div class="subhandle" v-show="isShowAddHandle">
+                                <el-menu>
+                                    <el-menu-item index="1" @click="addEmployee">单个添加</el-menu-item>
+                                    <el-menu-item index="2" @click="batchExportEmp">导入</el-menu-item>
+                                </el-menu>
+                            </div>
                         </div>
-                    </div>
-                    <div class="handleBar" @mouseenter="visibleHandle" @mouseleave="displayHandle">
-                        <i class="iconfont icon-caozuo"></i>
-                        <span>操作</span>
-                        <div class="subhandle" v-show="isShowHandle">
-                            <el-menu>
-                                <el-menu-item index="1" @click="moveToDepartment">移至部门</el-menu-item>
-                                <el-menu-item index="2" @click="moveoutOfEnterprise">移出企业</el-menu-item>
-                                <el-menu-item index="3" @click="freezeEmployee">冻结</el-menu-item>
-                                <el-menu-item index="4" @click="relieveEmployee">解冻</el-menu-item>
-                            </el-menu>
+                        <div class="handleBar" @mouseenter="visibleHandle" @mouseleave="displayHandle">
+                            <i class="iconfont icon-caozuo"></i>
+                            <span>操作</span>
+                            <div class="subhandle" v-show="isShowHandle">
+                                <el-menu>
+                                    <el-menu-item index="1" @click="batchmMoveToDepartment">移至部门</el-menu-item>
+                                    <el-menu-item index="2" @click="moveoutOfEnterprise">移出企业</el-menu-item>
+                                    <el-menu-item index="3" @click="freezeEmployee">冻结</el-menu-item>
+                                    <el-menu-item index="4" @click="relieveEmployee">解冻</el-menu-item>
+                                </el-menu>
+                            </div>
                         </div>
-                    </div>
-                    <div class="handleBar" @mouseenter="visibleHandleInfo" @mouseleave="displayHandleInfo">
-                        <i class="iconfont icon-icontishiwenhao"></i>
-                        <span>操作说明</span>
-                        <div class="subhandle" style="width:260px;" v-show="isShowHandleInfo">
-                            <div class="info">
-                                <div>
-                                    <span class="title">移至部门：</span><span class="center">将员工移至指定部门的操作。</span>
-                                </div>
-                                <div>
-                                    <span class="title">移出企业：</span><span class="center">用于员工离职的操作。</span>
-                                </div>
-                                <div>
-                                    <span class="title">冻结：</span><span class="center">员工被冻结后，默认不会给冻结员工发放积分或福利。员工在商城也无法使用积分进行消费。</span>
-                                </div>
-                                <div>
-                                    <span class="title">解冻：</span><span class="center">将冻结员工恢复成正常状态的操作。</span>
+                        <div class="handleBar" @mouseenter="visibleHandleInfo" @mouseleave="displayHandleInfo">
+                            <i class="iconfont icon-icontishiwenhao"></i>
+                            <span>操作说明</span>
+                            <div class="subhandle" style="width:260px;" v-show="isShowHandleInfo">
+                                <div class="info">
+                                    <div>
+                                        <span class="title">移至部门：</span><span class="center">将员工移至指定部门的操作。</span>
+                                    </div>
+                                    <div>
+                                        <span class="title">移出企业：</span><span class="center">用于员工离职的操作。</span>
+                                    </div>
+                                    <div>
+                                        <span class="title">冻结：</span><span class="center">员工被冻结后，默认不会给冻结员工发放积分或福利。员工在商城也无法使用积分进行消费。</span>
+                                    </div>
+                                    <div>
+                                        <span class="title">解冻：</span><span class="center">将冻结员工恢复成正常状态的操作。</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <el-form :inline="true">
+                            <el-form-item label="类型：">
+                                <el-select placeholder="请选择类型" v-model="filters.accountStatus">
+                                    <el-option label="全部" value=""></el-option>
+                                    <el-option label="正常" value="0"></el-option>
+                                    <el-option label="冻结" value="1"></el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label-width="250">
+                                <el-input placeholder="姓名/手机号/工号" v-model="filters.text"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="info" @click="getBeInJobResult">搜索</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-col>
+                    <el-table  v-loading="loading" :data="tableData" border resizable highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange">
+                        <el-table-column type="selection" align="center">
+                        </el-table-column>
+                        <el-table-column prop="name" label="姓名" align="center">
+                        </el-table-column>
+                        <el-table-column prop="department" label="部门" align="center">
+                        </el-table-column>
+                        <el-table-column prop="phone" label="手机号" align="center">
+                        </el-table-column>
+                        <el-table-column prop="job_Number" label="工号" align="center">
+                        </el-table-column>
+                        <el-table-column prop="isFrozen" label="账户状态" align="center">
+                        </el-table-column>
+                        <el-table-column label="操作" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text" @click="seeEmpDetail(scope.row)">查看</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <el-col :span="24" class="toolbar">
+                        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                            :page-sizes="[10,20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
+                        </el-pagination>
+                    </el-col>
+                </div>
+                <!-- 员工详情 -->
+                <div v-show="isShowEmpDetail" class="flexbox">
+                    <div class="leftbox">
+                        <img src="../../assets/timg.jpg" alt="">
                     </div>
-                    <el-form :inline="true">
-                        <el-form-item label="类型：">
-                            <el-select placeholder="请选择类型" v-model="filters.accountStatus">
-                                <el-option label="全部" value=""></el-option>
-                                <el-option label="正常" value="0"></el-option>
-                                <el-option label="冻结" value="1"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label-width="250">
-                            <el-input placeholder="姓名/手机号/工号" v-model="filters.text"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="info" @click="getBeInJobResult">搜索</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-col>
-                <el-table  v-loading="loading" :data="tableData" border resizable highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange">
-                    <el-table-column type="selection" align="center">
-                    </el-table-column>
-                    <el-table-column prop="name" label="姓名" align="center">
-                    </el-table-column>
-                    <el-table-column prop="department" label="部门" align="center">
-                    </el-table-column>
-                    <el-table-column prop="phone" label="手机号" align="center">
-                    </el-table-column>
-                    <el-table-column prop="job_Number" label="工号" align="center">
-                    </el-table-column>
-                    <el-table-column prop="isFrozen" label="账户状态" align="center">
-                    </el-table-column>
-                    <el-table-column label="操作" align="center">
-                        <template slot-scope="scope">
-                            <router-link :to="{path:'/Employee_Detail/'+$route.params.currentVal+'/'+$route.params.id+'/'+encodeURI(JSON.stringify(scope.row))}">
-                                <el-button type="text">查看</el-button>
-                            </router-link>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <el-col :span="24" class="toolbar">
-                    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-                        :page-sizes="[10,20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
-                    </el-pagination>
-                </el-col>
+                    <div class="rightbox">
+                        <el-form :inline="true" ref="employeeInfo" :model="employeeInfo" label-position="right" label-width="90px">
+                            <!-- 基本信息 -->
+                            <el-col class="block">
+                                <el-col class="title">基本信息</el-col>
+                                <el-col class="center">
+                                    <el-col>
+                                        <el-form-item label="姓名：">
+                                            <el-input placeholder="姓名" v-model="employeeInfo.name"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="出生年月：">
+                                            <el-input placeholder="出生年月" v-model="employeeInfo.birthday"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col>
+                                        <el-form-item label="年龄：">
+                                            <el-input placeholder="年龄" v-model="employeeInfo.age"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="身份证号：">
+                                            <el-input placeholder="身份证号" v-model="employeeInfo.identifyNumber"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-form-item label="性别：">
+                                        <el-select placeholder="请选择性别" v-model="employeeInfo.sex">
+                                            <el-option label="男" value="男"></el-option>
+                                            <el-option label="女" value="女"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-col>
+                            <!-- 联系方式 -->
+                            <el-col class="block">
+                                <el-col class="title">联系方式</el-col>
+                                <el-col class="center">
+                                    <el-form-item label="手机号：">
+                                        <el-input v-model="employeeInfo.phone"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="邮箱：">
+                                        <el-input v-model="employeeInfo.email"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-col>
+                            <!-- 在职信息 -->
+                            <el-col class="block">
+                                <el-col class="title">在职信息</el-col>
+                                <el-col class="center">
+                                    <el-col>
+                                        <el-form-item label="公司名称：">
+                                            <el-input :disabled="true" v-model="companyName"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col>
+                                        <el-form-item label="工号：">
+                                            <el-input v-model="employeeInfo.job_Number"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="部门：">
+                                            <el-select placeholder="请选择部门" v-model="employeeInfo.department">
+                                                <el-option label="市场部" value="1"></el-option>
+                                                <el-option label="采购部" value="2"></el-option>
+                                                <el-option label="客户" value="3"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col>
+                                        <el-form-item label="在职状态：">
+                                            <el-input v-model="employeeInfo.isFrozen"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="入职时间：">
+                                            <el-date-picker v-model="employeeInfo.joinedDate" type="date" placeholder="选择日期" :picker-options="pickerOptions"></el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-col>
+                            </el-col>
+                            <!-- 操作按钮 -->
+                            <el-col v-show="handleBtn">
+                                <el-button type="info" @click="modifyEmployeeInfo">修改信息</el-button>
+                                <el-button @click="goBackList">返回列表</el-button>
+                                <el-button @click="simpleMoveToDepartment">移至部门</el-button>
+                                <el-button @click="moveOutEnterprise">移出企业</el-button>
+                                <el-button @click="freezeEmployee" v-show="isShowFrozenBtn">冻结</el-button>
+                                <el-button @click="releaseEmployee" v-show="isShowReleaseBtn">解冻</el-button>
+                            </el-col>
+                            <el-col v-show="confirmBtn">
+                                <el-button type="info" @click="modifyEmpInfoSubmit">确认</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </el-col>
+                        </el-form>
+                    </div>
+                </div>
             </el-row>
         </div>
         <!-- 离职列表 -->
@@ -384,7 +479,7 @@
         </el-dialog>
         <!-- 移至部门弹窗 -->
         <el-dialog title="请选择部门" :visible.sync="moveToDepVisible" :close-on-click-modal="false" style="top:15%" class="moveToDepDialog">
-            <el-select v-model.number="moveToDepParams.depId_next">
+            <el-select v-model.number="departId">
                 <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
             <div slot="footer" class="dialog-footer">
@@ -450,6 +545,8 @@ export default{
             }
         }
         return {
+            isShowEmpList:true,
+            isShowEmpDetail:false,
             rABS:false,//是否将文件读取为二进制字符串
             requestHeader:{
                 "Content-Type": "text/html; charset=UTF-8",
@@ -458,6 +555,7 @@ export default{
                 'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type'
             },
             tableData:[],
+            simpleEmpInfo:{},
             //查询条件
             filters:{
                 accountStatus:"",
@@ -549,7 +647,15 @@ export default{
             },
             loading:false,
             leaveLoading:false,
-            examineLoading:false
+            examineLoading:false,
+            departId:"",
+
+
+            handleBtn:true,
+            confirmBtn:false,
+            isShowFrozenBtn:true,
+            isShowReleaseBtn:false,
+            companyName:"上海汇展人力资源有限公司",
         }
     },
     methods:{
@@ -592,11 +698,7 @@ export default{
         },
         //部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==0){
                     this.departmentList=[]
                     res.data.data.forEach(item=>{
@@ -617,11 +719,7 @@ export default{
             this.getDepartmentList()
         },
         addDepartmentSubmit(){
-            this.$axios.post("/api/api/organize/addDep",this.addDepParams,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
                 if(res.status==200){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
@@ -636,11 +734,7 @@ export default{
             this.handleDepartmentVisible=true
             this.isShowAddDept=false
             this.isShowUpdateDept=true
-            this.$axios.post("/api/api/organize/depInfo",qs.stringify({depId:id}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/organize/depInfo",qs.stringify({depId:id})).then(res=>{
                 if(res.status==200){
                     if(res.data.code==0){
                         this.deptId_pre=res.data.data.organizationUnitId
@@ -663,10 +757,6 @@ export default{
                 parentId:this.addDepParams.deptId_sup,
                 remark:this.addDepParams.remark,
                 sortId:this.addDepParams.sortId
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
                 if(res.status==200){
                     if(res.data.code==0){
@@ -681,11 +771,7 @@ export default{
         //部门删除
         deleteDepartment(id){
             this.$confirm("确定要删除该部门吗？","提示",{type:"warning"}).then(()=>{
-                this.$axios.post("/api/api/organize/deleteDep",qs.stringify({depId:id}),{
-                    headers:{
-                        "Authorization":authUnils.getToken()
-                    }
-                }).then(res=>{
+                this.$axios.post("/api/api/organize/deleteDep",qs.stringify({depId:id})).then(res=>{
                     if(res.status==200){
                         if(res.data.code==0){
                             this.$alert(res.data.message,"信息").then(()=>{
@@ -706,10 +792,7 @@ export default{
         },
         //生成二维码(后台获取)
         buildQRcode(){
-            // this.$axios.post("/api/api/service/qrcode",{
-            //     headers:{
-            //         "Authorization":authUnils.getToken()
-            //     }
+            // this.$axios.post("/api/api/service/qrcode
             // }).then(res=>{
             //     console.log(res)
             // })
@@ -726,57 +809,40 @@ export default{
             }
         },
         //移至部门
-        moveToDepartment(){
-            this.handleJudge()
-            this.moveToDepVisible=true
+        batchmMoveToDepartment(){
+            if(this.selectedEmployee.length==0){
+                this.$alert("请选中员工后进行操作","信息")
+            }else{
+                this.moveToDepVisible=true
+            }
             this.getDepartmentList()
         },
         //移至部门确定
         moveToDepSubmit(){
-            this.moveToDepParams.list=[]
-            this.selectedEmployee.forEach(item=>{
+            this.moveToDepParams.depId_next=this.departId
+            // 批量
+            if(this.isShowEmpList){
+                var tempList=[]
+                this.selectedEmployee.forEach(item=>{
+                    let obj={}
+                    obj["depId"]=item.deptId
+                    obj["empCode"]=item.empCode
+                    tempList.push(obj)
+                })
+                this.handleMoveToDept(tempList)
+            }
+            //单个
+            if(this.isShowEmpDetail){
                 let obj={}
-                obj["depId"]=item.deptId
-                obj["empCode"]=item.empCode
-                this.moveToDepParams.list.push(obj)
-            })
-            this.$axios.post("/api/api/employee/removeToDept",this.moveToDepParams,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==0){
-                        this.$alert(res.data.message,'信息').then(()=>{
-                            this.moveToDepVisible=false
-                            this.showEmployee(Number(this.$route.params.depId))
-                        })
-                    }else{
-                        this.$alert(res.data.message)
-                    }
-                }
-            })
+                obj["depId"]=this.employeeInfo.deptId
+                obj["empCode"]=this.employeeInfo.empCode
+                this.handleMoveToDept([obj])
+            }
         },
         //移出企业
         moveoutOfEnterprise(){
            this.handleJudge() 
-           this.$confirm("确定移出企业？","信息").then(()=>{
-                this.$axios.post("/api/api/employee/removeEmployee",{empCodes:this.empCodes},{
-                    headers:{
-                        "Authorization":authUnils.getToken()
-                    }
-                }).then(res=>{
-                    if(res.status==200){
-                        if(res.data.success){
-                            this.$alert(res.data.message,'信息').then(()=>{
-                                this.showEmployee(Number(this.$route.params.depId))
-                            })
-                        }else{
-                            this.$alert(res.data.message)
-                        }
-                    }
-                })
-            })
+           this.handleRemoveEmployee(this.empCodes)
         },
         //冻结
         freezeEmployee(){
@@ -792,35 +858,55 @@ export default{
                 this.handleFrozenEmployee(this.empCodes,0)
             })
         },
-        //冻结或解冻员工
-        handleFrozenEmployee(codes,i){
-            this.$axios.post("/api/api/employee/frozenEmployee",{
-                empCodes:this.empCodes,
-                isFrozen:i//0解冻 1冻结
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
+        //移至部门操作
+        handleMoveToDept(arr){
+            this.$axios.post("/api/api/employee/removeToDept",{
+                depId_next:this.departId,
+                list:arr
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.success){
+                if(res.data.code==0){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.moveToDepVisible=false
+                        this.goBackList()
+                    })
+                }else if(res.data.code==1){
+                    this.$alert(res.data.message,'信息')
+                }
+            })
+        },
+        //移出企业操作
+        handleRemoveEmployee(arr){
+            this.$confirm("确定移出企业？","信息").then(()=>{
+                this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
+                    if(res.data.code==0){
                         this.$alert(res.data.message,'信息').then(()=>{
-                            this.showEmployee(Number(this.$route.params.depId))
+                            this.goBackList()
                         })
-                    }else{
-                        this.$alert(res.data.message)
+                    }else if(res.data.code==1){
+                        this.$alert(res.data.message,'信息').then(()=>{
+                            this.selectedEmployee=[]
+                        })
                     }
+                })
+            })
+        },
+        //冻结,解冻员工
+        handleFrozenEmployee(codeArr,i){
+            this.$axios.post("/api/api/employee/frozenEmployee",{
+                empCodes:codeArr,
+                isFrozen:i//0解冻 1冻结
+            }).then(res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.goBackList()
+                    })
                 }
             })
         },
         // 拉回企业**************************************************************问题：参数错误******************************************************************
         pullbackEnterprise(code){
             this.$confirm("确定要拉回企业？","信息").then(()=>{
-                this.$axios.post("/api/api/employee/pullBack",{empCodes:code},{
-                    headers:{
-                        "Authorization":authUnils.getToken()
-                    }
-                }).then(res=>{
+                this.$axios.post("/api/api/employee/pullBack",{empCodes:code}).then(res=>{
                     console.log(res)
                     if(res.status==200){
                         if(res.data.success){
@@ -858,11 +944,7 @@ export default{
         //查询员工信息
         showEmployee(id){
             this.filters.depId=id
-            this.$axios.post("/api/api/employee/showEmployee",this.filters,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/employee/showEmployee",this.filters).then(res=>{
                 if(res.status==200){
                     if(res.data.code==0){
                         this.tableData=res.data.data.content
@@ -880,17 +962,26 @@ export default{
             this.filters.pageNum=val
             this.showEmployee(Number(this.$route.params.depId))
         },
+        //查看详情(在职)
+        seeEmpDetail(obj){
+            if(obj.isFrozen=="正常"){
+                this.isShowReleaseBtn=false
+                this.isShowFrozenBtn=true
+            }else if(obj.isFrozen=="冻结"){
+                this.isShowReleaseBtn=true
+                this.isShowFrozenBtn=false
+            }
+            this.employeeInfo=obj
+            this.isShowEmpList=false
+            this.isShowEmpDetail=true
+        },
         //获取离职列表
         getleaveOfficeList(){
             this.showDelEmployee()
         },
         //查询离职列表
         showDelEmployee(){
-            this.$axios.post("/api/api/employee/hasDelEmps",this.filtersDel,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/employee/hasDelEmps",this.filtersDel).then(res=>{
                 if(res.status==200){
                     this.leaveTableData=res.data.data.content
                     this.totalSizeDel=res.data.data.totalSize
@@ -913,11 +1004,7 @@ export default{
         //查询审批列表
         showExmineLists(){
             this.filtersExamine.auditStatus=Number(this.filtersExamine.auditStatus)
-            this.$axios.post("/api/api/approvalCenter/showApprovalMessage",this.filtersExamine,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/approvalCenter/showApprovalMessage",this.filtersExamine).then(res=>{
                 console.log(res)
                 if(res.data.code==0){
                     this.totalSizeExamine=res.data.data.totalSize
@@ -948,7 +1035,7 @@ export default{
             this.filtersExamine.pageNum=val
             this.showExmineLists()
         },
-        //查看详情
+        //查看详情(审批中心)
         seeDetails(obj){
             this.seeDetailsVisible=true
             this.employeeInfo=obj
@@ -978,6 +1065,68 @@ export default{
         },
         handleSelectionChange(val){
             this.selectedEmployee=val
+        },
+        // *******************************************员工详情*************************************************
+        //修改员工信息
+        modifyEmployeeInfo(){
+            this.handleBtn=false
+            this.confirmBtn=true
+        },
+        // 员工修改提交
+        modifyEmpInfoSubmit(){
+            this.handleBtn=true
+            this.confirmBtn=false
+            this.$message({message:"修改成功",type:"success"})
+        },
+        cancel(){
+            this.handleBtn=true
+            this.confirmBtn=false
+        },
+        //返回列表
+        goBackList(){
+            this.isShowEmpList=true
+            this.isShowEmpDetail=false
+            this.showEmployee(Number(this.$route.params.depId))
+        },
+        //移至部门
+        simpleMoveToDepartment(){
+            this.getDepartmentList()
+            this.moveToDepVisible=true
+        },
+        //移至部门确定
+        confirmMoveDep(){
+            this.$axios.post("/api/api/employee/removeToDept",{
+                depId_next:this.departId,
+                list:[{
+                    depId:this.employeeInfo.deptId,
+                    empCode:this.employeeInfo.empCode
+                }]
+            }).then(res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.moveToDepartVisible=true
+                        this.isShowEmpList=true
+                        this.isShowEmpDetail=false
+                        this.showEmployee(Number(this.$route.params.depId))
+                    })
+                }
+            })
+        },
+        //移出企业
+        moveOutEnterprise(){
+            this.handleRemoveEmployee([this.employeeInfo.empCode])
+        },
+        //冻结
+        freezeEmployee(){
+            this.$confirm("确定冻结该员工吗？","提示",{type:"warning"}).then(()=>{
+                this.handleFrozenEmployee([this.employeeInfo.empCode],1)
+            })
+        },
+        //解冻
+        releaseEmployee(){
+            this.$confirm("确定解冻该员工吗？","提示",{type:"warning"}).then(()=>{
+                this.handleFrozenEmployee([this.employeeInfo.empCode],0)
+            })
         }
     },
     mounted(){
@@ -1010,6 +1159,39 @@ export default{
             padding: 10px 20px;
             border-radius: 5px;
             font-size: 14px;
+        }
+    }
+    .flexbox{
+        display: flex;
+        width: 100%;
+        margin-top: 20px;
+        .leftbox{
+            width: 200px;
+            img{
+                width: 100px;
+                min-height: 100px;
+                display: block;
+                margin: 0px auto;
+            }
+        }
+        .rightbox{
+            width: 100%;
+            .block{
+                margin-bottom:20px;
+                .title{
+                    font-size: 16px;
+                    color: #3A4D62;
+                    letter-spacing: 0;
+                    border-bottom: 1px solid #E7EAEC;
+                    padding-bottom: 10px;
+                }
+                .center{
+                    margin-top:20px;
+                    .el-input__innner{
+                        height:30px;
+                    }
+                }
+            }
         }
     }
 </style>

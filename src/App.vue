@@ -122,14 +122,14 @@ export default {
         this.$confirm("确定退出当前登陆吗？","提示",{type:'warning'}).then(()=>{
 					this.$axios({
 						methods:"get",
-						url:"/api/api/user/logout",
-						headers:{
-							"Authorization":authUnils.getToken()
-						}
+						url:"/api/api/user/logout"
 					}).then(res=>{
 						if(res.status==200){
 							if(res.data.code==0){
 								this.$alert(res.data.message,"信息").then(()=>{
+									authUnils.removeToken()
+									localStorage.removeItem("enterpriseInfo")
+									localStorage.removeItem("loginName")
 									this.$router.push("/")
 								})
 							}
@@ -142,11 +142,7 @@ export default {
 		},
 		//企业信息
 		getEnterpriseInfo(){
-			this.$axios.post("/api/api/enterprise/entInfo",{},{
-				headers:{
-					"Authorization":authUnils.getToken()
-				}
-			}).then(res=>{
+			this.$axios.post("/api/api/enterprise/entInfo",{}).then(res=>{
 				if(res.status==200){
 					if(res.data.code==0){
 						this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName

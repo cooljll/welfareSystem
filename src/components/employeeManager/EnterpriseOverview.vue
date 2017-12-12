@@ -185,8 +185,7 @@ export default {
 		getTotalEmp(){
 			this.$axios.post("/api/api/employee/selEmpCount",false,{
                 headers:{
-                    "Content-Type":"application/json",
-                    // "Authorization":authUnils.getToken()
+                    "Content-Type":"application/json"
                 }
             }).then(res=>{
                 if(res.status==200){
@@ -199,11 +198,7 @@ export default {
 		},
 		//获取男女比例
 		getGenderNums(){
-			this.$axios.post("/api/api/service/genderScope",{},{
-				headers:{
-					// "Authorization":authUnils.getToken()
-				}
-			}).then(res=>{
+			this.$axios.post("/api/api/service/genderScope",{}).then(res=>{
 				if(res.data.code==0){
 					this.genderScope=res.data.data
 					this.drawGender()
@@ -212,11 +207,7 @@ export default {
 		},
 		//获取年龄比例
 		getAgeNums(){
-			this.$axios.post("/api/api/service/ageScope",{},{
-				headers:{
-					// "Authorization":authUnils.getToken()
-				}
-			}).then(res=>{
+			this.$axios.post("/api/api/service/ageScope",{}).then(res=>{
 				if(res.data.code==0){
 					this.ageScope=res.data.data
 					this.drawTime()
@@ -244,16 +235,8 @@ export default {
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-			this.$axios.post("/api/api/service/qrcode",{},{
-				headers:{
-					// "Authorization":authUnils.getToken()
-				}
-			}).then(res=>{
+			this.$axios.post("/api/api/service/qrcode",{}).then(res=>{
 				if(res.status==200){
-					if(res.data.code==1){
-						// 失败
-						// this.$message({message:res.data.message,type:"warning"})
-					}
 					if(res.data.code==0){
 						//成功
 					}

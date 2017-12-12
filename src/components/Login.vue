@@ -181,38 +181,33 @@ export default{
             }else if(this.userInfo.password==""){
                 this.$alert("密码不能为空","信息")
             }else{
-                if(!authUnils.getToken()){
-                    this.$axios({
-                        method:"post",
-                        url:"/api/oauth/token",
-                        data:'grant_type=client_credentials',
-                        headers:{
-                            "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
-                        }
-                    }).then(res=>{
-                        if(res){
-                            authUnils.setToken(res.data.token_type+" "+res.data.access_token)
-                            // localStorage.setItem("expirseTime",res.data.expires_in)
-                            this.$axios({
-                                method:"post",
-                                url:"/api/api/user/login",
-                                data:this.userInfo,
-                                headers:{
-                                    "Authorization":authUnils.getToken()
+                this.$axios({
+                    method:"post",
+                    url:"/api/oauth/token",
+                    data:'grant_type=client_credentials',
+                    headers:{
+                        "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
+                    }
+                }).then(res=>{
+                    if(res){
+                        authUnils.setToken(res.data.token_type+" "+res.data.access_token)
+                        this.$axios({
+                            method:"post",
+                            url:"/api/api/user/login",
+                            data:this.userInfo
+                        }).then(res=>{
+                            if(res.data.code==0){
+                                localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
+                                this.$router.push("/EnterpriseOverview")
+                            }else if(res.data.code==1){
+                                this.$alert(res.data.message,"信息")
+                                for(var key in this.userInfo){
+                                    this.userInfo[key]=''
                                 }
-                            }).then(res=>{
-                                if(res.data.code==0){
-                                    //保存当前的登陆信息
-                                    localStorage.setItem("loginName",this.userInfo.username)
-                                    this.$router.push("/EnterpriseOverview")
-                                }
-                            })
-                        }
-                    })
-                }else{
-                    console.log("token已存在")
-                    return false
-                }
+                            }
+                        })
+                    }
+                })
             }
         },
         handleReset(){
