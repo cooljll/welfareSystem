@@ -5,9 +5,13 @@
                 <div class="details-info">
                     <div class="main">
                         <div class="bread">
-                            <el-breadcrumb separator-class="el-icon-arrow-right">
+                            <el-breadcrumb separator-class="el-icon-arrow-right" v-show="isShowConsultList">
                                 <el-breadcrumb-item :to="{ path: '/ConsultIndex' }">福利资讯</el-breadcrumb-item>
                                 <el-breadcrumb-item :to="{ path: '/Consult_List' }">福利资讯</el-breadcrumb-item>
+                            </el-breadcrumb>
+                            <el-breadcrumb separator-class="el-icon-arrow-right" v-show="isShowConsultResult">
+                                <el-breadcrumb-item :to="{ path: '/ConsultIndex' }">福利资讯</el-breadcrumb-item>
+                                <el-breadcrumb-item :to="{ path: '/Consult_Detail' }">搜索结果</el-breadcrumb-item>
                             </el-breadcrumb>
                         </div>
                         <div class="info-list">
@@ -51,9 +55,12 @@
 </template>
 <script>
 import authUnils from "../../common/authUnils"
+import qs from 'queryString'
 export default{
     data(){
         return{
+            isShowConsultList:true,
+            isShowConsultResult:false,
             consultParams:{
                 pageNum:1,
                 pageSize:10
@@ -66,7 +73,6 @@ export default{
         //分页咨询
         getNewsPageInfo(){
             this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
-                console.log(res)
                 if(res.data.code==0){
                     this.newsPageList=res.data.data
                 }
@@ -75,9 +81,25 @@ export default{
         newsDetails(cId,id){
             this.$router.push('/Consult_Detail/'+cId+'/'+id)
         },
+        //查询结果
+        searchResult(){
+            this.$axios.post("/api/api/welfareNews/search",qs.stringify({filter:this.$route.params.ret})).then(res=>{
+                if(res.data.code==0){
+                    this.newsPageList=res.data.data
+                }
+            })
+        }
     },
     mounted(){
-        this.getNewsPageInfo()
+        if(this.$route.params.ret){
+            this.isShowConsultList=false
+            this.isShowConsultResult=true
+            this.searchResult()
+        }else{
+            this.isShowConsultList=true
+            this.isShowConsultResult=false
+            this.getNewsPageInfo()
+        }
         this.$axios.post("/api/api/welfareNews/newsPageInfo",{
             pageNum:1,
             pageSize:3

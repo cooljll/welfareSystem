@@ -42,6 +42,7 @@
     </div>
 </template>
 <script>
+import authUnils from '../../../common/authUnils'
 export default{
     data(){
         return{

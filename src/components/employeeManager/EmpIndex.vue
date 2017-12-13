@@ -53,22 +53,23 @@
         <el-dialog :title="departmentDialog" :visible.sync="handleDepartmentVisible" :close-on-click-modal="false" style="top:10%" class="addDepartDialog">
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="所属部门">
-                    <el-select v-model="addDepartData.deptId_sup">
+                    <el-select v-model="addDepParams.deptId_sup">
+                        <el-option value="0" label="设为一级部门"></el-option>
                         <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="部门名称">
-                    <el-input v-model="addDepartData.deptName_cur"></el-input>
+                    <el-input v-model="addDepParams.deptName_cur"></el-input>
                 </el-form-item>
                 <el-form-item label="排序">
-                    <el-input-number v-model="addDepartData.sortId" :min="1" :max="100" label="描述文字"></el-input-number>
+                    <el-input-number v-model="addDepParams.sortId" :min="1" :max="100" label="描述文字"></el-input-number>
                 </el-form-item>
                 <el-form-item label="备注">
-                    <el-input v-model="addDepartData.remark" type="textarea"></el-input>
+                    <el-input v-model="addDepParams.remark" type="textarea"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="primary">保存</el-button>
+                <el-button type="primary" @click="addDepartmentSubmit">保存</el-button>
                 <el-button @click.native="handleDepartmentVisible = false">取消</el-button>
             </div>
         </el-dialog>
@@ -92,8 +93,8 @@
                 </el-form-item>
                 <el-form-item label="性别">
                     <el-select v-model="addEmployeeParams.sex">
-                        <el-option label="男" value="1"></el-option>
-                        <el-option label="女" value="2"></el-option>
+                        <el-option label="男" value="男"></el-option>
+                        <el-option label="女" value="女"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="入职时间" prop="joinedTime">
@@ -101,12 +102,12 @@
                 </el-form-item>
                 <el-form-item label="所属部门">
                     <el-select v-model="addEmployeeParams.department">
-                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.label"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="primary" @click="addEmpSubmit">保存</el-button>
+                <el-button type="primary" @click="addSimpleEmpSubmit">保存</el-button>
                 <el-button @click.native="addEmployeeVisible = false">取消</el-button>
             </div>
         </el-dialog>
@@ -117,7 +118,7 @@
                 <el-upload class="uploaddemo" action="https://jsonplaceholder.typicode.com/posts/" :file-list="fileList">
                     <el-button type="primary">上传</el-button>
                 </el-upload>
-                <el-button>下载excel模板</el-button>
+                <el-button @click="downloadTemplate">下载excel模板</el-button>
             </div>
         </el-dialog>
 	</div>
@@ -125,6 +126,7 @@
 
 <script>
 import authUnils from "../../common/authUnils"
+import qs from 'queryString'
 export default {
   	data () {
         //   var tel = /^\d{3,4}-?\d{7,9}$/  电话号码格式：021-12345678
@@ -194,29 +196,12 @@ export default {
             //添加部门
             handleDepartmentVisible:false,
             departmentDialog:"",
-			departmentList:[
-                {
-                    value:"1",
-                    label:"设为一级部门"
-                },
-                {
-                    value:"2",
-                    label:"采购部"
-                },
-                {
-                    value:"3",
-                    label:"市场部"
-                },
-                {
-                    value:"4",
-                    label:"客户"
-                }
-            ],
-            addDepartData:{
-                deptId_sup:"",
-                deptName_cur:"",
-                sortId:"",
-                remark:""
+			departmentList:[],
+            addDepParams:{
+                deptId_sup: 0,
+                deptName_cur: "",
+                remark: "",
+                sortId: 50
             },
             //添加员工
             addEmployeeVisible:false,
@@ -279,6 +264,31 @@ export default {
                 this.isShowAll=true
                 this.isShowChecked=false
             }
+            console.log(checkedData)
+        },
+        getTreeDep(){
+            this.data=[]
+            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:true})).then(res=>{
+                if(res.status==200){
+                    if(res.data.code==0){
+                        this.data.push(this.transferData(res.data.data))
+                    }
+                }
+            })
+        },
+        //部门序列表
+        getDepartmentList(){
+            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
+                if(res.data.code==0){
+                    this.departmentList=[]
+                    res.data.data.forEach(item=>{
+                        let tempObj={}
+                        tempObj["value"]=item.organizationUnitId
+                        tempObj["label"]=item.displayName
+                        this.departmentList.push(tempObj)
+                    })
+                }
+            })
         },
 		pickerOptions:{
             disabledDate(time) {
@@ -308,16 +318,39 @@ export default {
         addDepartment(){
             this.departmentDialog="添加部门"
             this.handleDepartmentVisible=true
-		},
+            this.getDepartmentList()
+        },
+        addDepartmentSubmit(){
+            this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleDepartmentVisible=false
+                        this.isShowHandle=false
+                        this.getTreeDep()
+                    })
+                }
+            })
+        },
 		//单个添加员工
         addEmployee(){
             this.addEmployeeVisible=true
+            this.getDepartmentList()
         },
-        addEmpSubmit(){
-            this.$alert("添加成功","信息").then(()=>{
-                this.addEmployeeVisible=false
-            }).catch(()=>{
-                this.addEmployeeVisible=true
+        addSimpleEmpSubmit(){
+            this.$axios.post("/api/api/employee/addEmp",this.addEmployeeParams).then(res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addEmployeeVisible=false
+                        this.isShowHandle=false
+                        this.getTreeDep()
+                    })
+                }else if(res.data.code==1){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addEmployeeVisible=false
+                        this.isShowHandle=false
+                        this.getTreeDep()
+                    })
+                }
             })
         },
         //格式化时间
@@ -331,6 +364,13 @@ export default {
         //批量导入员工
         batchExportEmployee(){
             this.exportEmployeeVisible=true
+            this.isShowHandle=false
+        },
+        //下载excel模板
+        downloadTemplate(){
+            this.$axios.get("/api/api/employee/downloadExcel").then(res=>{
+                console.log(res)
+            })
         },
         //数据转化
         transferData(params){
@@ -345,20 +385,7 @@ export default {
         }
     },
     mounted(){
-        this.$axios({
-            method:"post",
-            url:"/api/api/organize/showTreeDep",
-            data:true,
-            headers:{
-                "Content-Type":"application/json"
-            }
-        }).then(res=>{
-            if(res.status==200){
-                if(res.data.code==0){
-                    this.data.push(this.transferData(res.data.data))
-                }
-            }
-        })
+        this.getTreeDep()
     }
 }
 </script>

@@ -6,8 +6,9 @@
                     <img src="assets/img/fulizix.png">
                 </div>
                 <div class="search-main">
-                    <input type="text" class="search-text">
-                    <input type="submit" class="search-btn" value="搜索">
+                    <el-input placeholder="请输入要搜索的内容" v-model="filter" class="mixInput">
+                        <el-button slot="append" @click="getSearchResult">搜索</el-button>
+                    </el-input>
                 </div>
             </div>
             <div class="information">
@@ -72,6 +73,7 @@ import qs from 'queryString'
 export default{
     data(){
         return{
+            filter:"",
             bannerList1:[],
             bannerList2:[],
             categoryTitle:"",//福利咨询标题
@@ -132,6 +134,14 @@ export default{
         },
         newsDetails(cId,id){
             this.$router.push('/Consult_Detail/'+cId+'/'+id)
+        },
+        //搜索
+        getSearchResult(){
+            console.log(12)
+            if(this.filter==""){
+                return false
+            }
+            this.$router.push("/Consult_List/"+encodeURI(this.filter))
         }
     },
     mounted(){
@@ -166,26 +176,6 @@ export default{
                 }
                 .search-main{
                     float: left;
-                    .search-text{
-                        width: 400px;
-                        height: 38px;
-                        background: #FFFFFF;
-                        border: 1px solid #8D9AA9;
-                        float: left;
-                        padding: 0px 10px;
-                        outline: none;
-                        cursor: text;
-                    }
-                    .search-btn{
-                        background: #3A4D62;
-                        border: 1px solid #3A4D62;
-                        color: #FFF;
-                        font-size: 14px;
-                        width: 112px;
-                        height: 40px;
-                        cursor: pointer;
-                        float: left;
-                    }
                 }
             }
             .information{
@@ -198,6 +188,11 @@ export default{
                     float: left;
                     position: relative;
                     cursor: pointer;
+                    // img{
+                    //     &:hover{
+                    //         transform: scale(2)
+                    //     }
+                    // }
                 }
                 .information-right{
                     width: 380px;

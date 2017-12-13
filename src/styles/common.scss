@@ -700,3 +700,22 @@
         height: 200px;
     }
 }
+
+//混合搜索框
+.mixInput{
+    width:512px;
+    border: 1px solid #8D9AA9;
+    .el-input__inner{
+        border-radius: 0;
+        border: 1px solid #fff;
+    }
+    .el-input-group__append{
+        width: 0px !important;
+        text-align: center;
+        background-color:#3A4D62;
+        border: 1px solid #3A4D62;
+        font-size: 14px;
+        color:#fff;
+        border-radius: 0;
+    }
+}

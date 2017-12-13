@@ -206,7 +206,7 @@
                                 <el-button @click="goBackList">返回列表</el-button>
                                 <el-button @click="simpleMoveToDepartment">移至部门</el-button>
                                 <el-button @click="moveOutEnterprise">移出企业</el-button>
-                                <el-button @click="freezeEmployee" v-show="isShowFrozenBtn">冻结</el-button>
+                                <el-button @click="simpleFreezeEmployee" v-show="isShowFrozenBtn">冻结</el-button>
                                 <el-button @click="releaseEmployee" v-show="isShowReleaseBtn">解冻</el-button>
                             </el-col>
                             <el-col v-show="confirmBtn">
@@ -376,8 +376,8 @@
                 </el-form-item>
                 <el-form-item label="性别">
                     <el-select v-model="addEmployeeParams.sex">
-                        <el-option label="男" value="1"></el-option>
-                        <el-option label="女" value="2"></el-option>
+                        <el-option label="男" value="男"></el-option>
+                        <el-option label="女" value="女"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="入职时间" prop="joinedTime">
@@ -385,12 +385,12 @@
                 </el-form-item>
                 <el-form-item label="所属部门">
                     <el-select v-model="addEmployeeParams.department">
-                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.label"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="primary">保存</el-button>
+                <el-button type="primary" @click="addSimpleEmpSubmit">保存</el-button>
                 <el-button @click.native="addEmployeeVisible = false">取消</el-button>
             </div>
         </el-dialog>
@@ -634,6 +634,7 @@ export default{
             loading:false,
             leaveLoading:false,
             examineLoading:false,
+            batchExamineEmp:[],
             departId:"",
             handleBtn:true,
             confirmBtn:false,
@@ -678,7 +679,7 @@ export default{
         },
         addDepartmentSubmit(){
             this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
-                if(res.status==200){
+                if(res.data.code==0){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
                     })
@@ -730,19 +731,35 @@ export default{
         deleteDepartment(id){
             this.$confirm("确定要删除该部门吗？","提示",{type:"warning"}).then(()=>{
                 this.$axios.post("/api/api/organize/deleteDep",qs.stringify({depId:id})).then(res=>{
-                    if(res.status==200){
-                        if(res.data.code==0){
-                            this.$alert(res.data.message,"信息").then(()=>{
-                                this.$router.push("/EnterpriseOverview")
-                            })
-                        }
+                    if(res.data.code==0){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.$router.push("/EnterpriseOverview")
+                        })
+                    }else if(res.data.code==1){
+                        this.$alert(res.data.message,"信息")
                     }
                 })
             })
         },
         //添加员工
         addEmployee(){
+            this.getDepartmentList()
             this.addEmployeeVisible=true
+        },
+        addSimpleEmpSubmit(){
+            this.$axios.post("/api/api/employee/addEmp",this.addEmployeeParams).then(res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addEmployeeVisible=false
+                        this.showEmployee(Number(this.$route.params.depId))
+                    })
+                }else if(res.data.code==1){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addEmployeeVisible=false
+                        this.showEmployee(Number(this.$route.params.depId))
+                    })
+                }
+            })
         },
         //员工导入
         batchExportEmp(){
@@ -757,7 +774,6 @@ export default{
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
             this.$axios.post("/api/api/service/qrcode",{}).then(res=>{
-                console.log(res)
                 if(res.data.data==0){
                     this.qrcodeVisible=true
                 }else if(res.data.code==1){
@@ -767,24 +783,14 @@ export default{
                 loading.close()
             })
         },
-        //处理判断
-        handleJudge(){
-            if(this.selectedEmployee.length==0){
-                this.$alert("请选中员工后进行操作","信息")
-            }else{
-                this.selectedEmployee.forEach(item=>{
-                    this.empCodes.push(item.empCode)
-                })
-            }
-        },
         //移至部门
         batchmMoveToDepartment(){
             if(this.selectedEmployee.length==0){
                 this.$alert("请选中员工后进行操作","信息")
             }else{
                 this.moveToDepVisible=true
+                this.getDepartmentList()
             }
-            this.getDepartmentList()
         },
         //移至部门确定
         moveToDepSubmit(){
@@ -809,22 +815,42 @@ export default{
         },
         //移出企业
         moveoutOfEnterprise(){
-           this.handleJudge() 
-           this.handleRemoveEmployee(this.empCodes)
+            if(this.selectedEmployee.length==0){
+                this.$alert("请选中员工后进行操作","信息")
+            }else{
+                this.selectedEmployee.forEach(item=>{
+                    this.empCodes.push(item.empCode)
+                })
+                this.$confirm("确定将员工移出企业？","信息").then(()=>{
+                    this.handleRemoveEmployee(this.empCodes)
+                })
+            }
         },
         //冻结
         freezeEmployee(){
-            this.handleJudge()
-            this.$confirm("确定冻结员工？","信息").then(()=>{
-                this.handleFrozenEmployee(this.empCodes,1)
-            })
+            if(this.selectedEmployee.length==0){
+                this.$alert("请选中员工后进行操作","信息")
+            }else{
+                this.selectedEmployee.forEach(item=>{
+                    this.empCodes.push(item.empCode)
+                })
+                this.$confirm("确定冻结员工？","信息").then(()=>{
+                    this.handleFrozenEmployee(this.empCodes,1)
+                })
+            }
         },
         //解冻
         relieveEmployee(){
-            this.handleJudge()
-            this.$confirm("确定解冻员工？","信息").then(()=>{
-                this.handleFrozenEmployee(this.empCodes,0)
-            })
+            if(this.selectedEmployee.length==0){
+                this.$alert("请选中员工后进行操作","信息")
+            }else{
+                this.selectedEmployee.forEach(item=>{
+                    this.empCodes.push(item.empCode)
+                })
+                this.$confirm("确定解冻员工？","信息").then(()=>{
+                    this.handleFrozenEmployee(this.empCodes,0)
+                })
+            }  
         },
         //移至部门操作
         handleMoveToDept(arr){
@@ -844,18 +870,16 @@ export default{
         },
         //移出企业操作
         handleRemoveEmployee(arr){
-            this.$confirm("确定移出企业？","信息").then(()=>{
-                this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
-                    if(res.data.code==0){
-                        this.$alert(res.data.message,'信息').then(()=>{
-                            this.goBackList()
-                        })
-                    }else if(res.data.code==1){
-                        this.$alert(res.data.message,'信息').then(()=>{
-                            this.selectedEmployee=[]
-                        })
-                    }
-                })
+            this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
+                if(res.data.code==0){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.goBackList()
+                    })
+                }else if(res.data.code==1){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.selectedEmployee=[]
+                    })
+                }
             })
         },
         //冻结,解冻员工
@@ -890,9 +914,13 @@ export default{
         },
         //批量审批
         batchExamine(){
-            this.$alert("请先选择一个人员进行审批","信息")
+            if(this.batchExamineEmp.length==0){
+                this.$alert("请选择员工后进行操作","信息")
+            }
         },
-        handleExamineDataChange(){},
+        handleExamineDataChange(val){
+            this.batchExamineEmp=val
+        },
         //格式化时间
         formatDate(time){
             var d=new Date(time)
@@ -1103,7 +1131,7 @@ export default{
             this.handleRemoveEmployee([this.employeeInfo.empCode])
         },
         //冻结
-        freezeEmployee(){
+        simpleFreezeEmployee(){
             this.$confirm("确定冻结该员工吗？","提示",{type:"warning"}).then(()=>{
                 this.handleFrozenEmployee([this.employeeInfo.empCode],1)
             })

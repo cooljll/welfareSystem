@@ -29,7 +29,7 @@
                                     <p class="bottom" v-show="isShowNext">
                                         <span>下一篇</span>
                                         <br>
-                                        <span class="index" @click="newsDetails(prevNews.categoryid,prevNews.id)">{{nextNews.fuliinfoTitle}}</span>
+                                        <span class="index" @click="newsDetails(nextNews.categoryid,nextNews.id)">{{nextNews.fuliinfoTitle}}</span>
                                     </p>
                                 </div>
                             </div>
@@ -84,12 +84,12 @@ export default{
                         this.isShowNext=false
                         this.newsDetailContent=newData[0]
                     }else if(newData.length==2){
-                        if(newData[0].id==id){
+                        if(newData[0].id==id){//下一篇
                             this.isShowPrev=false
                             this.isShowNext=true
                             this.newsDetailContent=newData[0]
                             this.nextNews=newData[1]
-                        }else{
+                        }else{//上一篇
                             this.isShowPrev=true
                             this.isShowNext=false
                             this.newsDetailContent=newData[0]

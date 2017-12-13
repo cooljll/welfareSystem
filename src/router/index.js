@@ -110,7 +110,7 @@ export default new Router({
       name: ''
     },
     {
-      path: '/Consult_List',
+      path: '/Consult_List/:ret?',
       component: Consult_List,
       name: ''
     },

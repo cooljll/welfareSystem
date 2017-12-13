@@ -1,15 +1,16 @@
 <template>
     <div>
-        <div class="page-title">
+        <!-- 订单列表 -->
+        <div class="page-title" v-show="isShowOrder">
             <div class="btn">
-                <el-button type="info" class="declare">
+                <el-button type="info" class="declare" @click="exportWelRollOrder">
                     <i class="iconfont icon-gantanhao"></i>
                     导出excel
                 </el-button>
             </div>
             {{$route.name}}
         </div>
-        <div class="page-center">
+        <div class="page-center" v-show="isShowOrder">
             <div class="searchBar">
                 <el-form :inline="true">
                     <el-form-item label="订单类型：">
@@ -43,15 +44,41 @@
                 </el-table-column>
                 <el-table-column prop="state" label="订单状态" align="center">
                 </el-table-column>
-                <el-table-column label="操作" sortable align="center">
+                <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="seeOrderDetail(scope.row.productNo)">查看详情</el-button>
+                        <el-button type="text" @click="seeOrderDetail(scope.row.orderId)">查看详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">
-                <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="extendtTotalSize">
+                </el-pagination>
+            </el-col>
+        </div>
+        <!-- 订单详情-发放名单 -->
+        <div class="page-center" v-show="isShowExtendList">
+            <div class="searchBar">
+                <div class="goback">
+                    <el-button type="info" @click="returnList">返回列表</el-button>
+                </div>
+                <div class="exportbox">导出excel</div>
+            </div>
+            <el-table :data="extendEmpTable" border resizable highlight-current-row style="width: 100%;" border>
+                <el-table-column type="selection" align="center">
+                </el-table-column>
+                <el-table-column prop="name" label="姓名" align="center">
+                </el-table-column>
+                <el-table-column prop="phoneNumber" label="手机号" align="center">
+                </el-table-column>
+                <el-table-column prop="welType" label="福利类型" align="center">
+                </el-table-column>
+                <el-table-column prop="state" label="是否兑换" align="center">
+                </el-table-column>
+            </el-table>
+            <el-col :span="24" class="toolbar">
+                <el-pagination @size-change="handleExtendSize" @current-change="handleExtendCurrent" :current-page="extendCurrentPage"
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                 </el-pagination>
             </el-col>
         </div>
@@ -95,9 +122,7 @@
                         <span class="center">{{orderInfo.createTime}}</span>
                     </div>
                     <div>
-                        <router-link to="/OrderExtend_Detail">
-                            <el-button type="primary">详细发放人员</el-button>
-                        </router-link>
+                        <el-button type="primary" @click="extendEmpList(orderInfo.orderId)">详细发放人员</el-button>
                     </div>
                 </div>
                 <div class="messbox">{{orderInfo.blessMsg}}</div>
@@ -112,16 +137,9 @@ import qs from 'queryString'
 export default{
     data(){
         return{
-            tableData:[
-                {
-                    orderId:"1001",
-                    productName:"演示福利卷",
-                    welType:"圣诞节",
-                    createTime:"2017-11-21 14:02:53",
-                    state:"发放成功",
-                    consume_point:1,
-                }
-            ],
+            isShowOrder:true,
+            isShowExtendList:false,
+            tableData:[],
             value:"",
             filters:{
                 welfareType:"",
@@ -130,23 +148,19 @@ export default{
                 pageNum:1,
                 pageSize:10
             },
+            totalSize:0,
             currentPage:1,
             orderDetailVisible:false,
-            orderInfo:{
-                blessMsg:"圣诞忙里偷闲，许个美好心愿，祝你快乐连连；发个美丽誓言，祝你风度翩翩；圣诞完了元旦，不要手忙脚乱；写份爱的信笺，祝你万事圆圆！",
-                consume_point:1,
-                createTime:"2017-11-21 14:02:53",
-                msg:"",
-                nums:1,
-                orderId:"10020601",
-                postType:"2",
-                postTypeName:"特定人员发放",
-                price:1,
-                productImage:"http://admin.youmina.com:80/image/FuliTicket/2017-05-10_152693_.png",
-                productName:"演示福利券（多选）",
-                productNo:"C3DE51C3-38BA-4A32-971B-F785AFFB8BE7",
-                state:"发放成功",
-                welType:"圣诞节"
+            orderInfo:{},
+            extendEmpTable:[],
+            extendCurrentPage:1,
+            extendtTotalSize:0,
+            //发放人员参数
+            extendEmpParams:{
+                orderId:"",
+                pageNum:1,
+                pageSize:10,
+                state:""
             }
         }
     },
@@ -163,7 +177,18 @@ export default{
             this.filters.startTime=this.formatDate(this.value[0])
             this.filters.endTime=this.formatDate(this.value[1])
         },
-        handleCurrentChange(){},
+        handleSizeChange(val){
+            this.filters.pageSize=val
+        },
+        handleCurrentChange(val){
+            this.filters.pageNum=val
+        },
+        //导出福利卷订单
+        exportWelRollOrder(){
+            this.$axios.get("/api/api/voucher/exportExcelVoucherOrder").then(res=>{
+                console.log(res)
+            })
+        },
         //显示订单列表
         getPagedOrder(){
             this.$axios.post("/api/api/voucher/showOrder",this.filters,{
@@ -171,10 +196,10 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                console.log(res)
                 if(res.status==200){
                     if(res.data.code==0){
                         this.tableData=res.data.data.content
+                        this.totalSize=res.data.data.totalSize
                     }else{
                         this.$alert(res.data.message,"信息")
                     }
@@ -186,20 +211,38 @@ export default{
             this.getPagedOrder()
         },
         //查看详情
-        seeOrderDetail(sku){
+        seeOrderDetail(id){
             this.orderDetailVisible=true
-            this.$axios.post("/api/api/voucher/product/sku",qs.stringify({sku:sku}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
+            this.$axios.post("/api/api/voucher/orderDetail",{
+                orderId:id,
+                pageNum:1,
+                pageSize:10,
+                state:""
             }).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==0){
-                       
-                    }
+                if(res.data.code==0){
+                    this.orderInfo=res.data.data
                 }
             })
+        },
+        extendEmpList(id){
+            this.orderDetailVisible=false
+            this.isShowExtendList=true
+            this.isShowOrder=false
+            this.extendEmpParams.orderId=id
+            this.$axios.post("/api/api/voucher/orderDetailEmp",this.extendEmpParams).then(res=>{
+                console.log(res)
+            })
+        },
+        //返回列表
+        returnList(){
+            this.isShowExtendList=false
+            this.isShowOrder=true
+        },
+        handleExtendSize(val){
+            this.extendEmpParams.pageSize=val
+        },
+        handleExtendCurrent(val){
+            this.extendEmpParams.pageSize=val
         }
     },
     mounted(){
@@ -285,6 +328,22 @@ export default{
             font-family: "MicrosoftYaHei-Bold";
             font-size: 14px;
             color: #FFFFFF;
+        }
+    }
+
+    .searchBar{
+        padding:0 20px;
+        .goback{
+            float: left;
+            height: 60px;
+            line-height: 60px;
+        }
+        .exportbox{
+            float: right;
+            height: 60px;
+            line-height: 60px;
+            color:#fff;
+            font-size: 14px;
         }
     }
 </style>

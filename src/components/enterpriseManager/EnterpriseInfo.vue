@@ -93,28 +93,20 @@
                             <el-row class="upload_box">
                                 <el-col class="updateImg_box">
                                     <div class="upload-content">
+                                        <input type="file">
                                         <div class="img_box">
                                             <img :src="enterpriseLogoUrl" alt="">
                                         </div>
+                                        <div class="upload-txt"><p>上传图片</p></div>
                                     </div>
                                     <div class="txt">企业LOGO</div>
                                 </el-col>
                                 <el-col class="updateImg_box">
-                                    <div class="upload-content">
-                                        <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false">
-                                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                                        </el-upload>
-                                    </div>
+                                    <div class="upload-content"></div>
                                     <div class="txt">公司banner</div>
                                 </el-col>
                                 <el-col class="updateImg_box">
-                                    <div class="upload-content">
-                                        <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false">
-                                            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                                            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                                        </el-upload>
-                                    </div>
+                                    <div class="upload-content"></div>
                                     <div class="txt">登录banner</div>
                                 </el-col>
                             </el-row>
@@ -200,6 +192,43 @@ export default{
                                             border: 0;
                                         }
                                     }
+                                    input{
+                                        position: absolute;
+                                        width: 100%;
+                                        height: 100%;
+                                        top: 0;
+                                        left: 0;
+                                        background-color: rgba(0, 0, 0, 0.6);
+                                        opacity: 0;
+                                        // filter: alpha(opacity=0);
+                                        // -moz-opacity: 0;
+                                        z-index: 3;
+                                        cursor: pointer;
+                                        &:hover{
+                                            background-color: rgba(0, 0, 0, 0.6);
+                                        }
+                                    }
+                                    .upload-txt{
+                                        position: absolute;
+                                        width: 100%;
+                                        height: 100%;
+                                        top: 0;
+                                        left: 0;
+                                        z-index: 1;
+                                        display: none;
+                                        p{
+                                            width: 76px;
+                                            position: absolute;
+                                            text-align: center;
+                                            height: 30px;
+                                            line-height: 30px;
+                                            top: 50%;
+                                            left: 50%;
+                                            margin: -15px 0 0 -37px;
+                                            border: 1px solid #FFFFFF;
+                                            color:#fff;
+                                        }
+                                    }
                                 }
                                 .txt{
                                     text-align: center;
@@ -213,29 +242,6 @@ export default{
                 }
             }
         }
-    }
-    
-    .avatar-uploader .el-upload {
-        border-radius: 6px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-    }
-    .avatar-uploader .el-upload:hover {
-        border-color: #409EFF;
-    }
-    .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 200px;
-        height: 150px;
-        line-height: 150px;
-        text-align: center;
-    }
-    .avatar {
-        width: 200px;
-        height: 150px;
-        display: block;
     }
 </style>
 
