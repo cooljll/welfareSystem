@@ -14,33 +14,22 @@
                         <div class="info-text">
                             <div class="title thide">
                                 <i class="iconfont icon-leftIcon"></i>
-                                夸张福利：这家公司竟为自己62万员工免费配发iPhone
+                                {{newsDetailContent.fuliinfoTitle}}
                                 <i class="iconfont icon-rightIcon"></i>
                             </div>
-                            <div class="content">
-                                <p style="text-indent: 2em;">现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。</p>
-                                <p style="text-indent: 2em;">库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                    但是这种行为还是很受员工的喜欢。</p>
-                                <p style="text-indent: 2em;">与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，比如他们为员工带来了Mac和Apple Watch，
-                                    同时他们还在相关领域投放了3万iPhone和iPad。</p>
-                                <p style="text-indent: 2em;">另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。</p>
-                                <p><br></p>
-                            </div>
+                            <div class="content" v-html="newsDetailContent.information"></div>
+                            <!-- 新闻索引 -->
                             <div class="bottom">
                                 <div class="look-else">
-                                    <p class="top">
+                                    <p class="top" v-show="isShowPrev">
                                         <span>上一篇</span>
                                         <br>
-                                        <router-link to="">
-                                            <span>2017企业最佳员工体验与福利创新论坛盛大召开</span>
-                                        </router-link>
+                                        <span class="index" @click="newsDetails(prevNews.categoryid,prevNews.id)">{{prevNews.fuliinfoTitle}}</span>
                                     </p>
-                                    <p class="bottom">
+                                    <p class="bottom" v-show="isShowNext">
                                         <span>下一篇</span>
                                         <br>
-                                        <router-link to="">
-                                            <span>星巴克创始人:企业成功来自员工信任 将为中国员工父母买"重疾险”</span>
-                                        </router-link>
+                                        <span class="index" @click="newsDetails(prevNews.categoryid,prevNews.id)">{{nextNews.fuliinfoTitle}}</span>
                                     </p>
                                 </div>
                             </div>
@@ -52,31 +41,13 @@
                         <span>热门资讯</span>
                     </div>
                     <div class="hot-collection">
-                        <div class="hot_item">
+                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.categoryid,item.id)">
                             <div class="imgbox">
-                                <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg" alt="">
+                                <img :src="item.imagepath" alt="">
                             </div>
                             <div class="item_info">
-                                <p class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</p>
-                                <div class="time"><span>2017.06.01</span></div>
-                            </div>
-                        </div>
-                        <div class="hot_item">
-                            <div class="imgbox">
-                                <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-05-08_685539_.jpg" alt="">
-                            </div>
-                            <div class="item_info">
-                                <p class="thide">夸张福利：这家公司竟为自己62万员工免费配发iPhone</p>
-                                <div class="time"><span>2017.05.08</span></div>
-                            </div>
-                        </div>
-                        <div class="hot_item">
-                            <div class="imgbox">
-                                <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-04-28_368467_.jpg" alt="">
-                            </div>
-                            <div class="item_info">
-                                <p class="thide">星巴克创始人:企业成功来自员工信任 将为中国员工父母买"重疾险”</p>
-                                <div class="time"><span>2017.04.28</span></div>
+                                <p class="thide">{{item.fuliinfoTitle}}</p>
+                                <div class="time"><span>{{item.inputtime.split(" ")[0]}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -86,7 +57,70 @@
     </div>
 </template>
 <script>
-    
+import authUnils from "../../common/authUnils"
+import qs from 'queryString'
+export default{
+    data(){
+        return{
+            hotNewsList:[],
+            newsDetail:{},
+            newsDetailContent:{},
+            prevNews:{},
+            nextNews:{},
+            isShowPrev:true,
+            isShowNext:true
+        }
+    },
+    methods:{
+        getNewsDetail(cId,id){
+            this.$axios.get("/api/api/welfareNews/newsInfo",{params:{
+                categoryId:cId,
+                fuliInformationId:id
+            }}).then(res=>{
+                if(res.data.code==0){
+                    var newData=res.data.data
+                    if(newData.length==1){
+                        this.isShowPrev=false
+                        this.isShowNext=false
+                        this.newsDetailContent=newData[0]
+                    }else if(newData.length==2){
+                        if(newData[0].id==id){
+                            this.isShowPrev=false
+                            this.isShowNext=true
+                            this.newsDetailContent=newData[0]
+                            this.nextNews=newData[1]
+                        }else{
+                            this.isShowPrev=true
+                            this.isShowNext=false
+                            this.newsDetailContent=newData[0]
+                            this.prevNews=newData[1]
+                        }
+                    }else{
+                        this.isShowPrev=true
+                        this.isShowNext=true
+                        this.newsDetailContent=newData[0]
+                        this.prevNews=newData[1]
+                        this.nextNews=newData[2]
+                    }
+                }
+            })
+        },
+        newsDetails(cId,id){
+            this.getNewsDetail(cId,id)
+        }
+    },
+    mounted(){
+        this.getNewsDetail(this.$route.params.cId,this.$route.params.id)
+        this.$axios.post("/api/api/welfareNews/newsPageInfo",{
+            pageNum:1,
+            pageSize:3
+        }).then(res=>{
+            if(res.data.code==0){
+                this.hotNewsList=res.data.data
+            }
+        })
+    }
+}
 </script>
 <style lang="scss" scoped>
     .main{
@@ -117,12 +151,18 @@
                     span{
                         color:#999ea1;
                     }
-                    p.top{
+                    .top{
                         float: left;
                     }
-                    p.bottom{
+                    .bottom{
                         float: right;
                         text-align: right;
+                    }
+                    .index{
+                        cursor: pointer;
+                        &:hover{
+                            text-decoration:underline;
+                        }
                     }
                 }
             }

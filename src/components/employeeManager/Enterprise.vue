@@ -750,11 +750,22 @@ export default{
         },
         //生成二维码(后台获取)
         buildQRcode(){
-            // this.$axios.post("/api/api/service/qrcode
-            // }).then(res=>{
-            //     console.log(res)
-            // })
-            this.qrcodeVisible=true
+            const loading = this.$loading({
+				lock: true,
+				text: '二维码生成中。。。',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
+            this.$axios.post("/api/api/service/qrcode",{}).then(res=>{
+                console.log(res)
+                if(res.data.data==0){
+                    this.qrcodeVisible=true
+                }else if(res.data.code==1){
+                    this.$alert(res.data.message,"信息")
+                    this.qrcodeVisible=false
+                }
+                loading.close()
+            })
         },
         //处理判断
         handleJudge(){
@@ -964,7 +975,6 @@ export default{
         showExmineLists(){
             this.filtersExamine.auditStatus=Number(this.filtersExamine.auditStatus)
             this.$axios.post("/api/api/approvalCenter/showApprovalMessage",this.filtersExamine).then(res=>{
-                console.log(res)
                 if(res.data.code==0){
                     this.totalSizeExamine=res.data.data.totalSize
                     res.data.data.content.forEach(item=>{

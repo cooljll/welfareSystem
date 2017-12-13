@@ -12,105 +12,16 @@
                         </div>
                         <div class="info-list">
                             <ul>
-                                <li>
+                                <li v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.categoryid,item.id)">
                                     <div class="news-wrapper">
                                         <div class="img">
-                                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
+                                            <img :src="item.imagepath">
                                         </div>
                                         <div class="info">
-                                            <h3 class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</h3>
-                                            <span>2017.06.01</span>
-                                            <p>
-                                                现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。
-                                                库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                                但是这种行为还是很受员工的喜欢。与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，
-                                                比如他们为员工带来了Mac和Apple Watch，同时他们还在相关领域投放了3万iPhone和iPad。另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="news-wrapper">
-                                        <div class="img">
-                                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
-                                        </div>
-                                        <div class="info">
-                                            <h3 class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</h3>
-                                            <span>2017.06.01</span>
-                                            <p>
-                                                现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。
-                                                库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                                但是这种行为还是很受员工的喜欢。与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，
-                                                比如他们为员工带来了Mac和Apple Watch，同时他们还在相关领域投放了3万iPhone和iPad。另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="news-wrapper">
-                                        <div class="img">
-                                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
-                                        </div>
-                                        <div class="info">
-                                            <h3 class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</h3>
-                                            <span>2017.06.01</span>
-                                            <p>
-                                                现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。
-                                                库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                                但是这种行为还是很受员工的喜欢。与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，
-                                                比如他们为员工带来了Mac和Apple Watch，同时他们还在相关领域投放了3万iPhone和iPad。另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="news-wrapper">
-                                        <div class="img">
-                                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
-                                        </div>
-                                        <div class="info">
-                                            <h3 class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</h3>
-                                            <span>2017.06.01</span>
-                                            <p>
-                                                现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。
-                                                库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                                但是这种行为还是很受员工的喜欢。与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，
-                                                比如他们为员工带来了Mac和Apple Watch，同时他们还在相关领域投放了3万iPhone和iPad。另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="news-wrapper">
-                                        <div class="img">
-                                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
-                                        </div>
-                                        <div class="info">
-                                            <h3 class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</h3>
-                                            <span>2017.06.01</span>
-                                            <p>
-                                                现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。
-                                                库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                                但是这种行为还是很受员工的喜欢。与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，
-                                                比如他们为员工带来了Mac和Apple Watch，同时他们还在相关领域投放了3万iPhone和iPad。另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="news-wrapper">
-                                        <div class="img">
-                                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
-                                        </div>
-                                        <div class="info">
-                                            <h3 class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</h3>
-                                            <span>2017.06.01</span>
-                                            <p>
-                                                现在苹果正在极力拓展企业用户，在昨天发布的新财报中，库克其实透露了一个细节，只是大家把注意力都放在了iPhone销量下滑上。
-                                                库克在当时的财报中透露，德国大众汽车已经为全球62万名员工标配了iPhone手机，至于具体细节双方都没有透露，
-                                                但是这种行为还是很受员工的喜欢。与此同时，美国银行Capital One也在积极的跟员工标配苹果产品，
-                                                比如他们为员工带来了Mac和Apple Watch，同时他们还在相关领域投放了3万iPhone和iPad。另外，苹果与IBM、SAP和思科的深度合作还在洽谈中。
-                                            </p>
+                                            <h3 class="thide">{{item.fuliinfoTitle}}</h3>
+                                            <span>{{item.inputtime.split(" ")[0]}}</span>
+                                            <!-- 去掉所有的HTML标记 -->
+                                            <p v-html="item.information.replace(/<[^>]+>/g,'')"></p>
                                         </div>
                                     </div>
                                 </li>
@@ -123,31 +34,13 @@
                         <span>热门收藏</span>
                     </div>
                     <div class="hot-collection">
-                        <div class="hot_item">
+                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.categoryid,item.id)">
                             <div class="imgbox">
-                                <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg" alt="">
+                                <img :src="item.imagepath" alt="">
                             </div>
                             <div class="item_info">
-                                <p class="thide">2017企业最佳员工体验与福利创新论坛盛大召开</p>
-                                <div class="time"><span>2017.06.01</span></div>
-                            </div>
-                        </div>
-                        <div class="hot_item">
-                            <div class="imgbox">
-                                <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-05-08_685539_.jpg" alt="">
-                            </div>
-                            <div class="item_info">
-                                <p class="thide">夸张福利：这家公司竟为自己62万员工免费配发iPhone</p>
-                                <div class="time"><span>2017.05.08</span></div>
-                            </div>
-                        </div>
-                        <div class="hot_item">
-                            <div class="imgbox">
-                                <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-04-28_368467_.jpg" alt="">
-                            </div>
-                            <div class="item_info">
-                                <p class="thide">星巴克创始人:企业成功来自员工信任 将为中国员工父母买"重疾险”</p>
-                                <div class="time"><span>2017.04.28</span></div>
+                                <p class="thide">{{item.fuliinfoTitle}}</p>
+                                <div class="time"><span>{{item.inputtime.split(" ")[0]}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -157,7 +50,44 @@
     </div>
 </template>
 <script>
-    
+import authUnils from "../../common/authUnils"
+export default{
+    data(){
+        return{
+            consultParams:{
+                pageNum:1,
+                pageSize:10
+            },
+            newsPageList:[],
+            hotNewsList:[]
+        }
+    },
+    methods:{
+        //分页咨询
+        getNewsPageInfo(){
+            this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
+                console.log(res)
+                if(res.data.code==0){
+                    this.newsPageList=res.data.data
+                }
+            })
+        },
+        newsDetails(cId,id){
+            this.$router.push('/Consult_Detail/'+cId+'/'+id)
+        },
+    },
+    mounted(){
+        this.getNewsPageInfo()
+        this.$axios.post("/api/api/welfareNews/newsPageInfo",{
+            pageNum:1,
+            pageSize:3
+        }).then(res=>{
+            if(res.data.code==0){
+                this.hotNewsList=res.data.data
+            }
+        })
+    }
+}  
 </script>
 <style lang="scss" scoped>
     .info-list{

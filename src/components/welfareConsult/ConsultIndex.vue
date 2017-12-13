@@ -16,7 +16,7 @@
                     <!-- banner轮播 -->
                     <el-carousel trigger="click">
                         <el-carousel-item v-for="(item,index) in bannerList1" :key="index">
-                            <img :src="item.imagerpath" alt="" @click="seeDetails(item.linkpath)">
+                            <img :src="item.imagerpath" alt="" @click="bannerDetail(item.linkpath)">
                             <div class="info">
                                 <div class="info-label">
                                     <span class="z">资讯</span>
@@ -29,7 +29,7 @@
                 <!-- 右banner -->
                 <div class="information-right">
                     <ul>
-                        <li v-for="(item,index) in bannerList2" :key="index" @click="seeDetails(item.linkpath)">
+                        <li v-for="(item,index) in bannerList2" :key="index" @click="bannerDetail(item.linkpath)">
                             <img :src="item.imagerpath" alt="">
                             <div class="info">
                                 <div class="info-label">
@@ -43,11 +43,10 @@
             </div>
             <div class="information-class">
                 <div class="information-title">
-                    <span>福利资讯</span>
+                    <span>{{categoryTitle}}</span>
                 </div>
                 <div class="information-contant">
-                    <!-- 动态渲染 -->
-                    <!-- <div class="information-item" v-for="(item,index) in newsPageList" :key="index">
+                    <div class="information-item" v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.categoryid,item.id)">
                         <a>
                             <img :src="item.imagepath">
                             <p>{{item.fuliinfoTitle}}</p>
@@ -57,76 +56,10 @@
                                 <span class="t">{{item.inputtime}}</span>
                             </div>
                         </div>
-                    </div> -->
-                    <div class="information-item">
-                        <a onclick="detail('9', '1')">
-                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg">
-                            <p>2017企业最佳员工体验与福利创新论坛盛大召开</p>
-                        </a>
-                        <div class="item-info">
-                            <div class="item-drec cle">
-                                <span class="t">2017.06.01</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="information-item">
-                        <a onclick="detail('8', '1')">
-                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-05-08_685539_.jpg">
-                            <p>夸张福利：这家公司竟为自己62万员工免费配发iPhone</p>
-                        </a>
-                        <div class="item-info">
-                            <div class="item-drec cle">
-                                <span class="t">2017.05.08</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="information-item">
-                        <a onclick="detail('7', '1')">
-                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-04-28_368467_.jpg">
-                            <p>星巴克创始人:企业成功来自员工信任 将为中国员工父母买"重疾险”</p>
-                        </a>
-                        <div class="item-info">
-                            <div class="item-drec cle">
-                                <span class="t">2017.04.28</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="information-item">
-                        <a onclick="detail('6', '1')">
-                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-04-28_705434_.png">
-                            <p>吃货福利来了！能吃的筷子在东京餐馆上市</p>
-                        </a>
-                        <div class="item-info">
-                            <div class="item-drec cle">
-                                <span class="t">2017.04.28</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="information-item">
-                        <a onclick="detail('5', '1')">
-                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-04-28_670606_.jpg">
-                            <p>腾讯员工福利这么好！不愧是中国百强品牌榜首</p>
-                        </a>
-                        <div class="item-info">
-                            <div class="item-drec cle">
-                                <span class="t">2017.04.28</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="information-item">
-                        <a onclick="detail('4', '1')">
-                            <img src="http://admin.youmina.com:80/image/FuliInfomation/Information_2017-04-28_144147_.jpeg">
-                            <p>小米要给员工建福利房，科技大佬喜欢发哪些购房福利？</p>
-                        </a>
-                        <div class="item-info">
-                            <div class="item-drec cle">
-                                <span class="t">2017.04.28</span>
-                            </div>
-                        </div>
                     </div>
                 </div>  
-                <div class="more_information">
-                    查看更多
+                <div class="more_information" v-show="isShowMore">
+                    <span @click="getMoreNews">查看更多</span>
                     <!-- <img src="assets/img/sy_right.png"> -->
                 </div>
             </div>
@@ -141,29 +74,19 @@ export default{
         return{
             bannerList1:[],
             bannerList2:[],
-            newsPageList:[
-                {
-                    categoryid:1,
-                    categoryname:'福利资讯',
-                    fuliinfoTitle:"2017企业最佳员工体验与福利创新论坛盛大召开",
-                    id:9,
-                    imagepath:"http://admin.youmina.com:80/image/FuliInfomation/Information_2017-06-01_230066_.jpg",
-                    information:"<p style='line-height: 1.75em;'>&nbsp; &nbsp; 伯乐会联合国内领先的企业员工餐饮服务商美餐网，在 2017 年 5 月 19 日联合举办的——2017 年企业最佳员工体验与福利创新论坛将于上海盛大召开。</p><p style='line-height: 1.75em;'><img src='http://admin.youmina.com:80/ueditor/jsp/upload/image/20170601/1496286945235025171.jpg'/></p><p style='text-align: center; line-height: 1.75em;'><strong><br/></strong></p><p style='line-height: 1.75em; text-align: center;'><strong>论坛背景</strong></p><p style='line-height: 1.75em;'><span style='line-height: 1.75em;'>　　</span><span style='line-height: 1.75em;'>《未来职场》和 Beyond.com 在共同研究中发现，83% 的 HR 领导者认为“员工体验”对团队获得成功是重要的，</span><span style='line-height: 1.75em;'>",
-                    inputtime:"2017-06-01 11:23:50",
-                    inputuser:"liuziwei",
-                    state:'1'
-                }
-            ]
+            categoryTitle:"",//福利咨询标题
+            newsPageList:[],
+            consultParams:{
+                pageNum:1,
+                pageSize:6
+            },
+            isShowMore:true
         }
     },
     methods:{
         //获取福利咨询banner
         getBannerPosition1(){
-            this.$axios.get("/api/api/welfareNews/banner?position=1",{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.get("/api/api/welfareNews/banner?position=1").then(res=>{
                 if(res.status==200){
                     if(res.data.code==0){
                        this.bannerList1=res.data.data
@@ -172,11 +95,7 @@ export default{
             })
         },
         getBannerPosition2(){
-            this.$axios.get("/api/api/welfareNews/banner?position=2",{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.get("/api/api/welfareNews/banner?position=2").then(res=>{
                 if(res.status==200){
                     if(res.data.code==0){
                        this.bannerList2=res.data.data
@@ -184,15 +103,42 @@ export default{
                 }
             })
         },
-        seeDetails(params){
-            let fuliInformationID=params.split(",")[0]
-            let categoryID=params.split(",")[1]
-            this.$router.push("/Consult_Detail")
+        //获取福利咨询标题
+        getTitle(){
+            this.$axios.get("/api/api/welfareNews/title").then(res=>{
+                if(res.data.code==0){
+                    this.categoryTitle=res.data.data[0].categoryname
+                }
+            })
+        },
+        //分页咨询
+        getNewsPageInfo(){
+            this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
+                if(res.data.code==0){
+                    if(res.data.data.length==0){
+                        this.isShowMore=false
+                    }else{
+                        this.isShowMore=true
+                    }
+                    this.newsPageList=res.data.data
+                }
+            })
+        },
+        getMoreNews(){
+            this.$router.push("/Consult_List")
+        },
+        bannerDetail(params){
+            this.$router.push('/Consult_Detail/'+params.split(",")[0]+'/'+params.split(",")[1])
+        },
+        newsDetails(cId,id){
+            this.$router.push('/Consult_Detail/'+cId+'/'+id)
         }
     },
     mounted(){
         this.getBannerPosition1()
         this.getBannerPosition2()
+        this.getTitle()
+        this.getNewsPageInfo()
     }
 }
 </script>
