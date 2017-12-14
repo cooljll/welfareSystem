@@ -70,7 +70,7 @@
                                 {{tag}}
                             </el-tag>
                         </div>
-                        <el-button type="primary" @click="uploadExcelSubmit">确定下载Excel</el-button>
+                        <el-button type="primary" @click="confirmDownloadExcel">确定下载Excel</el-button>
                         <el-button @click="callOff">取消</el-button>
                     </div>
                 </div>
@@ -79,10 +79,13 @@
                     <div class="title">Excel操作</div>
                     <div class="center">
                         <el-button @click="uploadExcelTemplate">下载Excel模板</el-button>
-                        <el-upload class="upload-demo" :on-success="handleUploadSuccess" action="https://jsonplaceholder.typicode.com/posts/"
-                             multiple :file-list="fileList">
-                            <el-button type="primary">选择Excel</el-button>
-                        </el-upload>
+                        <div class="fileUpload">
+                            <input type="file" @change="getFile($event)" id="fileToUpload">
+                            <div class="replaceComp">
+                                <el-button type="primary" @click="selectExcelFile">选择excel</el-button>
+                                <span>{{fileName}}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- 邮件寄语 -->
@@ -246,6 +249,15 @@
                 <el-button @click.native="addEmployeeVisible = false">取消</el-button>
             </div>
         </el-dialog>
+        <!-- 下载excel模板弹框 -->
+        <el-dialog title="信息" :visible.sync="uploadExcelVisible" :close-on-click-modal="false" class="uploadExcelDialog" style="top:18%">
+            <div class="tip">
+                请上传编辑好的积分发放配置请按照Excel格式填写内容,Excel中其他内容请勿修改！
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" size="small" @click="confirmSubmit">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -295,8 +307,8 @@ export default{
             ],
             currentPage:1,
             value:'',
-            fileList:[],
-            status:"",
+            file:'',
+            fileName:"未选择",
             //员工积分发放模板数据
             extendCreditTemp:[{
                 name:"",
@@ -311,7 +323,8 @@ export default{
             selectedDeparts:[],
             selectedEmpTags:[],//标签数组
             enterpriseBalance:0,//积分余额
-            screenWidth:document.body.clientWidth
+            screenWidth:document.body.clientWidth,
+            uploadExcelVisible:false
         }
     },
     methods:{
@@ -329,15 +342,12 @@ export default{
         handleNextStep1(){
             if(!this.isShow){
                 this.$alert("请先选择福利类型","信息")
-            }else if(this.status=="success"){
+            }else if(!this.file){
                 this.$alert("请先上传excel","信息")
             }else if(this.messageTemplate==""){
                 this.$alert("模板寄语不能为空","信息")
             }else{
-                this.step1=false
-                this.step2=true
-                this.step3=false
-                this.step4=false
+                this.uploadFile()
             }
         },
         handleNextStep2(){
@@ -362,12 +372,6 @@ export default{
         },
         handleGoBack2(){
             this.handleNextStep1()
-        },
-        handleUploadSuccess(response,file,fileList){
-            this.status=fileList.status
-            console.log(response)
-            console.log(file)
-            console.log(fileList)
         },
         //基本节日选中处理
         handleCurrentBtn(val,id){
@@ -398,31 +402,46 @@ export default{
         handleCurrentChange(){},
         // 下载excel模板
         uploadExcelTemplate(){
-            this.$confirm("请上传编辑好的积分发放配置请按照Excel格式填写内容,Excel中其他内容请勿修改！","信息",{
-                center:true,
-                customClass:"excelMsg"
-            }).then(()=>{
-                this.uploadConfig=true
-            }).catch(()=>{
-                this.uploadConfig=false
-            })
+            this.uploadExcelVisible=true
+        },
+        confirmSubmit(){
+            this.uploadConfig=true
+            this.uploadExcelVisible=false
         },
         //取消
         callOff(){
             this.uploadConfig=false
         },
-        //确定下载excel
-        uploadExcelSubmit(){
-            require.ensure([],()=>{
-                const {export_json_to_excel}=require("../../../vendor/Export2Excel")
-                const tHeader=["员工姓名","员工部门","员工手机号","积分金额"]
-                const filterVal=["name","department","phoneNumber","creditNums"]
-                const data=this.formatJson(filterVal,this.extendCreditTemp)
-                export_json_to_excel(tHeader,data,"员工发放积分模板")
+        //上传文件
+        selectExcelFile(){
+            document.getElementById('fileToUpload').click()
+        },
+        getFile(event) {
+            this.file = event.target.files[0]
+            this.fileName=this.file.name
+        },
+        uploadFile(){
+            let formData = new FormData()
+            formData.append("file",this.file)
+            let config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            this.$axios.post("/api/api/integral/uploadIntegralByExcel",formData,config).then(res=>{
+                if(res.data.code==0){
+                    this.step1=false
+                    this.step2=true
+                    this.step3=false
+                    this.step4=false
+                }else if(res.data.code==1){
+                    this.$alert(res.data.message,"信息")
+                }
             })
         },
-        formatJson(filterVal,jsonData){
-            return jsonData.map(v=>filterVal.map(j=>v[j]))
+        //确定下载excel
+        confirmDownloadExcel(){
+            
         },
         //模板寄语
         randomTemMessage(){
