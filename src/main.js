@@ -49,6 +49,8 @@ axios.interceptors.response.use(
                 router.replace({
                     path: '/'
                 })
+            case 500:
+                alert("服务器内部错误")
         }
     }
       return Promise.reject(error.response.data)   // 返回接口返回的错误信息

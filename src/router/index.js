@@ -16,8 +16,6 @@ import WechatRecharge from '@/components/fuliManager/rechargeManage/WechatRechar
 import CreditExtend from '@/components/fuliManager/creditManage/CreditExtend' 
 import CreditExtend_Excel from '@/components/fuliManager/creditManage/CreditExtend_Excel'
 import CreditExtend_Order from '@/components/fuliManager/creditManage/CreditExtend_Order'
-import CreditOrder_Detail from '@/components/fuliManager/creditManage/CreditOrder_Detail'
-import OrderExtend_Detail from '@/components/fuliManager/creditManage/OrderExtend_Detail'//福利发放人员详情
 // 福利发放
 import WelfareRollExtend from '@/components/fuliManager/welfareExtend/WelfareRollExtend'
 import WelfareRollOrder from '@/components/fuliManager/welfareExtend/WelfareRollOrder'
@@ -84,10 +82,8 @@ export default new Router({
           { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },
           { path: '/CreditExtend_Excel', component: CreditExtend_Excel, name: 'Excel积分发放' },
           { path: '/CreditExtend_Order', component: CreditExtend_Order, name: '积分发放订单' },
-          { path: '/CreditOrder_Detail/:id?', component: CreditOrder_Detail, name: '' },
           { path: '/WelfareRollExtend', component: WelfareRollExtend, name: '福利卷发放' },
           { path: '/WelfareRollOrder', component: WelfareRollOrder, name: '福利卷订单' },
-          { path: '/OrderExtend_Detail/:id?/:type?', component: OrderExtend_Detail, name: '' },
           { path: '/WelfarePick', component: WelfarePick, name: '福利挑选' },
           { path: '/PurchaseOrder', component: PurchaseOrder, name: '采购订单' },
           { path: '/WelfareData', component: WelfareData, name: '福利数据' },
