@@ -65,9 +65,9 @@
                     <div class="center">
                         <el-button @click="selectEmployee">选择人员</el-button>
                         <div class="choosestafflist">
-                            <el-tag v-for="tag in selectedEmpTags" :key="tag" closable class="tagStyle"
+                            <el-tag v-for="tag in selectedEmpTags" :key="tag.label" closable class="tagStyle"
                                 :disable-transitions="false" @close="handleClose(tag)">
-                                {{tag}}
+                                {{tag.label}}
                             </el-tag>
                         </div>
                         <el-button type="primary" @click="confirmDownloadExcel">确定下载Excel</el-button>
@@ -83,7 +83,7 @@
                             <input type="file" @change="getFile($event)" id="fileToUpload">
                             <div class="replaceComp">
                                 <el-button type="primary" @click="selectExcelFile">选择excel</el-button>
-                                <span>{{fileName}}</span>
+                                <span class="fileName">{{fileName}}</span>
                             </div>
                         </div>
                     </div>
@@ -142,7 +142,7 @@
                         <template slot-scope="scope">
                             <el-button type="text" class="handlebtn" v-show='!scope.row.edit' @click="scope.row.edit=true">修改积分</el-button>
                             <el-button type="text" class="handlebtn" v-show='scope.row.edit' @click="scope.row.edit=false">保存</el-button>
-                            <el-button type="text" class="handlebtn">删除</el-button>
+                            <el-button type="text" class="handlebtn" @click="delEmpCredit(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -163,10 +163,10 @@
                             <div class="title">消耗总积分</div>
                             <div class="center-left">
                                 <div class="allscorerow">
-                                    <span class="scoreallcount">14</span>
+                                    <span class="scoreallcount">{{totalScores}}</span>
                                     <span>积分</span>
                                 </div>
-                                <div class="rowbottom">发放总人数:&nbsp;<span>14</span></div>
+                                <div class="rowbottom">发放总人数:&nbsp;<span>{{totalEmployee}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -196,9 +196,9 @@
                             <div class="title">发放对象</div>
                             <div class="center">
                                 <div class="showstafflist">
-                                    <el-tag v-for="tag in selectedEmpTags" :key="tag" closable class="tagStyle"
+                                    <el-tag v-for="tag in selectedEmpTags" :key="tag.label" closable class="tagStyle"
                                         :disable-transitions="false" @close="handleClose(tag)">
-                                        {{tag}}
+                                        {{tag.label}}
                                     </el-tag>
                                 </div>
                             </div>
@@ -206,11 +206,20 @@
                     </div>
                 </div>
                 <div class="information-btn">
-                    <el-button type="primary">支付订单</el-button>
+                    <el-button type="primary" @click="payOrder">支付订单</el-button>
                     <el-button @click="handleGoBack2">上一步</el-button>
                 </div>
             </div>
             <div class="layer-center4" v-show="step4">
+                <div class="success">
+                    <!-- <img src="assets/img/successful.png"> -->
+                    <img src="../../../assets/timg.jpg" alt="">
+                    <div class="statusname">发放成功！</div>
+                    <div class="btnbox">
+                        <el-button type="primary" @click="oneMoreExtend">再次发放</el-button>
+                        <el-button @click="$router.push('/CreditExtend_Order')">查看订单</el-button>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- 选择员工弹出框 -->
@@ -219,9 +228,9 @@
                 <div class="box">
                     <div class="title">选择部门</div>
                     <div class="center">
-                        <span>上海汇展人力资源有限公司(14)</span>
+                        <span>{{enterpriseName}}</span>
                         <el-checkbox-group v-model="checkedDepart">
-                            <el-checkbox v-for="(item,index) in notSelectdeparts" :label="item" :key="index">{{item}}</el-checkbox>
+                            <el-checkbox v-for="(item,index) in notSelectdeparts" :label="item" :key="index">{{item.label}}</el-checkbox>
                         </el-checkbox-group>
                     </div>
                 </div>
@@ -239,7 +248,7 @@
                     <div class="title">已选部门</div>
                     <div class="center">
                         <el-checkbox-group v-model="selectedDeparts">
-                            <el-checkbox v-for="(item,index) in selectedArr" :label="item" :key="index">{{item}}</el-checkbox>
+                            <el-checkbox v-for="(item,index) in selectedArr" :label="item" :key="index">{{item.label}}</el-checkbox>
                         </el-checkbox-group> 
                     </div>
                 </div>
@@ -262,6 +271,7 @@
 </template>
 <script>
 import authUnils from '../../../common/authUnils'
+import qs from 'queryString'
 export default{
     data(){
         return{
@@ -293,18 +303,7 @@ export default{
             festivalId:"",//节日id
             value:"",
             selectEmpVisible:false,
-            tableData:[
-                {
-                    departmentName:"市场部",
-                    email:"13564585235@139.com",
-                    memberCode:"e6f68da9-a318-4065-b88d-caa3b3bd9dfe",
-                    name:"李东生",
-                    openId:"ohZv7wmeK-YzIkj4Qqtyn3ftbaOo",
-                    phone:"13564585235",
-                    shopScore:1,
-                    edit:false
-                }
-            ],
+            tableData:[],
             currentPage:1,
             value:'',
             file:'',
@@ -317,14 +316,17 @@ export default{
                 creditNums:""
             }],
             messageTemplate:"",//模板寄语
-            notSelectdeparts:["市场部(14)","采购部(0)","客户(0)"],//选择部门
+            notSelectdeparts:[],//选择部门
             checkedDepart:[],
             selectedArr:[],//已选部门
             selectedDeparts:[],
             selectedEmpTags:[],//标签数组
             enterpriseBalance:0,//积分余额
+            totalScores:0,
+            totalEmployee:0,
             screenWidth:document.body.clientWidth,
-            uploadExcelVisible:false
+            uploadExcelVisible:false,
+            enterpriseName:""
         }
     },
     methods:{
@@ -351,6 +353,12 @@ export default{
             }
         },
         handleNextStep2(){
+            this.totalEmployee=this.tableData.length
+            this.totalScores=0
+            this.tableData.forEach(item=>{
+                this.totalScores+=item.shopScore
+            })
+            this.getEnterpriseBalance()
             this.step1=false
             this.step2=false
             this.step3=true
@@ -371,7 +379,10 @@ export default{
             })
         },
         handleGoBack2(){
-            this.handleNextStep1()
+            this.step1=false
+            this.step2=true
+            this.step3=false
+            this.step4=false
         },
         //基本节日选中处理
         handleCurrentBtn(val,id){
@@ -398,6 +409,7 @@ export default{
         //选择员工
         selectEmployee(){
             this.selectEmpVisible=true
+            this.getTreeDep()
         },
         handleCurrentChange(){},
         // 下载excel模板
@@ -407,6 +419,24 @@ export default{
         confirmSubmit(){
             this.uploadConfig=true
             this.uploadExcelVisible=false
+        },
+        //确定下载excel
+        confirmDownloadExcel(){
+            if(this.selectedEmpTags.length==0){
+                this.$alert("请先选择部门","信息")
+            }else{
+                let tempStr=""
+                this.selectedEmpTags.forEach(item=>{
+                    tempStr+=","+item.organizationUnitId
+                })
+                this.$axios.get("/api/api/integral/downloadExcel?param="+escape(tempStr.substr(1)),{
+                    headers:{
+                        "Content-Type":"charset=utf-8"
+                    }
+                }).then(res=>{
+                    console.log(res.data)
+                })
+            }
         },
         //取消
         callOff(){
@@ -421,8 +451,14 @@ export default{
             this.fileName=this.file.name
         },
         uploadFile(){
+            const loading = this.$loading({
+				lock: true,
+				text: '正在进行下一步操作请稍等...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             let formData = new FormData()
-            formData.append("file",this.file)
+            formData.append("uploadexcel",this.file)
             let config = {
               headers: {
                 'Content-Type': 'multipart/form-data'
@@ -430,18 +466,16 @@ export default{
             }
             this.$axios.post("/api/api/integral/uploadIntegralByExcel",formData,config).then(res=>{
                 if(res.data.code==0){
+                    loading.close()
                     this.step1=false
                     this.step2=true
                     this.step3=false
                     this.step4=false
+                    this.tableData=res.data.data
                 }else if(res.data.code==1){
                     this.$alert(res.data.message,"信息")
                 }
             })
-        },
-        //确定下载excel
-        confirmDownloadExcel(){
-            
         },
         //模板寄语
         randomTemMessage(){
@@ -517,6 +551,38 @@ export default{
                 }
             }
         },
+        //删除
+        delEmpCredit(obj){
+            this.$alert("确认是否删除？(如果删除错误请重新上传excel)","信息").then(()=>{
+                this.tableData.splice(this.tableData.indexOf(obj), 1)
+            })
+        },
+        //支付订单
+        payOrder(){
+            this.$alert("确定要支付订单？","信息").then(()=>{
+                this.$axios.post("/api/api/integral/postIntegralByExcel",{
+                    blessMsg:this.messageTemplate,
+                    festivalId:this.festivalId,
+                    list:this.tableData
+                }).then(res=>{
+                    if(res.data.code==0){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.step1=false
+                            this.step2=false
+                            this.step3=false
+                            this.step4=true
+                        })
+                    }
+                })
+            })
+        },
+        //再次发放
+        oneMoreExtend(){
+            this.step1=true
+            this.step2=false
+            this.step3=false
+            this.step4=false
+        },
         //节日信息
         showFestival(){
             this.$axios.post("/api/api/integral/showFestival",{},{
@@ -548,6 +614,30 @@ export default{
             }else{
                 this.isShowTag1=true
             }
+        },
+        //部门树形
+        getTreeDep(){
+            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
+                if(res.status==200){
+                    if(res.data.code==0){
+                        let ret=this.transferData(res.data.data)
+                        this.enterpriseName=ret.label
+                        this.notSelectdeparts=[]
+                        this.notSelectdeparts=ret.subItems
+                    }
+                }
+            })
+        },
+        //数据转化
+        transferData(params){
+            params["label"]=params.displayName+"("+params.memberCount+")"
+            if(params.subItems&&params.subItems.length!==0){
+                //有子级
+                params.subItems.forEach(item=>{
+                    item["label"]=item.displayName+"("+item.memberCount+")"
+                })
+            }
+            return params
         }
     },
     mounted(){
@@ -835,7 +925,7 @@ export default{
                     line-height: 35px;
                 }
                 .el-checkbox-group{
-                    padding: 0 20px;
+                    padding: 0 40px;
                     .el-checkbox{
                         display: block;
                         height:35px;
