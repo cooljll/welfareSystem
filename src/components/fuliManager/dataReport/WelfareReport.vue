@@ -83,7 +83,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         if(res.data.data.content.length!=0){
                             this.reportDataList=res.data.data.content
                             this.isShowReportData=true

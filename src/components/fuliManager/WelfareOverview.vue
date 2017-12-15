@@ -189,10 +189,10 @@ export default{
         //积分消费充值记录
         getPointRecords(yearParams){
             this.$axios.post("/api/api/enterprise/getPostPointRecords",qs.stringify({year:yearParams})).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.consumeData=res.data.data
                     this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams})).then(res=>{
-                        if(res.data.code==0){
+                        if(res.data.code==1000){
                             this.rechargeData=res.data.data
                             this.drawBrokenLine()
                         }
@@ -210,9 +210,8 @@ export default{
                 year:year,
                 month:month
             })).then(res=>{
-                console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.baseData=res.data.data
                         this.drawPie()
                     }
@@ -226,7 +225,7 @@ export default{
         showNewNotice(){
             this.$axios.post("/api/api/announcement/newNotice",{}).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.newNoticeContent=res.data.data.content
                     }
                 }

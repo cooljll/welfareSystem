@@ -14,6 +14,7 @@
                 <el-form :inline="true">
                     <el-form-item label="订单状态：">
                         <el-select placeholder="请选择状态" v-model="filters.state">
+                            <el-option label="全部" value=""></el-option>
                             <el-option label="待付款" value="0"></el-option>
                             <el-option label="待审核" value="1"></el-option>
                             <el-option label="已完成" value="2"></el-option>
@@ -49,9 +50,8 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center" fixed="right">
                     <template slot-scope="scope">
-                        <router-link to="/CreditRecharge">
-                            <el-button type="text">再次充值</el-button>
-                        </router-link>
+                        <el-button type="text" @click="continuePay(scope.row.orderType)" v-show="scope.row.orderState=='待付款'?true:false">继续支付</el-button>
+                        <el-button type="text" @click="oneMorePay" v-show="scope.row.orderState=='待付款'?false:true">再次充值</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -104,16 +104,14 @@ export default{
         },
         //导出excel
         exportExcel() {
-            require.ensure([],()=>{
-                const {export_json_to_excel}=require("../../../vendor/Export2Excel")
-                const tHeader=["订单编号","订单类型","创建时间","充值积分","支付金额","订单状态","发票类型","发票状态"]
-                const filterVal=["orderID","orderType","createTime","amount_pay","recharge_point","orderState","taxType","taxState"]
-                const data=this.formatJson(filterVal,this.tableData)
-                export_json_to_excel(tHeader,data,"积分充值订单")
+            this.$axios.get("/api/api/recharge/dowloadExcel",{
+                params:{
+                    startTime:this.filters.startTime,
+                    endTime:this.filters.lastTime
+                }
+            }).then(res=>{
+                console.log(res.data)
             })
-        },
-        formatJson(filterVal,jsonData){
-            return jsonData.map(v=>filterVal.map(j=>v[j]))
         },
         //充值订单
         getRechargeOrderList(){
@@ -123,7 +121,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.tableData=res.data.data.content
                         this.totalSize=res.data.data.totalSize
                     }
@@ -132,6 +130,18 @@ export default{
         },
         getSearchResult(){
             this.getRechargeOrderList()
+        },
+        //继续支付
+        continuePay(type){
+            if(type=="支付宝"){
+
+            }else if(type=="微信支付"){
+
+            }
+        },
+        //再次充值
+        oneMorePay(){
+            this.$router.push("/CreditRecharge")
         }
     },
     mounted(){

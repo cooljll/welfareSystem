@@ -550,7 +550,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.messageTemplate=res.data.data
                     }
                 }
@@ -565,7 +565,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.totalEmployee=res.data.data
                         this.totalScores=this.totalEmployee*this.rollScores
                     }
@@ -580,7 +580,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.frozenEmpCount=res.data.data
                     }
                 }
@@ -594,7 +594,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.enterpriseBalance=res.data.data
                     }
                 }
@@ -617,7 +617,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 // if(res.status==200){
-                //     if(res.data.code==0){
+                //     if(res.data.code==1000){
                 //         this.$alert(res.data.message,"信息").then(()=>{
                 //             this.handleStep4()
                 //         })
@@ -647,7 +647,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 // if(res.status==200){
-                //     if(res.data.code==0){
+                //     if(res.data.code==1000){
                 //         this.$alert(res.data.message,"信息").then(()=>{
                 //             this.handleStep4()
                 //         })
@@ -676,7 +676,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.handleStep4()
                         })
@@ -701,7 +701,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.handleStep4()
                         })
@@ -722,7 +722,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.enterpriseName=res.data.data.displayName+"("+res.data.data.memberCount+")"
                         res.data.data.subItems.forEach(item=>{
                             this.departments.push(this.transferData(item))
@@ -739,7 +739,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.creditExtendData=[]
                         res.data.data.forEach(item=>{
                             if(item.memberCount!=0){
@@ -762,7 +762,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.notSelectArr=[]
                         res.data.data.content.forEach(item=>{
                             if(item.job_Number==""){
@@ -831,7 +831,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.welfareRollList=res.data.data
                     }
                 }
@@ -852,7 +852,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         loading.close()
                         this.rollDescription=res.data.data.description
                         this.rollInvalidtime=res.data.data.invalidtime
@@ -878,7 +878,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.btnGroups=res.data.data
                     }
                 }

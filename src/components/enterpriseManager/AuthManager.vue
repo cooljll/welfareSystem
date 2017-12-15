@@ -161,7 +161,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.tableData=res.data.data
                     }
                 }
@@ -175,7 +175,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.addAccountParams.loginName=res.data.data
                     }else if(res.data.code==1){
                         this.$alert(res.message,"信息")
@@ -191,7 +191,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.authList=res.data.data
                     }
                 }
@@ -230,7 +230,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.addAccountVisible=false
                             this.getAccountList()
@@ -251,7 +251,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.tags=res.data.data
                     }
                 }
@@ -287,7 +287,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.addAccountVisible=false
                             this.getAccountList()
@@ -312,7 +312,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.$router.push("/")
                         }).catch(()=>{
@@ -335,7 +335,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 // if(res.status==200){
-                //     if(res.data.code==0){
+                //     if(res.data.code==1000){
                 //         this.tableData=res.data.data
                 //     }
                 // }

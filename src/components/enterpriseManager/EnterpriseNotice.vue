@@ -73,8 +73,8 @@
                         </el-table-column>
                     </el-table>
                     <div class="toolbar">
-                        <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                            :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                            :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                         </el-pagination>
                     </div>
                 </div>
@@ -138,6 +138,7 @@ export default{
                 endTime: ""
             },
             currentPage:1,
+            totalSize:0,
             noticeList:[],
             //发布公告参数
             addNoticeParams:{
@@ -152,7 +153,6 @@ export default{
         }
     },
     methods:{
-        handleCurrentChange(){},
         handleTab(tab){
             if(tab.name=="first"){
                 this.isShowExtendNotice=true
@@ -182,11 +182,21 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.noticeList=res.data.data.content
+                        this.totalSize=res.data.data.totalSize
                     }
                 }
             })
+        },
+        handleSizeChange(val){
+            this.filters.pageSize=val
+            this.getNoticeList()
+        },
+        //分页操作
+        handleCurrentChange(val){
+            this.filters.pageNum=val
+            this.getNoticeList()
         },
         handleSelectionChange(val){
             this.selectedDepList=val
@@ -205,7 +215,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.isShow_success=true
                         this.isShow_extend=false
                     }
@@ -240,7 +250,7 @@ export default{
             }).then(res=>{
                 console.log(res)
                 // if(res.status==200){
-                //     if(res.data.code==0){
+                //     if(res.data.code==1000){
                 //         this.noticeList=res.data.data.content
                 //     }
                 // }
@@ -256,7 +266,7 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.tableData=res.data.data.filter(item=>{
                         if(item.memberCount!=0){
                             return true

@@ -196,10 +196,10 @@ export default{
                             url:"/api/api/user/login",
                             data:this.userInfo
                         }).then(res=>{
-                            if(res.data.code==0){
+                            if(res.data.code==1000){
                                 localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
                                 this.$router.push("/EnterpriseOverview")
-                            }else if(res.data.code==1){
+                            }else if(res.data.code==1001){
                                 this.$alert(res.data.message,"信息")
                                 for(var key in this.userInfo){
                                     this.userInfo[key]=''

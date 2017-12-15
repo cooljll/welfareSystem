@@ -125,7 +125,7 @@ export default {
 						url:"/api/api/user/logout"
 					}).then(res=>{
 						if(res.status==200){
-							if(res.data.code==0){
+							if(res.data.code==1000){
 								this.$alert(res.data.message,"信息").then(()=>{
 									authUnils.removeToken()
 									localStorage.removeItem("enterpriseInfo")
@@ -144,7 +144,7 @@ export default {
 		getEnterpriseInfo(){
 			this.$axios.post("/api/api/enterprise/entInfo",{}).then(res=>{
 				if(res.status==200){
-					if(res.data.code==0){
+					if(res.data.code==1000){
 						this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
 						this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
 						localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))

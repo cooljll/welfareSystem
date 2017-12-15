@@ -465,7 +465,7 @@ export default{
               }
             }
             this.$axios.post("/api/api/integral/uploadIntegralByExcel",formData,config).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     loading.close()
                     this.step1=false
                     this.step2=true
@@ -488,7 +488,7 @@ export default{
                     }
                 }).then(res=>{
                     if(res.status==200){
-                        if(res.data.code==0){
+                        if(res.data.code==1000){
                             this.messageTemplate=res.data.data
                         }
                     }
@@ -503,7 +503,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.enterpriseBalance=res.data.data
                     }
                 }
@@ -565,7 +565,7 @@ export default{
                     festivalId:this.festivalId,
                     list:this.tableData
                 }).then(res=>{
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.step1=false
                             this.step2=false
@@ -591,7 +591,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.btnGroups=res.data.data
                     }
                 }
@@ -619,7 +619,7 @@ export default{
         getTreeDep(){
             this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         let ret=this.transferData(res.data.data)
                         this.enterpriseName=ret.label
                         this.notSelectdeparts=[]

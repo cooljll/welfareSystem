@@ -85,7 +85,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.tableData=res.data.data.content
                         this.totalSize=res.data.data.totalSize
                     }

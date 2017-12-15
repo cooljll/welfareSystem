@@ -13,34 +13,32 @@
         <div class="main-center">
             <el-row>
                 <el-col :md="24" :lg="16" class="main-left">
-                    <form method="post" enctype="multipart/form-data" id="myForm">
-                        <el-form label-position="right" label-width="80px">
-                            <el-form-item label="意见标题">
-                                <el-input placeholder="请概述你的意见" v-model="feedbackParams.feedbackName"></el-input>
-                            </el-form-item>
-                            <el-form-item label="意见描述">
-                                <el-input v-model="feedbackParams.content" type="textarea" class="descInfo" placeholder="请再次留下您宝贵意见，让有米拿弹性福利平台不断进步，谢谢！"></el-input>
-                            </el-form-item>
-                            <el-form-item label="相关截图">
-                                <div class="fileUpload">
-                                    <input type="file" @change="getFile($event)" id="fileToUpload">
-                                    <div class="replaceComp">
-                                        <el-button size="large" type="primary" @click="selectExcelFile">上传图片</el-button>
-                                        <span class="fileName">{{fileName}}</span>
-                                    </div>
+                    <el-form label-position="right" label-width="80px">
+                        <el-form-item label="意见标题">
+                            <el-input placeholder="请概述你的意见" v-model="feedbackName"></el-input>
+                        </el-form-item>
+                        <el-form-item label="意见描述">
+                            <el-input v-model="content" type="textarea" class="descInfo" placeholder="请再次留下您宝贵意见，让有米拿弹性福利平台不断进步，谢谢！"></el-input>
+                        </el-form-item>
+                        <el-form-item label="相关截图">
+                            <div class="fileUpload">
+                                <input type="file" @change="getFile($event)" id="fileToUpload">
+                                <div class="replaceComp">
+                                    <el-button size="large" type="primary" @click="selectExcelFile">上传图片</el-button>
+                                    <span class="fileName">{{fileName}}</span>
                                 </div>
-                            </el-form-item>
-                            <el-form-item label="联系人">
-                                <el-input placeholder="请输入联系人" v-model="feedbackParams.feedbackUser"></el-input>
-                            </el-form-item>
-                            <el-form-item label="手机号">
-                                <el-input placeholder="请输入手机号" v-model="feedbackParams.feedbackPhone"></el-input>
-                            </el-form-item>
-                            <el-form-item label="邮箱">
-                                <el-input placeholder="请输入邮箱" v-model="feedbackParams.feedbackEmail"></el-input>
-                            </el-form-item>
-                        </el-form>
-                    </form>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="联系人">
+                            <el-input placeholder="请输入联系人" v-model="feedbackUser"></el-input>
+                        </el-form-item>
+                        <el-form-item label="手机号">
+                            <el-input placeholder="请输入手机号" v-model="feedbackPhone"></el-input>
+                        </el-form-item>
+                        <el-form-item label="邮箱">
+                            <el-input placeholder="请输入邮箱" v-model="feedbackEmail"></el-input>
+                        </el-form-item>
+                    </el-form>
                     <el-row class="submitBtn">
                         <el-button type="primary" @click="feedbackSubmit">提交申请</el-button>
                     </el-row>
@@ -65,15 +63,13 @@ import authUnils from '../../common/authUnils'
 export default{
     data(){
         return{
-            fileName:"",
+            fileName:"",                  
             file:"",
-            feedbackParams:{
-                content:"",
-                feedbackEmail:"",
-                feedbackName:"",
-                feedbackPhone:"",
-                feedbackUser:""
-            }
+            content:"",
+            feedbackEmail:"",
+            feedbackName:"",
+            feedbackPhone:"",
+            feedbackUser:""
         }
     },
     methods:{
@@ -86,35 +82,33 @@ export default{
             this.fileName=this.file.name
         },
         feedbackSubmit(){
-            if(this.feedbackParams.feedbackName==""){
+            if(this.feedbackName==""){
                 this.$alert("请输入反馈标题","信息")                
-            }else if(this.feedbackParams.content==""){
+            }else if(this.content==""){
                 this.$alert("请输入反馈内容","信息")
-            }else if(this.feedbackParams.feedbackUser==""){
+            }else if(this.feedbackUser==""){
                 this.$alert("请输入联系人","信息")
-            }else if(this.feedbackParams.feedbackPhone==""){
+            }else if(this.feedbackPhone==""){
                 this.$alert("请输入手机号","信息")
-            }else if(this.feedbackParams.feedbackEmail==""){
+            }else if(this.feedbackEmail==""){
                 this.$alert("请输入邮箱","信息")
             }
-            let formData = new FormData(document.getElementById("myForm"))
+            let formData = new FormData()
             formData.append('feedbackImage', this.file)
-            formData.append('content', this.feedbackParams.content)
-            formData.append('feedbackEmail', this.feedbackParams.feedbackEmail)
-            formData.append('feedbackName', this.feedbackParams.feedbackName)
-            formData.append('feedbackPhone', this.feedbackParams.feedbackPhone)
-            formData.append('feedbackUser', this.feedbackParams.feedbackUser)
+            formData.append('content', this.content)
+            formData.append('feedbackEmail', this.feedbackEmail)
+            formData.append('feedbackName', this.feedbackName)
+            formData.append('feedbackPhone', this.feedbackPhone)
+            formData.append('feedbackUser', this.feedbackUser)
             let config = {
               headers: {
                 'Content-Type': 'multipart/form-data'
               }
             }
             this.$axios.post("/api/api/help/feedback",formData,config).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
-                        for(let key in this.feedbackParams){
-                            this.feedbackParams[key]=''
-                        }
+                        this.$router.go(0)
                     })
                 }else if(res.data.code==1){
                     this.$alert(res.data.message,'信息')

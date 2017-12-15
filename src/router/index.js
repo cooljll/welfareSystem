@@ -76,7 +76,7 @@ export default new Router({
       },         
       children: [
           { path: '/WelfareOverview', component: WelfareOverview, name: '福利总览' },
-          { path: '/CreditRecharge', component: CreditRecharge, name: '积分充值' },
+          { path: '/CreditRecharge/:count?', component: CreditRecharge, name: '积分充值' },
           { path: '/WechatRecharge', component: WechatRecharge, name: '积分充值 ' },
           { path: '/OrderRecharge', component: OrderRecharge, name: '订单充值' },
           { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },

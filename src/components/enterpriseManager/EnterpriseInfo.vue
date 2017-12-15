@@ -137,7 +137,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.enterpriseInfo=res.data.data
                         console.log(this.enterpriseInfo)
                         this.entCoord=this.enterpriseInfo.lon+","+this.enterpriseInfo.lat

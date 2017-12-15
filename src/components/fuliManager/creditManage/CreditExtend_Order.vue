@@ -216,7 +216,7 @@ export default{
                 }
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.tableData=res.data.data.content
                         this.totalSize=res.data.data.totalSize
                     }else{
@@ -245,7 +245,7 @@ export default{
             this.$axios.post("/api/api/integral/orderDetail",this.creditDescParams).then(res=>{
                 console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.creditOrderDesc=res.data.data
                         this.postType=res.data.data.postType
                         if(this.postType=="1"){
@@ -301,7 +301,7 @@ export default{
             this.$axios.post("/api/api/integral/orderDetailEmp",this.extendEmpParams).then(res=>{
                 console.log(res)
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         res.data.data.content.forEach(item=>{
                             item["welType"]=this.welType
                         })

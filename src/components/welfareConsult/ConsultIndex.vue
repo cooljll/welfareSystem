@@ -90,7 +90,7 @@ export default{
         getBannerPosition1(){
             this.$axios.get("/api/api/welfareNews/banner?position=1").then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                        this.bannerList1=res.data.data
                     }
                 }
@@ -99,7 +99,7 @@ export default{
         getBannerPosition2(){
             this.$axios.get("/api/api/welfareNews/banner?position=2").then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                        this.bannerList2=res.data.data
                     }
                 }
@@ -108,7 +108,7 @@ export default{
         //获取福利咨询标题
         getTitle(){
             this.$axios.get("/api/api/welfareNews/title").then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.categoryTitle=res.data.data[0].categoryname
                 }
             })
@@ -116,7 +116,7 @@ export default{
         //分页咨询
         getNewsPageInfo(){
             this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     if(res.data.data.length==0){
                         this.isShowMore=false
                     }else{

@@ -77,7 +77,7 @@ export default{
                 categoryId:cId,
                 fuliInformationId:id
             }}).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     var newData=res.data.data
                     if(newData.length==1){
                         this.isShowPrev=false
@@ -115,7 +115,7 @@ export default{
             pageNum:1,
             pageSize:3
         }).then(res=>{
-            if(res.data.code==0){
+            if(res.data.code==1000){
                 this.hotNewsList=res.data.data
             }
         })

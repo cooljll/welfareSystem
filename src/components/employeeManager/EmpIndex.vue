@@ -270,7 +270,7 @@ export default {
             this.data=[]
             this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:true})).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.data.push(this.transferData(res.data.data))
                     }
                 }
@@ -279,7 +279,7 @@ export default {
         //部门序列表
         getDepartmentList(){
             this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.departmentList=[]
                     res.data.data.forEach(item=>{
                         let tempObj={}
@@ -322,7 +322,7 @@ export default {
         },
         addDepartmentSubmit(){
             this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
                         this.isShowHandle=false
@@ -338,7 +338,7 @@ export default {
         },
         addSimpleEmpSubmit(){
             this.$axios.post("/api/api/employee/addEmp",this.addEmployeeParams).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
                         this.isShowHandle=false

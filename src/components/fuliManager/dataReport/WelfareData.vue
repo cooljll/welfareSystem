@@ -130,14 +130,14 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.consumeData=res.data.data
                     this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams}),{
                         headers:{
                             "Authorization":authUnils.getToken()
                         }
                     }).then(res=>{
-                        if(res.data.code==0){
+                        if(res.data.code==1000){
                             this.rechargeData=res.data.data
                             this.drawBrokenLine()
                         }

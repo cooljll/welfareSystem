@@ -320,7 +320,7 @@
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
                             <el-button type="text" @click="seeDetails(scope.row)">查看详情</el-button>
-                            <el-button type="text" @click="examineVisible=true">审批</el-button>
+                            <el-button type="text" @click="simpleExamine">审批</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -458,15 +458,14 @@
         <el-dialog title="审批" :visible.sync="examineVisible" :close-on-click-modal="false" style="top:10%" class="examineDialog">
             <el-form label-position="right" label-width="100px">
                 <el-form-item label="进行审批：">
-                    <el-select placeholder="请选择状态" v-model="value1" clearable>
+                    <el-select placeholder="请选择状态" v-model="status" clearable>
                         <el-option label="已通过" value="1"></el-option>
                         <el-option label="已拒绝" value="2"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="移至部门：">
-                    <el-select placeholder="请选择状态" v-model="value1" clearable>
-                        <el-option label="已通过" value="1"></el-option>
-                        <el-option label="已拒绝" value="2"></el-option>
+                    <el-select v-model="departId" clearable>
+                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.label"></el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
@@ -628,7 +627,6 @@ export default{
             seeDetailsVisible:false,
             examineVisible:false,
             moveToDepVisible:false,
-            value1:'',
             empCodes:[],
             employeeInfo:{},
             loading:false,
@@ -636,6 +634,14 @@ export default{
             examineLoading:false,
             batchExamineEmp:[],
             departId:"",
+            status:"",
+            //审批参数
+            examineParams:{
+                depId: 0,
+                empCodes: [],
+                reason: "",
+                status: 0
+            },
             handleBtn:true,
             confirmBtn:false,
             isShowFrozenBtn:true,
@@ -658,7 +664,7 @@ export default{
         //部门序列表
         getDepartmentList(){
             this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.departmentList=[]
                     res.data.data.forEach(item=>{
                         let tempObj={}
@@ -679,7 +685,7 @@ export default{
         },
         addDepartmentSubmit(){
             this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
                     })
@@ -695,7 +701,7 @@ export default{
             this.isShowUpdateDept=true
             this.$axios.post("/api/api/organize/depInfo",qs.stringify({depId:id})).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.deptId_pre=res.data.data.organizationUnitId
                         if(res.data.data.parentOrganizationUnitId){
                             this.addDepParams.deptId_sup="0"
@@ -718,7 +724,7 @@ export default{
                 sortId:this.addDepParams.sortId
             }).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                        this.$alert(res.data.message,"信息").then(()=>{
                            this.handleDepartmentVisible=false
                            this.$router.go(0)
@@ -731,7 +737,7 @@ export default{
         deleteDepartment(id){
             this.$confirm("确定要删除该部门吗？","提示",{type:"warning"}).then(()=>{
                 this.$axios.post("/api/api/organize/deleteDep",qs.stringify({depId:id})).then(res=>{
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.$router.push("/EnterpriseOverview")
                         })
@@ -748,7 +754,7 @@ export default{
         },
         addSimpleEmpSubmit(){
             this.$axios.post("/api/api/employee/addEmp",this.addEmployeeParams).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
                         this.showEmployee(Number(this.$route.params.depId))
@@ -858,7 +864,7 @@ export default{
                 depId_next:this.departId,
                 list:arr
             }).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,'信息').then(()=>{
                         this.moveToDepVisible=false
                         this.goBackList()
@@ -871,7 +877,7 @@ export default{
         //移出企业操作
         handleRemoveEmployee(arr){
             this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,'信息').then(()=>{
                         this.goBackList()
                     })
@@ -888,7 +894,7 @@ export default{
                 empCodes:codeArr,
                 isFrozen:i//0解冻 1冻结
             }).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,'信息').then(()=>{
                         this.goBackList()
                     })
@@ -911,6 +917,11 @@ export default{
                     }
                 })
             })
+        },
+        //审批
+        simpleExamine(){
+            this.examineVisible=true
+            this.getDepartmentList()
         },
         //批量审批
         batchExamine(){
@@ -942,7 +953,7 @@ export default{
             this.filters.depId=id
             this.$axios.post("/api/api/employee/showEmployee",this.filters).then(res=>{
                 if(res.status==200){
-                    if(res.data.code==0){
+                    if(res.data.code==1000){
                         this.tableData=res.data.data.content
                         this.totalSize=res.data.data.totalSize
                     }
@@ -1003,7 +1014,7 @@ export default{
         showExmineLists(){
             this.filtersExamine.auditStatus=Number(this.filtersExamine.auditStatus)
             this.$axios.post("/api/api/approvalCenter/showApprovalMessage",this.filtersExamine).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.totalSizeExamine=res.data.data.totalSize
                     res.data.data.content.forEach(item=>{
                         if(item.gender==1){
@@ -1083,7 +1094,7 @@ export default{
                 phone:this.employeeInfo.phone,
                 sex:this.employeeInfo.sex
             }).then((res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleBtn=true
                         this.confirmBtn=false
@@ -1116,7 +1127,7 @@ export default{
                     empCode:this.employeeInfo.empCode
                 }]
             }).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.moveToDepartVisible=true
                         this.isShowEmpList=true

@@ -185,12 +185,12 @@ export default{
         //银行支付
         payByBank(){
             this.$axios.post("/api/api/recharge/pay",this.invoiceInfo).then(res=>{
-                if(res.data.code==0){
+                if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.isShowRecharge=false
                         this.isShowSuccess=true
                     })
-                }else if(res.data.code==1){
+                }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.isShowRecharge=true
                         this.isShowSuccess=false
@@ -203,6 +203,9 @@ export default{
             this.isShowRecharge=true
             this.isShowSuccess=false
         }
+    },
+    mounted(){
+      
     }
 }
 </script>
@@ -281,7 +284,7 @@ export default{
             }
             .pay-info{
                 width:75%;
-                float: right;
+                float: left;
                 .invoice-info{
                     background: #FAFAFA;
                     height: 333px;
