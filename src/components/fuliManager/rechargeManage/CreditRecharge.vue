@@ -111,6 +111,16 @@
                 </div>
             </div>
         </div>
+        <!-- 微信支付弹框 -->
+        <el-dialog title="扫码支付" :visible.sync="weChatVisible" :close-on-click-modal="false" style="top:15%" class="weChatDialog">
+           <div class="weixinpaybox">
+                <img class="QRimg" src="rest/wechatPay/nativeOrder?payOrder=1000000617526030&amp;orderNo=61E80986-251C-449D-BB7F-0B81FCB3F1D4">
+                <span class="QRtitle">
+                    请使用微信扫一扫<br>
+                    扫描二维码支付
+                </span>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -136,7 +146,8 @@ export default{
                 payOrder: "",
                 payType: "",
                 point: ""
-            }
+            },
+            weChatVisible:false
         }
     },
     methods:{

@@ -385,7 +385,7 @@ export default{
             enterpriseBalance:0,//积分余额
             //选择员工参数
             selectEmpParams:{
-                deptId:"",
+                depId:"",
                 text:""
             },
             selectedDepArr:[],//选中的部门
@@ -600,6 +600,19 @@ export default{
                 }
             })
         },
+        //部门树形
+        getTreeDep(){
+            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
+                if(res.status==200){
+                    if(res.data.code==1000){
+                        let ret=this.transferData(res.data.data)
+                        this.enterpriseName=ret.label
+                        this.departments=[]
+                        this.departments=ret.subItems
+                    }
+                }
+            })
+        },
         //全体员工发放福利卷
         allEmpExtendRolls(){
             this.$axios.post("/api/api/voucher/postVoucherByAll",{
@@ -712,32 +725,11 @@ export default{
         //选择员工
         selectEmployee(){
             this.selectEmpVisible=true
-            this.$axios({
-                method:"post",
-                url:"/api/api/organize/showTreeDep",
-                data:true,
-                headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.enterpriseName=res.data.data.displayName+"("+res.data.data.memberCount+")"
-                        res.data.data.subItems.forEach(item=>{
-                            this.departments.push(this.transferData(item))
-                        })
-                    }
-                }
-            })
+            this.getTreeDep()
         },
         //显示部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.creditExtendData=[]
@@ -751,7 +743,7 @@ export default{
             })
         },
         handleChange(){
-            this.selectEmpParams.deptId=this.checkedDepart[this.checkedDepart.length-1].organizationUnitId.toString()
+            this.selectEmpParams.depId=this.checkedDepart[this.checkedDepart.length-1].organizationUnitId
             this.getDeportEmpNums()
         },
         //获取部门人员数

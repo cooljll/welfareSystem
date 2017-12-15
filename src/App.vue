@@ -124,15 +124,13 @@ export default {
 						methods:"get",
 						url:"/api/api/user/logout"
 					}).then(res=>{
-						if(res.status==200){
-							if(res.data.code==1000){
-								this.$alert(res.data.message,"信息").then(()=>{
-									authUnils.removeToken()
-									localStorage.removeItem("enterpriseInfo")
-									localStorage.removeItem("loginName")
-									this.$router.push("/")
-								})
-							}
+						if(res.data.code==1000){
+							this.$alert(res.data.message,"信息").then(()=>{
+								authUnils.removeToken()
+								localStorage.removeItem("enterpriseInfo")
+								localStorage.removeItem("loginName")
+								this.$router.push("/")
+							})
 						}
 					})
         })

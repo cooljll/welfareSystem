@@ -137,7 +137,6 @@ export default{
         },
         //搜索
         getSearchResult(){
-            console.log(12)
             if(this.filter==""){
                 return false
             }

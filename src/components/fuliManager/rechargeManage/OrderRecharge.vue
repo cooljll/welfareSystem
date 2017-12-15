@@ -50,8 +50,10 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center" fixed="right">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="continuePay(scope.row.orderType)" v-show="scope.row.orderState=='待付款'?true:false">继续支付</el-button>
-                        <el-button type="text" @click="oneMorePay" v-show="scope.row.orderState=='待付款'?false:true">再次充值</el-button>
+                        <el-button type="text" 
+                        v-show='(scope.row.orderState=="已完成"||(scope.row.orderState=="待付款"&&scope.row.orderType=="银行电汇")||(scope.row.orderState==null))?true:false'>再次充值</el-button>
+                        <el-button type="text" @click="handleOrder(scope.row)"
+                        v-show='((scope.row.orderState=="待付款"&&scope.row.orderType=="微信支付")||(scope.row.orderState=="待付款"&&scope.row.orderType=="支付宝"))?true:false'>继续支付</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -61,6 +63,16 @@
                 </el-pagination>
             </el-col>
         </div>
+        <!-- 微信支付弹框 -->
+        <el-dialog title="扫码支付" :visible.sync="weChatVisible" :close-on-click-modal="false" style="top:15%" class="weChatDialog">
+           <div class="weixinpaybox">
+                <img class="QRimg" src="rest/wechatPay/nativeOrder?payOrder=1000000617526030&amp;orderNo=61E80986-251C-449D-BB7F-0B81FCB3F1D4">
+                <span class="QRtitle">
+                    请使用微信扫一扫<br>
+                    扫描二维码支付
+                </span>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -78,7 +90,10 @@ export default{
                 pageSize:10
             },
             totalSize:0,
-            currentPage:1
+            currentPage:1,
+            weChatVisible:false,
+            isShowRecharge:true,
+            isShowPay:false
         }
     },
     methods:{
@@ -115,33 +130,40 @@ export default{
         },
         //充值订单
         getRechargeOrderList(){
-            this.$axios.post("/api/api/recharge/order",this.filters,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.tableData=res.data.data.content
-                        this.totalSize=res.data.data.totalSize
-                    }
+            this.$axios.post("/api/api/recharge/order",this.filters).then(res=>{
+                if(res.data.code==1000){
+                    this.tableData=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
                 }
             })
         },
         getSearchResult(){
             this.getRechargeOrderList()
         },
-        //继续支付
-        continuePay(type){
-            if(type=="支付宝"){
-
-            }else if(type=="微信支付"){
-
+        //订单操作
+        handleOrder(obj){
+            if(obj.orderState=="待付款"&&obj.orderType=="支付宝"){
+                this.$axios.get("/api/api/alipays/web",{
+                    params:{
+                        orderNo:obj.orderNo,
+                        payOrder:obj.payOrder,
+                        point:obj.amount_pay
+                    }
+                }).then(res=>{
+                    console.log(res)
+                })
+            }else if(obj.orderState=="待付款"&&obj.orderType=="微信支付"){
+                this.weChatVisible=true
+                this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                    params:{
+                        orderNo:obj.orderNo,
+                        payOrder:obj.payOrder,
+                        point:obj.amount_pay
+                    }
+                }).then(res=>{
+                    console.log(res)
+                })
             }
-        },
-        //再次充值
-        oneMorePay(){
-            this.$router.push("/CreditRecharge")
         }
     },
     mounted(){
@@ -150,5 +172,8 @@ export default{
 }
 </script>
 <style lang="scss" scoped>
+    .el-button{
+        margin-left:0 !important;
+    }
 </style>
 

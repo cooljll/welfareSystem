@@ -224,7 +224,7 @@
                     <img src="../../../assets/timg.jpg" alt="">
                     <div class="statusname">发放成功！</div>
                     <div class="btnbox">
-                        <el-button type="primary" @click="$router.push('/CreditExtend')">再次发放</el-button>
+                        <el-button type="primary" @click="oneMoreExtend">再次发放</el-button>
                         <el-button @click="$router.push('/CreditExtend_Order')">查看订单</el-button>
                     </div>
                 </div>
@@ -281,7 +281,7 @@
             </div>
             <div slot="footer" class="dialog-footer footer-center">
                 <el-button type="primary" @click="selectedEmpSubmit">确定</el-button>
-                <el-button @click.native="addEmployeeVisible = false">取消</el-button>
+                <el-button @click.native="selectEmpVisible = false">取消</el-button>
             </div>
         </el-dialog>
     </div>
@@ -340,7 +340,7 @@ export default{
             enterpriseBalance:0,//积分余额
             //选择员工参数
             selectEmpParams:{
-                deptId:"",
+                depId:"",
                 text:""
             },
             screenWidth:document.body.clientWidth
@@ -396,7 +396,6 @@ export default{
             }else{
                 if(this.allEmp){
                     this.getNormalEmps()
-                    this.totalScores=this.totalEmployee*this.allScores
                 }
                 if(this.specialEmp){
                     this.totalEmployee=this.extendEmpArr.length
@@ -505,6 +504,7 @@ export default{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.totalEmployee=res.data.data
+                        this.totalScores=this.totalEmployee*this.allScores
                     }
                 }
             })
@@ -537,6 +537,19 @@ export default{
                 }
             })
         },
+        //部门树形
+        getTreeDep(){
+            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
+                if(res.status==200){
+                    if(res.data.code==1000){
+                        let ret=this.transferData(res.data.data)
+                        this.enterpriseName=ret.label
+                        this.departments=[]
+                        this.departments=ret.subItems
+                    }
+                }
+            })
+        },
         //全体员工发放积分
         allEmpExtendScores(){
             this.$axios.post("/api/api/integral/postIntegralByAll",{
@@ -544,10 +557,6 @@ export default{
                 festivalId:this.festivalId.toString(),
                 point:this.allScores.toString(),
                 tolPoint:this.totalScores.toString()
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
@@ -570,10 +579,6 @@ export default{
                 point:this.specialScores.toString(),
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
@@ -596,10 +601,6 @@ export default{
                 point:this.specialScores,
                 tolPoint:this.totalScores,
                 empCodes:tempArr
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
@@ -617,10 +618,6 @@ export default{
                 festivalId:this.festivalId.toString(),
                 tolPoint:this.totalScores.toString(),
                 depts:arr
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
@@ -634,24 +631,7 @@ export default{
         //选择员工
         selectEmployee(){
             this.selectEmpVisible=true
-            this.$axios({
-                method:"post",
-                url:"/api/api/organize/showTreeDep",
-                data:true,
-                headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.enterpriseName=res.data.data.displayName+"("+res.data.data.memberCount+")"
-                        res.data.data.subItems.forEach(item=>{
-                            this.departments.push(this.transferData(item))
-                        })
-                    }
-                }
-            })
+            this.getTreeDep()
         },
         //显示部门序列表
         getDepartmentList(){
@@ -673,28 +653,23 @@ export default{
             })
         },
         handleChange(){
-            this.selectEmpParams.deptId=this.checkedDepart[this.checkedDepart.length-1].organizationUnitId.toString()
+            this.selectEmpParams.depId=this.checkedDepart[this.checkedDepart.length-1].organizationUnitId
             this.getDeportEmpNums()
+            console.log(this.checkedDepart)
         },
         //获取部门人员数
         getDeportEmpNums(){
-            this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.notSelectArr=[]
-                        res.data.data.content.forEach(item=>{
-                            if(item.job_Number==""){
-                                item["label"]=item.name
-                            }else{
-                                item["label"]=item.name+"("+item.job_Number+")"
-                            }
-                            this.notSelectArr.push(item)
-                        })
-                    }
+            this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
+                if(res.data.code==1000){
+                    this.notSelectArr=[]
+                    res.data.data.content.forEach(item=>{
+                        if(item.job_Number==""){
+                            item["label"]=item.name
+                        }else{
+                            item["label"]=item.name+"("+item.job_Number+")"
+                        }
+                        this.notSelectArr.push(item)
+                    })
                 }
             })
         },
@@ -782,6 +757,13 @@ export default{
                     this.deportEmpExtendScores(tempDepArr)
                 }
             })
+        },
+        oneMoreExtend(){
+            this.step1=true
+            this.step2=false
+            this.step3=false
+            this.step4=false
+            this.selectedType=""
         },
         //处理屏幕宽度变化
         handleScreenWidthChange(width){

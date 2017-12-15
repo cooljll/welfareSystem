@@ -32,6 +32,7 @@ axios.interceptors.response.use(
   response => {
       switch(response.data.code){
             case 2001:
+                ElementUI.MessageBox.alert("登陆超时,请重新登陆","信息")
                 authUtil.removeToken()
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
@@ -50,7 +51,7 @@ axios.interceptors.response.use(
                     path: '/'
                 })
             case 500:
-                alert("服务器内部错误")
+                ElementUI.MessageBox.alert("服务器内部错误","信息")
         }
     }
       return Promise.reject(error.response.data)   // 返回接口返回的错误信息

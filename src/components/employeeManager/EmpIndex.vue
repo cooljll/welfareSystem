@@ -368,7 +368,11 @@ export default {
         },
         //下载excel模板
         downloadTemplate(){
-            this.$axios.get("/api/api/employee/downloadExcel").then(res=>{
+            this.$axios.get("/api/api/employee/downloadExcel",{
+                headers:{
+                    "connection":""
+                }
+            }).then(res=>{
                 console.log(res)
             })
         },
