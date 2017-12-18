@@ -28,7 +28,7 @@
                 </el-table-column>
             </el-table>
         </div>
-        <!-- 添加账号弹窗 -->
+        <!-- 添加账号弹窗(子账号修改密码) -->
         <el-dialog title="账号信息" :visible.sync="addAccountVisible" :close-on-click-modal="false" class="addAccountDialog">
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="账号名称" prop="name">
@@ -62,7 +62,7 @@
                 <el-button @click.native="addAccountVisible = false">取消</el-button>
             </div>
         </el-dialog>
-        <!-- 账号密码修改弹窗 -->
+        <!-- 账号密码修改弹窗(主账号修改密码) -->
         <el-dialog title="账号信息" :visible.sync="updateAccountVisible" :close-on-click-modal="false" class="updateAccountPwdDialog" style="top:10%">
             <el-form label-position="right" label-width="80px" class="form-center" :model="updatePwdParams" status-icon :rules="updatePwdRule" ref="updatePwdParams">
                 <el-form-item label="账号名称">
@@ -93,6 +93,7 @@
 </template>
 <script>
 import authUnils from '../../common/authUnils'
+import qs from 'queryString'
 export default{
     data(){
         var validatePass = (rule, value, callback) => {
@@ -154,46 +155,27 @@ export default{
     methods:{
         //企业账号列表信息
         getAccountList(){
-            this.$axios.post("/api/api/account/info",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.tableData=res.data.data
-                    }
+            this.$axios.post("/api/api/account/info",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.tableData=res.data.data
                 }
             })
         },
         //获取子账号名称
         getSubAccountName(){
-            this.$axios.post("/api/api/account/accountName",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.addAccountParams.loginName=res.data.data
-                    }else if(res.data.code==1){
-                        this.$alert(res.message,"信息")
-                    }
+            this.$axios.post("/api/api/account/accountName",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.addAccountParams.loginName=res.data.data
+                }else if(res.data.code==1001){
+                    this.$alert(res.message,"信息")
                 }
             })
         },
         //获取权限列表
         getAuthList(){
-            this.$axios.post("/api/api/account/authorityList",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.authList=res.data.data
-                    }
+            this.$axios.post("/api/api/account/authorityList",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.authList=res.data.data
                 }
             })
         },
@@ -223,37 +205,24 @@ export default{
         //添加子账号
         addSubAccountSubmit(){
             this.addAccountParams.authority=this.tags.join(",")
-            this.$axios.post("/api/api/account/addAccount",this.addAccountParams,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.addAccountVisible=false
-                            this.getAccountList()
-                        })
-                    }else if(res.data.code==1){
-                        this.$alert(res.message,"信息").then(()=>{
-                            this.addAccountVisible=true
-                        })
-                    }
+            this.$axios.post("/api/api/account/addAccount",this.addAccountParams).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addAccountVisible=false
+                        this.getAccountList()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.message,"信息").then(()=>{
+                        this.addAccountVisible=true
+                    })
                 }
             })
         },
         //查看权限
         seeAuth(guid){
-            this.$axios.post("/api/api/account/authority",{userGuid:guid},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.tags=res.data.data
-                    }
+            this.$axios.post("/api/api/account/authority",qs.stringify({userGuid:guid})).then(res=>{
+                if(res.data.code==1000){
+                    this.tags=res.data.data
                 }
             })
         },
@@ -281,21 +250,15 @@ export default{
                 guid:this.accountInfo.userGuid,
                 loginName:this.accountInfo.loginName,
                 pwd:this.addAccountParams.loginPwd
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.addAccountVisible=false
-                            this.getAccountList()
-                        })
-                    }
-                    if(res.data.code==1){
-                        this.$alert(res.data.message,"信息")
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addAccountVisible=false
+                        this.getAccountList()
+                    })
+                }
+                if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -306,39 +269,32 @@ export default{
                 loginPwd_new:this.updatePwdParams.loginPwd_new,
                 loginPwd_old:this.updatePwdParams.loginPwd_old,
                 userGuid:this.accountInfo.userGuid
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.$router.push("/")
-                        }).catch(()=>{
-                            this.updateAccountVisible=false
-                            this.getAccountList()
-                        })
-                    }
-                    if(res.data.code==1){
-                        this.$alert(res.data.message,"信息")
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        authUnils.removeToken()
+                        localStorage.removeItem("enterpriseInfo")
+                        localStorage.removeItem("loginName")
+                    }).catch(()=>{
+                        this.updateAccountVisible=false
+                        this.getAccountList()
+                    })
+                }
+                if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
          //冻结账号
         frozenAccount(guid){
-            this.$axios.post("/api/api/account/frozenAccount",{userGuid:guid},{
-                headers:{
-                    "Authorization":authUnils.getToken()
+            this.$axios.post("/api/api/account/frozenAccount",qs.stringify({userGuid:guid})).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.getAccountList()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
-            }).then(res=>{
-                console.log(res)
-                // if(res.status==200){
-                //     if(res.data.code==1000){
-                //         this.tableData=res.data.data
-                //     }
-                // }
             })
         }
     },

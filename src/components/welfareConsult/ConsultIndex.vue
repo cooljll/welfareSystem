@@ -130,7 +130,7 @@ export default{
             this.$router.push("/Consult_List")
         },
         bannerDetail(params){
-            this.$router.push('/Consult_Detail/'+params.split(",")[0]+'/'+params.split(",")[1])
+            this.$router.push('/Consult_Detail/'+params.split(",")[1]+'/'+params.split(",")[0])
         },
         newsDetails(cId,id){
             this.$router.push('/Consult_Detail/'+cId+'/'+id)

@@ -117,6 +117,8 @@ export default{
         }).then(res=>{
             if(res.data.code==1000){
                 this.hotNewsList=res.data.data
+            }else if(res.data.code==1001){
+                this.$alert(res.data.message,"信息")
             }
         })
     }

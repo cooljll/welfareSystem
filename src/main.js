@@ -36,9 +36,11 @@ axios.interceptors.response.use(
                 authUtil.removeToken()
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
+                
                 router.replace({
                     path: '/'
                 })
+                break
       }
       return response
   },
@@ -50,12 +52,15 @@ axios.interceptors.response.use(
                 router.replace({
                     path: '/'
                 })
+                break
             case 500:
                 ElementUI.MessageBox.alert("服务器内部错误","信息")
+                break
         }
     }
       return Promise.reject(error.response.data)   // 返回接口返回的错误信息
   })
+//路由拦截器
 
 new Vue({
   el: '#app',

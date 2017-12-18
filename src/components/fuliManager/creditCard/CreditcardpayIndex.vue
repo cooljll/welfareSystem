@@ -6,6 +6,8 @@
                 <el-col>
                     <img src="" alt="">
                 </el-col>
+            </el-row>
+            <el-row class="main" v-show="isShowIndex">
                 <el-col>
                     <div class="fileUpload">
                         <input type="file" @change="getFile($event)" id="fileToUpload">
@@ -32,6 +34,40 @@
                     </div>
                 </el-col>
             </el-row>
+             <!-- 上传成功之后的页面 -->
+            <el-row class="main" v-show="isShowList">
+                <el-col>
+                    <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
+                        <el-table-column label="序号" type="index" align="center" width="80">
+                        </el-table-column>
+                        <el-table-column prop="no" label="卡号" align="center">
+                        </el-table-column>
+                        <el-table-column prop="num" label="姓名" align="center">
+                        </el-table-column>
+                        <el-table-column prop="totalMoney" label="金额" align="center">
+                        </el-table-column>
+                        <el-table-column prop="createTime" label="信息" align="center">
+                        </el-table-column>
+                        <el-table-column label="操作" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text">查看详情</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <div class="toolbar">
+                        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                            :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
+                        </el-pagination>
+                    </div>
+                </el-col>
+                <el-col class="text-center">
+                    <div>
+                        <el-button>重新上传</el-button>
+                        <el-button type="primary">提交还款</el-button>
+                    </div>
+                    <p class="tip">注：如果 "提交还款” 为灰色不可点击，说明表格中存在信息错误，请您修改正确后重新上传。</p>
+                </el-col>
+            </el-row>
         </div>
     </div>
 </template>
@@ -40,8 +76,15 @@ import authUnils from '../../../common/authUnils'
 export default{
     data(){
         return{
+            isShowIndex:true,
+            isShowList:false,
             isShowUpload:false,
-            fileName:""
+            fileName:"",
+            file:"",
+            excelId:"",
+            tableData:[],
+            currentPage:1,
+            totalSize:0
         }
     },
     methods:{
@@ -50,24 +93,35 @@ export default{
             document.getElementById('fileToUpload').click()
         },
         getFile(e){
-            let file = e.target.files[0]
-            console.log(file)
-            if(file){
-                this.fileName=file.name
+            this.file = e.target.files[0]
+            if(this.file){
+                this.fileName=this.file.name
                 this.isShowUpload=true
             }
         },
         //开始上传
         uploadFile(){
-            // this.$axios.post("/api/api/creditCard/isExcelMsg",{
-            //     excelId:"",
-            //     pageNum:1,
-            //     pageSize:10
-            // }).then(res=>{
-            //     console.log(res)
-            // })
-            this.$axios.post("/api/api/creditCard/checkExcel").then(res=>{
-                console.log(res)
+            let formData = new FormData()
+            formData.append('uploadexcel', this.file)
+            let config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            this.$axios.post("/api/api/creditCard/checkExcel",formData,config).then(res=>{
+                if(res.data.code==1000){
+                    this.excelId=res.data.data
+                    this.$axios.post("/api/api/creditCard/uploadExcel",formData,config).then(res=>{
+                        if(res.data.code==1000){
+                            this.$alert(res.data.message,'信息').then(()=>{
+                                this.isShowIndex=false
+                                this.isShowList=true
+                            })
+                        }
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
             })
         },
         //下载excel模板
@@ -75,7 +129,9 @@ export default{
             this.$axios.get("/api/api/creditCard/excel").then(res=>{
                 console.log(res)
             })
-        }
+        },
+        handleSizeChange(){},
+        handleCurrentChange(){}
     }
 }
 </script>
@@ -115,6 +171,14 @@ export default{
                     margin:0 auto;
                     border: 1px solid #f8f8f8;
                     padding:30px 0;
+                }
+                .tip{
+                    margin-top: 10px;
+                    color: #666;
+                    font-size: 14px;
+                }
+                &.text-center{
+                    margin:0 0 10px 0;
                 }
             }
             .uploadInfo{

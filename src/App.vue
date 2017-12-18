@@ -105,35 +105,35 @@ export default {
   name: 'app',
   data(){
     return{
-			isShowLogin:false,
-			isShowMain:true,
-			activeIndex:"",
-			//企业基础信息
-			enterpriseBaseInfo:{
-				enterpriseName:"",
-				enterpriseCode:""
-			},
-			loginName:"",
-			enterpriseLogoUrl:""
+		isShowLogin:false,
+		isShowMain:true,
+		activeIndex:"",
+		//企业基础信息
+		enterpriseBaseInfo:{
+			enterpriseName:"",
+			enterpriseCode:""
+		},
+		loginName:"",
+		enterpriseLogoUrl:""
     }
   },
-  methods:{
-    logout(){
-        this.$confirm("确定退出当前登陆吗？","提示",{type:'warning'}).then(()=>{
-					this.$axios({
-						methods:"get",
-						url:"/api/api/user/logout"
-					}).then(res=>{
-						if(res.data.code==0){
-							this.$alert(res.data.message,"信息").then(()=>{
-								authUnils.removeToken()
-								localStorage.removeItem("enterpriseInfo")
-								localStorage.removeItem("loginName")
-								this.$router.push("/")
-							})
-						}
-					})
-        })
+  	methods:{
+    	logout(){
+			this.$confirm("确定退出当前登陆吗？","提示",{type:'warning'}).then(()=>{
+				this.$axios({
+					methods:"get",
+					url:"/api/api/user/logout"
+				}).then(res=>{
+					if(res.data.code==0){
+						this.$alert(res.data.message,"信息").then(()=>{
+							authUnils.removeToken()
+							localStorage.removeItem("enterpriseInfo")
+							localStorage.removeItem("loginName")
+							this.$router.push("/")
+						})
+					}
+				})
+			})
 		},
 		goBack(){
 			this.$router.push("/EnterpriseOverview")
@@ -141,13 +141,11 @@ export default {
 		//企业信息
 		getEnterpriseInfo(){
 			this.$axios.post("/api/api/enterprise/entInfo",{}).then(res=>{
-				if(res.status==200){
-					if(res.data.code==1000){
-						this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
-						this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
-						localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
-						this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
-					}
+				if(res.data.code==1000){
+					this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
+					this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
+					localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
+					this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
 				}
 			})
 		}

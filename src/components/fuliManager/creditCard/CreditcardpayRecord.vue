@@ -17,15 +17,15 @@
                 </el-form>
             </div>
             <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
-                <el-table-column label="序号" sortable align="center">
+                <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
-                <el-table-column prop="name" label="订单号" align="center">
+                <el-table-column prop="orderNo" label="订单号" align="center">
                 </el-table-column>
-                <el-table-column prop="depart" label="总人数" align="center">
+                <el-table-column prop="num" label="总人数" align="center">
                 </el-table-column>
-                <el-table-column prop="phoneNumber" label="总还款金额" align="center">
+                <el-table-column prop="totalMoney" label="总还款金额" align="center">
                 </el-table-column>
-                <el-table-column prop="id" label="创建时间" align="center">
+                <el-table-column prop="createTime" label="创建时间" align="center">
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
@@ -34,8 +34,8 @@
                 </el-table-column>
             </el-table>
             <div class="toolbar">
-                <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                 </el-pagination>
             </div>
         </div>
@@ -91,22 +91,22 @@ import authUnils from '../../../common/authUnils'
 export default{
     data(){
         return{
-            isShowList:false,
-            isShowDetail:true,
+            isShowList:true,
+            isShowDetail:false,
             tableData:[],
             value:"",
             filters:{
                 orderNo:"",
                 startTime:"",
                 endTime:"",
-                pageNum:"",
-                pageSize:""
+                pageNum:1,
+                pageSize:10
             },
-            currentPage:1
+            currentPage:1,
+            totalSize:0
         }
     },
     methods:{
-        handleCurrentChange(){},
         //格式化时间
         formatDate(time){
             var d=new Date(time)
@@ -119,9 +119,28 @@ export default{
             this.filters.startTime=this.formatDate(this.value[0])
             this.filters.endTime=this.formatDate(this.value[1])
         },
+        getcreditCardList(){
+            this.$axios.post("/api/api/creditCard/queueOrders",this.filters).then(res=>{
+                if(res.data.code==1000){
+                    this.tableData=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
+                }
+            })
+        },
+        handleSizeChange(val){
+            this.filters.pageSize=val
+            this.getcreditCardList()
+        },
+        handleCurrentChange(val){
+            this.filters.pageNum=val
+            this.getcreditCardList()
+        },
         getSearchResult(){
-            console.log(this.filters)
+            this.getcreditCardList()
         }
+    },
+    mounted(){
+        this.getcreditCardList()
     }
 }
 </script>
