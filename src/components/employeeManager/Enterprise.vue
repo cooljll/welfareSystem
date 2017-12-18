@@ -320,7 +320,7 @@
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
                             <el-button type="text" @click="seeDetails(scope.row)">查看详情</el-button>
-                            <el-button type="text" @click="simpleExamine">审批</el-button>
+                            <el-button type="text" @click="simpleExamine(scope.row.entGuid)">审批</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -456,7 +456,7 @@
         </el-dialog>
         <!-- 审批弹窗 -->
         <el-dialog title="审批" :visible.sync="examineVisible" :close-on-click-modal="false" style="top:10%" class="examineDialog">
-            <el-form label-position="right" label-width="100px">
+            <el-form label-position="right" label-width="100px" class="form-center">
                 <el-form-item label="进行审批：">
                     <el-select placeholder="请选择状态" v-model="status" clearable>
                         <el-option label="已通过" value="1"></el-option>
@@ -470,7 +470,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="primary">确定</el-button>
+                <el-button type="primary" @click="exmineSubmit">确定</el-button>
                 <el-button @click.native="examineVisible = false">取消</el-button>
             </div>
         </el-dialog>
@@ -635,13 +635,7 @@ export default{
             batchExamineEmp:[],
             departId:"",
             status:"",
-            //审批参数
-            examineParams:{
-                depId: 0,
-                empCodes: [],
-                reason: "",
-                status: 0
-            },
+            code:"",
             handleBtn:true,
             confirmBtn:false,
             isShowFrozenBtn:true,
@@ -919,9 +913,13 @@ export default{
             })
         },
         //审批
-        simpleExamine(){
+        simpleExamine(code){
+            this.code=code
             this.examineVisible=true
             this.getDepartmentList()
+        },
+        exmineSubmit(){
+            this.handleExamineEmp([this.code])
         },
         //批量审批
         batchExamine(){
@@ -931,6 +929,16 @@ export default{
         },
         handleExamineDataChange(val){
             this.batchExamineEmp=val
+        },
+        handleExamineEmp(arr){
+            this.$axios.post("/api/api/approvalCenter/dealApproval",{
+                depId:this.departId,
+                status:Number(this.status),
+                reason:"",
+                empCodes:arr
+            }).then(res=>{
+                console.log(res)
+            })
         },
         //格式化时间
         formatDate(time){

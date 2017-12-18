@@ -59,14 +59,18 @@ export default{
         },
         //开始上传
         uploadFile(){
-            this.$axios.post("/api/api/creditCard/isExcelMsg",{
-                excelId:"",
-                pageNum:1,
-                pageSize:10
-            }).then(res=>{
+            // this.$axios.post("/api/api/creditCard/isExcelMsg",{
+            //     excelId:"",
+            //     pageNum:1,
+            //     pageSize:10
+            // }).then(res=>{
+            //     console.log(res)
+            // })
+            this.$axios.post("/api/api/creditCard/checkExcel").then(res=>{
                 console.log(res)
             })
         },
+        //下载excel模板
         downloadTemplate(){
             this.$axios.get("/api/api/creditCard/excel").then(res=>{
                 console.log(res)

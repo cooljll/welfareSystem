@@ -62,7 +62,7 @@
                 <div class="goback">
                     <el-button type="info" @click="returnList">返回列表</el-button>
                 </div>
-                <div class="exportbox">导出excel</div>
+                <div class="exportbox" @click="exportToExcel">导出excel</div>
             </div>
             <el-table :data="extendEmpTable" border resizable highlight-current-row style="width: 100%;" border>
                 <el-table-column type="selection" align="center">
@@ -243,6 +243,12 @@ export default{
         },
         handleExtendCurrent(val){
             this.extendEmpParams.pageSize=val
+        },
+        //导出福利卷订单详情
+        exportToExcel(){
+            this.$axios.get("/api/api/voucher/exportExcelVoucherOrderDes").then(res=>{
+                console.log(res)
+            })
         }
     },
     mounted(){
@@ -344,6 +350,7 @@ export default{
             line-height: 60px;
             color:#fff;
             font-size: 14px;
+            cursor: pointer;
         }
     }
 </style>

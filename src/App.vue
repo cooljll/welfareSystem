@@ -124,7 +124,7 @@ export default {
 						methods:"get",
 						url:"/api/api/user/logout"
 					}).then(res=>{
-						if(res.data.code==1000){
+						if(res.data.code==0){
 							this.$alert(res.data.message,"信息").then(()=>{
 								authUnils.removeToken()
 								localStorage.removeItem("enterpriseInfo")

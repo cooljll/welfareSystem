@@ -621,7 +621,7 @@ export default{
                 nums:this.totalEmployee.toString(),
                 productName:this.productName,
                 productPrice:this.rollScores.toString(),
-                sku:"",
+                sku:this.sku,
                 tolPoint:this.totalScores.toString()
             },{
                 headers:{
@@ -629,13 +629,13 @@ export default{
                 }
             }).then(res=>{
                 console.log(res)
-                // if(res.status==200){
-                //     if(res.data.code==1000){
-                //         this.$alert(res.data.message,"信息").then(()=>{
-                //             this.handleStep4()
-                //         })
-                //     }
-                // }
+                if(res.status==200){
+                    if(res.data.code==1000){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.handleStep4()
+                        })
+                    }
+                }
             })
         },
         //特定员工发放福利卷
@@ -658,14 +658,13 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                console.log(res)
-                // if(res.status==200){
-                //     if(res.data.code==1000){
-                //         this.$alert(res.data.message,"信息").then(()=>{
-                //             this.handleStep4()
-                //         })
-                //     }
-                // }
+                if(res.status==200){
+                    if(res.data.code==1000){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.handleStep4()
+                        })
+                    }
+                }
             })
         },
         //特定人员不发放福利卷
@@ -831,6 +830,7 @@ export default{
         },
         //获取福利卷详情
         getWelfareRolls(sku){
+            this.sku=sku
             const loading = this.$loading({
                 lock: true,
                 text: '正在获取福利卷',
@@ -842,7 +842,6 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                console.log(res)
                 if(res.status==200){
                     if(res.data.code==1000){
                         loading.close()
@@ -850,11 +849,6 @@ export default{
                         this.rollInvalidtime=res.data.data.invalidtime
                         this.rollScores=res.data.data.score
                         this.productName=res.data.data.name
-                        if(res.data.data.sku==null){
-                            this.sku=""
-                        }else{
-                            this.sku=res.data.data.sku
-                        }
                         this.welfareRollDialogTitle=res.data.data.name
                         this.productList=res.data.data.list
                         this.welfareRollDemoVisible=true

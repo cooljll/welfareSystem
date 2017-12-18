@@ -241,19 +241,12 @@ export default{
         seeNoticeDetail(id){
             this.isShow_List=false
             this.isShow_Detail=true
-            this.$axios.get("/api/api/announcement/desc",{
-                annId:id,
+            this.$axios.post("/api/api/announcement/desc",id,{
                 headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":authUnils.getToken()
+                    "Content-Type":"application/json"
                 }
             }).then(res=>{
                 console.log(res)
-                // if(res.status==200){
-                //     if(res.data.code==1000){
-                //         this.noticeList=res.data.data.content
-                //     }
-                // }
             })
         },
         goBackList(){

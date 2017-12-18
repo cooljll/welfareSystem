@@ -342,13 +342,13 @@ export default {
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
                         this.isShowHandle=false
-                        this.getTreeDep()
+                        // this.getTreeDep()
+                        this.$router.go(0)
                     })
-                }else if(res.data.code==1){
+                }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
-                        this.addEmployeeVisible=false
+                        this.addEmployeeVisible=true
                         this.isShowHandle=false
-                        this.getTreeDep()
                     })
                 }
             })

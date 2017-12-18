@@ -431,10 +431,13 @@ export default{
                 })
                 this.$axios.get("/api/api/integral/downloadExcel?param="+escape(tempStr.substr(1)),{
                     headers:{
-                        "Content-Type":"charset=utf-8"
+                        "Content-Type":"application/x-download",
+                        "Content-Disposition":"attachment;filename=myexcel.xls"
                     }
                 }).then(res=>{
-                    console.log(res.data)
+                    if(res){
+                        // window.open("getExcelList","_blank")
+                    }
                 })
             }
         },

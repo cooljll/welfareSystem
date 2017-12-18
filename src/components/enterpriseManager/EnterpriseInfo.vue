@@ -4,7 +4,7 @@
             <span class="line"></span>
             <span class="title">企业资料</span>
             <div class="btn">
-                <el-button type="primary">确认修改</el-button>
+                <el-button type="primary" @click="modifyEnterpriseInfo">确认修改</el-button>
             </div>
         </div>
         <div class="wrapper-center">
@@ -92,21 +92,29 @@
                         <div class="upload-wrapper">
                             <el-row class="upload_box">
                                 <el-col class="updateImg_box">
-                                    <div class="upload-content">
-                                        <input type="file">
+                                    <div class="upload-content" @mouseenter="showUploadBtn" @mouseleave="hiddenUploadBtn">
+                                        <input type="file" @change="getEnterpriseFile($event)" accept="image/*">
                                         <div class="img_box">
                                             <img :src="enterpriseLogoUrl" alt="">
                                         </div>
-                                        <div class="upload-txt"><p>上传图片</p></div>
+                                        <div class="upload-txt" v-show="isShowUploadBtn"><p>上传图片</p></div>
                                     </div>
                                     <div class="txt">企业LOGO</div>
                                 </el-col>
                                 <el-col class="updateImg_box">
-                                    <div class="upload-content"></div>
+                                    <div class="upload-content" @mouseenter="showCompanyBanner" @mouseleave="hiddenCompanyBanner">
+                                        <input type="file" @change="getCompanyFile($event)" accept="image/*">
+                                        <img :src="companyBanner" alt="">
+                                        <div class="upload-txt" v-show="isShowCompanyBanner"><p>上传图片</p></div>
+                                    </div>
                                     <div class="txt">公司banner</div>
                                 </el-col>
                                 <el-col class="updateImg_box">
-                                    <div class="upload-content"></div>
+                                    <div class="upload-content" @mouseenter="showLoginBanner" @mouseleave="hiddenLoginBanner">
+                                        <input type="file" @change="getLoginFile($event)" accept="image/*">
+                                        <img :src="loginBanner" alt="">
+                                        <div class="upload-txt" v-show="isShowLoginBanner"><p>上传图片</p></div>
+                                    </div>
                                     <div class="txt">登录banner</div>
                                 </el-col>
                             </el-row>
@@ -125,7 +133,15 @@ export default{
             imageUrl: '',
             enterpriseInfo:{},
             entCoord:"",
-            enterpriseLogoUrl:""
+            enterpriseLogoUrl:"",
+            isShowUploadBtn:false,
+            isShowCompanyBanner:false,
+            isShowLoginBanner:false,
+            companyBanner:'',
+            loginBanner:"",
+            enterprisefile:"",
+            companyfile:"",
+            loginfile:""
         }
     },
     methods:{
@@ -145,6 +161,63 @@ export default{
                     }
                 }
             })
+        },
+        getEnterpriseFile(event) {
+            this.enterprisefile = event.target.files[0]
+            let windowURL = window.URL || window.webkitURL
+            this.enterpriseLogoUrl = windowURL.createObjectURL(event.target.files[0])
+        },
+        getCompanyFile(event) {
+            this.companyfile = event.target.files[0]
+            let windowURL = window.URL || window.webkitURL
+            this.companyBanner = windowURL.createObjectURL(event.target.files[0])
+        },
+        getLoginFile(event) {
+            this.loginfile = event.target.files[0]
+            let windowURL = window.URL || window.webkitURL
+            this.loginBanner = windowURL.createObjectURL(event.target.files[0])
+        },
+        //修改企业信息
+        modifyEnterpriseInfo(){
+            let formData = new FormData()
+            formData.append('entLogoFile', this.enterprisefile)
+            formData.append('entBannerFile', this.companyfile)
+            formData.append('loginBannerFile', this.loginfile)
+            formData.append('contactEmail', this.enterpriseInfo.contactEmail)
+            formData.append('contactPerson', this.enterpriseInfo.contactPerson)
+            formData.append('contactPhone', this.enterpriseInfo.contactPhone)
+            formData.append('deliveryAddress', this.enterpriseInfo.deliveryAddress)
+            formData.append('contactTel', this.enterpriseInfo.contactTel)
+            formData.append('address', this.enterpriseInfo.address)
+            formData.append('enterpriseDomain', this.enterpriseInfo.enterpriseDomain)
+            formData.append('fax', this.enterpriseInfo.fax)
+            formData.append('zip', this.enterpriseInfo.zip)
+            let config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            this.$axios.post("/api/api/enterprise/editInfo",formData,config).then(res=>{
+                console.log(res)
+            })
+        },
+        showUploadBtn(){
+            this.isShowUploadBtn=true
+        },
+        hiddenUploadBtn(){
+            this.isShowUploadBtn=false
+        },
+        showCompanyBanner(){
+            this.isShowCompanyBanner=true
+        },
+        hiddenCompanyBanner(){
+            this.isShowCompanyBanner=false
+        },
+        showLoginBanner(){
+            this.isShowLoginBanner=true
+        },
+        hiddenLoginBanner(){
+            this.isShowLoginBanner=false
         }
     },
     mounted(){
@@ -180,6 +253,12 @@ export default{
                                     border: 1px solid #F0F0F0;
                                     position: relative;
                                     display: table;
+                                    img{
+                                        max-width: 100%;
+                                        max-height: 100%;
+                                        display: block;
+                                        margin: 0px auto;
+                                    }
                                     .img_box{
                                         display: table-cell;
                                         width: 100%;
@@ -198,15 +277,11 @@ export default{
                                         height: 100%;
                                         top: 0;
                                         left: 0;
-                                        background-color: rgba(0, 0, 0, 0.6);
                                         opacity: 0;
-                                        // filter: alpha(opacity=0);
-                                        // -moz-opacity: 0;
+                                        filter: alpha(opacity=0);
+                                        -moz-opacity: 0;
                                         z-index: 3;
                                         cursor: pointer;
-                                        &:hover{
-                                            background-color: rgba(0, 0, 0, 0.6);
-                                        }
                                     }
                                     .upload-txt{
                                         position: absolute;
@@ -215,7 +290,7 @@ export default{
                                         top: 0;
                                         left: 0;
                                         z-index: 1;
-                                        display: none;
+                                        background-color: rgba(0, 0, 0, 0.5);
                                         p{
                                             width: 76px;
                                             position: absolute;
