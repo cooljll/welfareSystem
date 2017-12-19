@@ -13,23 +13,21 @@
                         </div>
                         <div class="info-text">
                             <div class="title thide">
-                                <i class="iconfont icon-leftIcon"></i>
-                                {{newsDetailContent.fuliinfoTitle}}
-                                <i class="iconfont icon-rightIcon"></i>
+                                {{newsDetailContent.title}}
                             </div>
-                            <div class="content" v-html="newsDetailContent.information"></div>
+                            <div class="content" v-html="newsDetailContent.contents"></div>
                             <!-- 新闻索引 -->
                             <div class="bottom">
                                 <div class="look-else">
                                     <p class="top" v-show="isShowPrev">
                                         <span>上一篇</span>
                                         <br>
-                                        <span class="index" @click="newsDetails(prevNews.categoryid,prevNews.id)">{{prevNews.fuliinfoTitle}}</span>
+                                        <span class="index" @click="newsDetails(prevNews.id)">{{prevNews.title}}</span>
                                     </p>
                                     <p class="bottom" v-show="isShowNext">
                                         <span>下一篇</span>
                                         <br>
-                                        <span class="index" @click="newsDetails(nextNews.categoryid,nextNews.id)">{{nextNews.fuliinfoTitle}}</span>
+                                        <span class="index" @click="newsDetails(nextNews.id)">{{nextNews.title}}</span>
                                     </p>
                                 </div>
                             </div>
@@ -41,13 +39,13 @@
                         <span>热门资讯</span>
                     </div>
                     <div class="hot-collection">
-                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.categoryid,item.id)">
+                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.id)">
                             <div class="imgbox">
-                                <img :src="item.imagepath" alt="">
+                                <img :src="item.coverUrl" alt="">
                             </div>
                             <div class="item_info">
-                                <p class="thide">{{item.fuliinfoTitle}}</p>
-                                <div class="time"><span>{{item.inputtime.split(" ")[0]}}</span></div>
+                                <p class="thide">{{item.title}}</p>
+                                <div class="time"><span>{{item.startDate.split(" ")[0]}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -72,51 +70,43 @@ export default{
         }
     },
     methods:{
-        getNewsDetail(cId,id){
+        getNewsDetail(id){
             this.$axios.get("/api/api/welfareNews/newsInfo",{params:{
-                categoryId:cId,
-                fuliInformationId:id
+                id:id
             }}).then(res=>{
                 if(res.data.code==1000){
-                    var newData=res.data.data
-                    if(newData.length==1){
+                    this.newsDetailContent=res.data.data
+                    if(this.newsDetailContent.previousArticleDetailsFoot==null){
                         this.isShowPrev=false
+                        this.isShowNext=true
+                        this.nextNews=this.newsDetailContent.nextArticleDetailsFoot
+                        this.prevNews={}
+                    }else if(this.newsDetailContent.nextArticleDetailsFoot==null){
+                        this.isShowPrev=true
                         this.isShowNext=false
-                        this.newsDetailContent=newData[0]
-                    }else if(newData.length==2){
-                        if(newData[0].id==id){//下一篇
-                            this.isShowPrev=false
-                            this.isShowNext=true
-                            this.newsDetailContent=newData[0]
-                            this.nextNews=newData[1]
-                        }else{//上一篇
-                            this.isShowPrev=true
-                            this.isShowNext=false
-                            this.newsDetailContent=newData[0]
-                            this.prevNews=newData[1]
-                        }
+                        this.prevNews=this.newsDetailContent.previousArticleDetailsFoot
+                        this.nextNews={}
                     }else{
                         this.isShowPrev=true
                         this.isShowNext=true
-                        this.newsDetailContent=newData[0]
-                        this.prevNews=newData[1]
-                        this.nextNews=newData[2]
+                        this.prevNews=this.newsDetailContent.previousArticleDetailsFoot
+                        this.nextNews=this.newsDetailContent.nextArticleDetailsFoot
                     }
                 }
             })
         },
-        newsDetails(cId,id){
-            this.getNewsDetail(cId,id)
+        newsDetails(id){
+            this.getNewsDetail(id)
         }
     },
     mounted(){
-        this.getNewsDetail(this.$route.params.cId,this.$route.params.id)
+        this.getNewsDetail(Number(this.$route.params.id))
         this.$axios.post("/api/api/welfareNews/newsPageInfo",{
             pageNum:1,
             pageSize:3
         }).then(res=>{
             if(res.data.code==1000){
-                this.hotNewsList=res.data.data
+                this.hotNewsList=res.data.data.content
             }else if(res.data.code==1001){
                 this.$alert(res.data.message,"信息")
             }
@@ -135,9 +125,21 @@ export default{
                 margin: 30px 0;
                 font-size: 20px;
                 color: #7B7D7F;
-                i{
-                    font-size:24px;
-                    color:#ccc;
+                &:before,&:after{
+                    content: '';
+                    width: 30px;
+                    height: 30px;
+                    display: inline-block;
+                }
+                &:before{
+                    background: url(../../assets/img/right_f.png) no-repeat;
+                    background-size: contain; 
+                    margin: 0 15px 0 0;
+                }
+                &:after{
+                    background: url(../../assets/img/left_f.png) no-repeat;
+                    background-size: contain; 
+                    margin: 0 0 0 15px;
                 }
             }
             .content{

@@ -37,8 +37,7 @@
                 </el-row>
             </div>
             <div class="nonData" v-show="isShowNotData">
-                <!-- <img src="assets/img/dataerror.png"> -->
-                <img src="../../../assets/timg.jpg" alt="">
+                <img src="../../../assets/img/dataerror.png">
                 <span>暂无福利报告</span>
             </div>
         </div>

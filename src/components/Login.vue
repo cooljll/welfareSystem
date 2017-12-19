@@ -190,22 +190,28 @@ export default{
                     }
                 }).then(res=>{
                     if(res){
-                        authUnils.setToken(res.data.token_type+" "+res.data.access_token)
-                        this.$axios({
-                            method:"post",
-                            url:"/api/api/user/login",
-                            data:this.userInfo
-                        }).then(res=>{
-                            if(res.data.code==1000){
-                                localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
-                                this.$router.push("/EnterpriseOverview")
-                            }else if(res.data.code==1001){
-                                this.$alert(res.data.message,"信息")
-                                for(var key in this.userInfo){
-                                    this.userInfo[key]=''
+                        if(authUnils.getToken()){
+                            authUnils.removeToken()
+                            localStorage.removeItem("enterpriseInfo")
+                            localStorage.removeItem("loginName")
+                        }else{
+                            authUnils.setToken(res.data.token_type+" "+res.data.access_token)
+                            this.$axios({
+                                method:"post",
+                                url:"/api/api/user/login",
+                                data:this.userInfo
+                            }).then(res=>{
+                                if(res.data.code==1000){
+                                    localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
+                                    this.$router.push("/EnterpriseOverview")
+                                }else if(res.data.code==1001){
+                                    this.$alert(res.data.message,"信息")
+                                    for(var key in this.userInfo){
+                                        this.userInfo[key]=''
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        }
                     }
                 })
             }

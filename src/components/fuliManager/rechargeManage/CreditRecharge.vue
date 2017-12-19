@@ -97,7 +97,7 @@
                 <a class="immediaterecharge" @click="immediateRechange">立即充值</a>
             </div>
             <div class="success" v-show="isShowSuccess">
-                <img src="../../assets/img/successful.png">
+                <img src="../../../assets/img/successful.png">
                 <div class="statusname">发放成功！</div>
                 <div class="btnbox">
                     <el-button type="primary" @click="rechargeOneMore">再次充值</el-button>

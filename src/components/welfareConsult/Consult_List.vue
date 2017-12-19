@@ -16,16 +16,16 @@
                         </div>
                         <div class="info-list">
                             <ul>
-                                <li v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.categoryid,item.id)">
+                                <li v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.id)">
                                     <div class="news-wrapper">
                                         <div class="img">
-                                            <img :src="item.imagepath">
+                                            <img :src="item.coverUrl">
                                         </div>
                                         <div class="info">
-                                            <h3 class="thide">{{item.fuliinfoTitle}}</h3>
-                                            <span>{{item.inputtime.split(" ")[0]}}</span>
+                                            <h3 class="thide">{{item.title}}</h3>
+                                            <span>{{item.startDate.split(" ")[0]}}</span>
                                             <!-- 去掉所有的HTML标记 -->
-                                            <p v-html="item.information.replace(/<[^>]+>/g,'')"></p>
+                                            <p v-html="item.contents.replace(/<[^>]+>/g,'')"></p>
                                         </div>
                                     </div>
                                 </li>
@@ -38,13 +38,13 @@
                         <span>热门收藏</span>
                     </div>
                     <div class="hot-collection">
-                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.categoryid,item.id)">
+                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.id)">
                             <div class="imgbox">
-                                <img :src="item.imagepath" alt="">
+                                <img :src="item.coverUrl" alt="">
                             </div>
                             <div class="item_info">
-                                <p class="thide">{{item.fuliinfoTitle}}</p>
-                                <div class="time"><span>{{item.inputtime.split(" ")[0]}}</span></div>
+                                <p class="thide">{{item.title}}</p>
+                                <div class="time"><span>{{item.startDate.split(" ")[0]}}</span></div>
                             </div>
                         </div>
                     </div>
@@ -74,18 +74,19 @@ export default{
         getNewsPageInfo(){
             this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
                 if(res.data.code==1000){
-                    this.newsPageList=res.data.data
+                    this.newsPageList=res.data.data.content
                 }
             })
         },
-        newsDetails(cId,id){
-            this.$router.push('/Consult_Detail/'+cId+'/'+id)
+        newsDetails(id){
+            this.$router.push('/Consult_Detail/'+id)
         },
         //查询结果
         searchResult(){
             this.$axios.post("/api/api/welfareNews/search",qs.stringify({filter:this.$route.params.ret})).then(res=>{
+                console.log(res)
                 if(res.data.code==1000){
-                    this.newsPageList=res.data.data
+                    this.newsPageList=res.data.data.content
                 }
             })
         }
@@ -105,7 +106,9 @@ export default{
             pageSize:3
         }).then(res=>{
             if(res.data.code==1000){
-                this.hotNewsList=res.data.data
+                this.hotNewsList=res.data.data.content
+            }else if(res.data.code==1001){
+                this.$alert(res.data.message,"信息")
             }
         })
     }

@@ -34,7 +34,7 @@
                         <span class="txt">积分余额</span>
                         <a class="indextitle-btn" @click="creditRechange">充值</a>
                     </div>
-                    <div class="center">{{Math.floor(baseData.ScoreBalance)}}</div>
+                    <div class="center">{{Math.floor(scoreBalance)}}</div>
                 </div>
                 <div class="holiday-approaching">
                     <div class="title">
@@ -92,7 +92,8 @@ export default{
             rechargeData:[],
             baseData:{},//基础数据
             newNoticeContent:"",
-            enterpriseInfo:{}
+            enterpriseInfo:{},
+            scoreBalance:""//企业余额
         }
     },
     methods:{
@@ -231,6 +232,13 @@ export default{
                 }
             })
         },
+        getPointBalance(){
+            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.scoreBalance=res.data.data
+                }
+            })
+        }
     },
     mounted(){
         this.enterpriseInfo=JSON.parse(localStorage.getItem("enterpriseInfo"))
@@ -241,6 +249,7 @@ export default{
         this.getPointRecords(this.currentYear)
         this.getBaseData(this.year,parseInt(this.month))
         this.showNewNotice()
+        this.getPointBalance()
     }
 }
 </script>

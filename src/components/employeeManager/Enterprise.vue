@@ -895,19 +895,16 @@ export default{
                 }
             })
         },
-        // 拉回企业**************************************************************问题：参数错误******************************************************************
+        // 拉回企业
         pullbackEnterprise(code){
             this.$confirm("确定要拉回企业？","信息").then(()=>{
-                this.$axios.post("/api/api/employee/pullBack",{empCodes:code}).then(res=>{
-                    console.log(res)
-                    if(res.status==200){
-                        if(res.data.success){
-                            this.$alert(res.data.message,'信息').then(()=>{
-                                this.showDelEmployee()
-                            })
-                        }else{
-                            this.$alert(res.data.message)
-                        }
+                this.$axios.post("/api/api/employee/pullBack",{empCode:code}).then(res=>{
+                    if(res.data.code==1000){
+                        this.$alert(res.data.message,'信息').then(()=>{
+                            this.$router.go(0)
+                        })
+                    }else if(res.data.code==1001){
+                        this.$alert(res.data.message)
                     }
                 })
             })

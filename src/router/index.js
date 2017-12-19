@@ -101,7 +101,7 @@ export default new Router({
       name: ''
     },
     {
-      path: '/Consult_Detail/:cId?/:id?',
+      path: '/Consult_Detail/:id?',
       component: Consult_Detail,
       name: ''
     },

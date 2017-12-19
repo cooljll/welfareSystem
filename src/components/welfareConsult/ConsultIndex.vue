@@ -17,7 +17,7 @@
                     <!-- banner轮播 -->
                     <el-carousel trigger="click">
                         <el-carousel-item v-for="(item,index) in bannerList1" :key="index">
-                            <img :src="item.imagerpath" alt="" @click="bannerDetail(item.linkpath)">
+                            <img :src="item.imagerpath" alt="" @click="bannerDetail(item.id)">
                             <div class="info">
                                 <div class="info-label">
                                     <span class="z">资讯</span>
@@ -30,7 +30,7 @@
                 <!-- 右banner -->
                 <div class="information-right">
                     <ul>
-                        <li v-for="(item,index) in bannerList2" :key="index" @click="bannerDetail(item.linkpath)">
+                        <li v-for="(item,index) in bannerList2" :key="index" @click="bannerDetail(item.id)">
                             <img :src="item.imagerpath" alt="">
                             <div class="info">
                                 <div class="info-label">
@@ -47,14 +47,14 @@
                     <span>{{categoryTitle}}</span>
                 </div>
                 <div class="information-contant">
-                    <div class="information-item" v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.categoryid,item.id)">
+                    <div class="information-item" v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.id)">
                         <a>
-                            <img :src="item.imagepath">
-                            <p>{{item.fuliinfoTitle}}</p>
+                            <img :src="item.coverUrl">
+                            <p>{{item.title}}</p>
                         </a>
                         <div class="item-info">
                             <div class="item-drec cle">
-                                <span class="t">{{item.inputtime}}</span>
+                                <span class="t">{{item.startDate}}</span>
                             </div>
                         </div>
                     </div>
@@ -87,21 +87,17 @@ export default{
     },
     methods:{
         //获取福利咨询banner
-        getBannerPosition1(){
-            this.$axios.get("/api/api/welfareNews/banner?position=1").then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                       this.bannerList1=res.data.data
-                    }
-                }
-            })
-        },
-        getBannerPosition2(){
-            this.$axios.get("/api/api/welfareNews/banner?position=2").then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                       this.bannerList2=res.data.data
-                    }
+        getBannerNews(){
+            this.$axios.get("/api/api/welfareNews/banner").then(res=>{
+                if(res.data.code==0){
+                    res.data.data.forEach(item=>{
+                        if(item.bannerPosition==1){
+                            this.bannerList1.push(item)
+                        }
+                        if(item.bannerPosition==2){
+                            this.bannerList2.push(item)
+                        }
+                    })
                 }
             })
         },
@@ -116,24 +112,26 @@ export default{
         //分页咨询
         getNewsPageInfo(){
             this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
+                console.log(res)
                 if(res.data.code==1000){
                     if(res.data.data.length==0){
                         this.isShowMore=false
                     }else{
                         this.isShowMore=true
                     }
-                    this.newsPageList=res.data.data
+                    this.newsPageList=res.data.data.content
                 }
             })
         },
+        //查看更多
         getMoreNews(){
             this.$router.push("/Consult_List")
         },
-        bannerDetail(params){
-            this.$router.push('/Consult_Detail/'+params.split(",")[1]+'/'+params.split(",")[0])
+        bannerDetail(id){
+            this.$router.push('/Consult_Detail/'+id)
         },
-        newsDetails(cId,id){
-            this.$router.push('/Consult_Detail/'+cId+'/'+id)
+        newsDetails(id){
+            this.$router.push('/Consult_Detail/'+id)
         },
         //搜索
         getSearchResult(){
@@ -144,8 +142,7 @@ export default{
         }
     },
     mounted(){
-        this.getBannerPosition1()
-        this.getBannerPosition2()
+        this.getBannerNews()
         this.getTitle()
         this.getNewsPageInfo()
     }

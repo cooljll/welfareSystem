@@ -61,7 +61,18 @@ axios.interceptors.response.use(
       return Promise.reject(error.response.data)   // 返回接口返回的错误信息
   })
 //路由拦截器
-
+// router.beforeEach((to, from, next) => {
+//     if(authUtil.getToken()){
+//         if(to.path=="/"){
+//             authUtil.removeToken()
+//             localStorage.removeItem("enterpriseInfo")
+//             localStorage.removeItem("loginName")
+//             next({path:'/'})
+//         }
+//     }else{
+//         next({path:'/'})
+//     }
+// })
 new Vue({
   el: '#app',
   router,
