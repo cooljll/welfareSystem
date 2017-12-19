@@ -127,7 +127,7 @@
                 <!-- 员工详情 -->
                 <div v-show="isShowEmpDetail" class="flexbox">
                     <div class="leftbox">
-                        <img src="../../assets/timg.jpg" alt="">
+                        <img src="../../assets/img/zanwu_imges.png" alt="">
                     </div>
                     <div class="rightbox">
                         <el-form :inline="true" ref="employeeInfo" :model="employeeInfo" label-position="right" label-width="90px">

@@ -18,7 +18,7 @@
                     <el-col class="reportList" :xs="24" :md="12" :lg="8" v-for="(item,index) in reportDataList" :key="index">
                         <div class="bgc" href="http://139.224.28.8:8070/ymn_managementsystem/upload/FuliReport/金划算科技股份有限公司_2017-02-08_691494_.pdf" target="_blank" download="">
                             <div class="img">
-                                <!-- <img src="assets/img/bgground.png"> -->
+                                <img src="../../../assets/img/bgground.png">
                             </div>
                             <div class="title">
                                 <p>金划算科技股份有限公司</p>
@@ -29,7 +29,7 @@
                             <div class="left">{{item.createtime}}</div>
                             <div class="right">
                                 <a href="http://139.224.28.8:8070/ymn_managementsystem/upload/FuliReport/金划算科技股份有限公司_2017-02-08_691494_.pdf" target="_blank" download="">
-                                    <img src="assets/img/Rectangle_9.png">下载
+                                    <img src="../../../assets/img/Rectangle_9.png">下载
                                 </a>
                             </div>
                         </div>
@@ -128,12 +128,12 @@ export default{
                     cursor: pointer;
                     .img{
                         height:214px;
-                        // img{
-                        //     width: 100%;
-                        //     height: 214px;
-                        //     border: 0px;
-                        //     cursor: pointer;
-                        // }
+                        img{
+                            width: 100%;
+                            height: 214px;
+                            border: 0px;
+                            cursor: pointer;
+                        }
                     }
                     .title{
                         width: 80%;

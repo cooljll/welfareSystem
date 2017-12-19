@@ -83,10 +83,10 @@
                                             </div>
                                         </div>
                                         <div class="paytype" v-show="zhifubao">
-                                            <!-- <img src="assets/img/zhifubao.png"> -->
+                                            <img src="../../../assets/img/zhifubao.png">
                                         </div>
                                         <div class="paytype" v-show="weixin">
-                                            <!-- <img src="assets/img/weixinzhifu.png"> -->
+                                            <img src="../../../assets/img/weixinzhifu.png">
                                         </div>
                                     </div>
                                 </div>
@@ -97,8 +97,7 @@
                 <a class="immediaterecharge" @click="immediateRechange">立即充值</a>
             </div>
             <div class="success" v-show="isShowSuccess">
-                <!-- <img src="assets/img/successful.png"> -->
-                <img src="../../../assets/timg.jpg" alt="">
+                <img src="../../assets/img/successful.png">
                 <div class="statusname">发放成功！</div>
                 <div class="btnbox">
                     <el-button type="primary" @click="rechargeOneMore">再次充值</el-button>

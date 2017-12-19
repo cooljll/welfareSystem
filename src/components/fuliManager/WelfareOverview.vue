@@ -366,10 +366,10 @@ export default{
                 .integral-balance{
                     margin-right: 2%;
                     background: #76C397;
-                    // background: #76C397 url(assets/img/integral-balance.png) 100% 100% no-repeat;
+                    background: #76C397 url(../../assets/img/integral-balance.png) 100% 100% no-repeat;
                 }
                 .holiday-approaching{
-                    // background: #FFFFFF url(assets/img/qiqiu.png) 100% 100% no-repeat;
+                    background: #FFFFFF url(../../assets/img/qiqiu.png) 100% 100% no-repeat;
                     .title{
                         .txt{
                             color:#333;
@@ -383,7 +383,7 @@ export default{
                 }
                 .enterprise-announcement{
                     margin-right: 2%;
-                    // background: #FFFFFF url(assets/img/laba.png) 100% 100% no-repeat;
+                    background: #FFFFFF url(../../assets/img/laba.png) 100% 100% no-repeat;
                     .title{
                         .txt{
                             color:#333;
@@ -406,7 +406,7 @@ export default{
                 }
                 .enterprise-information{
                     background: #76C3BD;
-                    // background: #76C3BD url(assets/img/enterprise-information.png) 100% 100% no-repeat;
+                    background: #76C3BD url(../../assets/img/enterprise-information.png) 100% 100% no-repeat;
                     .title{
                         .txt{
                             color:#333;

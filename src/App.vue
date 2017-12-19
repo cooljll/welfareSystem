@@ -24,7 +24,7 @@
 				<!-- 企业名称信息 -->
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner1">
-						<img src="./assets/common/Customer.png" alt="">
+						<img src="./assets/img/enterprise.png" alt="">
 						{{enterpriseBaseInfo.enterpriseName}}
 					</span>
 					<el-dropdown-menu slot="dropdown" style="width:230px;">
@@ -35,7 +35,7 @@
 				<!-- 客服 -->
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner">
-						<img src="./assets/common/Customer.png" />
+						<img src="./assets/img/Customer.png" />
 					</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>在线客服</el-dropdown-item>
@@ -47,7 +47,7 @@
 				<!-- 帮助 -->
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner">
-						<img src="./assets/common/help.png" />
+						<img src="./assets/img/help.png" />
 					</span>
 					<el-dropdown-menu slot="dropdown">
 						<router-link to="/HelpCenter">
@@ -64,7 +64,7 @@
 				<!-- 通知 -->
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner">
-						<img src="./assets/common/announcement.png" />
+						<img src="./assets/img/announcement.png" />
 					</span>
 					<el-dropdown-menu slot="dropdown">
 						<router-link to="/EnterpriseNotice/1">
@@ -78,7 +78,7 @@
 				<!-- 退出登陆 -->
 				<el-dropdown trigger="hover">
 					<span class="el-dropdown-link userinfo-inner">
-						<img src="./assets/common/set.png" />
+						<img src="./assets/img/set.png" />
 					</span>
 					<el-dropdown-menu slot="dropdown">
 						<router-link to="/EnterpriseInfo">

@@ -3,7 +3,7 @@
         <div class="page-box">
             <div class="search-box">
                 <div class="search-logo">
-                    <img src="assets/img/fulizix.png">
+                    <img src="../../assets/img/fulizix.png">
                 </div>
                 <div class="search-main">
                     <el-input placeholder="请输入要搜索的内容" v-model="filter" class="mixInput">
@@ -61,7 +61,7 @@
                 </div>  
                 <div class="more_information" v-show="isShowMore">
                     <span @click="getMoreNews">查看更多</span>
-                    <!-- <img src="assets/img/sy_right.png"> -->
+                    <img src="../../assets/img/sy_right.png">
                 </div>
             </div>
         </div>
@@ -294,6 +294,12 @@ export default{
                     color: #2D2E2E;
                     line-height: 20px;
                     cursor: pointer;
+                    span{
+                        display:inline-block;
+                    }
+                    span,img{
+                        vertical-align: middle;
+                    }
                 }
             }
             

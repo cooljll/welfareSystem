@@ -45,13 +45,12 @@
                 </el-col>
                 <el-col :md="24" :lg="8" class="main-right">
                     <div class="help-header">
-                        <p>有米拿帮助中心<img src="assets/img/help-center.png"></p>
+                        <p>有米拿帮助中心<img src="../../assets/img/help-center.png"></p>
                     </div>
                     <div class="help-text">如果您在使用有米拿企业后台过程中遇到问题，或者有任何的意见或建议，
                         欢迎及时向我们反馈，我们会尽快回复您的问题，并依据您的反馈，不断改进。</div>
                     <div class="help-img">
-                        <!-- <img src="assets/img/help-center-img.png"> -->
-                        <img src="../../assets/timg.jpg" alt="">
+                        <img src="../../assets/img/help-center-img.png">
                     </div>
                 </el-col>
             </el-row>

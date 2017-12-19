@@ -4,7 +4,7 @@
         <div class="page-center">
             <el-row class="main">
                 <el-col>
-                    <img src="" alt="">
+                    <img src="../../../assets/img/step.png" alt="">
                 </el-col>
             </el-row>
             <el-row class="main" v-show="isShowIndex">
@@ -37,21 +37,16 @@
              <!-- 上传成功之后的页面 -->
             <el-row class="main" v-show="isShowList">
                 <el-col>
-                    <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
+                    <el-table :data="excelTable" border resizable highlight-current-row style="width: 100%;">
                         <el-table-column label="序号" type="index" align="center" width="80">
                         </el-table-column>
-                        <el-table-column prop="no" label="卡号" align="center">
+                        <el-table-column prop="cardNo" label="卡号" align="center">
                         </el-table-column>
-                        <el-table-column prop="num" label="姓名" align="center">
+                        <el-table-column prop="cardName" label="姓名" align="center">
                         </el-table-column>
-                        <el-table-column prop="totalMoney" label="金额" align="center">
+                        <el-table-column prop="money" label="金额" align="center">
                         </el-table-column>
-                        <el-table-column prop="createTime" label="信息" align="center">
-                        </el-table-column>
-                        <el-table-column label="操作" align="center">
-                            <template slot-scope="scope">
-                                <el-button type="text">查看详情</el-button>
-                            </template>
+                        <el-table-column prop="message" label="信息" align="center">
                         </el-table-column>
                     </el-table>
                     <div class="toolbar">
@@ -62,8 +57,8 @@
                 </el-col>
                 <el-col class="text-center">
                     <div>
-                        <el-button>重新上传</el-button>
-                        <el-button type="primary">提交还款</el-button>
+                        <el-button @click="reUpload">重新上传</el-button>
+                        <el-button type="primary" @click="submitOfRepay">提交还款</el-button>
                     </div>
                     <p class="tip">注：如果 "提交还款” 为灰色不可点击，说明表格中存在信息错误，请您修改正确后重新上传。</p>
                 </el-col>
@@ -81,10 +76,15 @@ export default{
             isShowUpload:false,
             fileName:"",
             file:"",
-            excelId:"",
             tableData:[],
             currentPage:1,
-            totalSize:0
+            totalSize:0,
+            excelParams:{
+                excelId:'',
+                pageNum:1,
+                pageSize:10
+            },
+            excelTable:[]
         }
     },
     methods:{
@@ -110,15 +110,50 @@ export default{
             }
             this.$axios.post("/api/api/creditCard/checkExcel",formData,config).then(res=>{
                 if(res.data.code==1000){
-                    this.excelId=res.data.data
+                    this.excelParams.excelId=res.data.data
                     this.$axios.post("/api/api/creditCard/uploadExcel",formData,config).then(res=>{
                         if(res.data.code==1000){
                             this.$alert(res.data.message,'信息').then(()=>{
                                 this.isShowIndex=false
                                 this.isShowList=true
+                                this.getExcelInfo()
                             })
                         }
                     })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
+            })
+        },
+        //查看上传的excel信息
+        getExcelInfo(){
+            this.$axios.post("/api/api/creditCard/excelInfo",this.excelParams).then(res=>{
+                console.log(res)
+                if(res.data.code==1000){
+                    this.excelTable=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
+                }
+            })
+        },
+        handleSizeChange(val){
+            this.excelParams.pageSize=val
+            this.getExcelInfo()
+        },
+        handleCurrentChange(val){
+            this.excelParams.pageNum=val
+            this.getExcelInfo()
+        },
+        //重新上传
+        reUpload(){
+            this.isShowUpload=false
+            this.isShowIndex=true
+            this.isShowList=false
+        },
+        //提交还款
+        submitOfRepay(){
+            this.$axios.post("/api/api/creditCard/isExcelMsg",this.excelParams).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息")
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }
@@ -129,9 +164,7 @@ export default{
             this.$axios.get("/api/api/creditCard/excel").then(res=>{
                 console.log(res)
             })
-        },
-        handleSizeChange(){},
-        handleCurrentChange(){}
+        }
     }
 }
 </script>
