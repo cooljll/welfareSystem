@@ -78,7 +78,9 @@
                 <div class="row">
                     <div class="title">Excel操作</div>
                     <div class="center">
-                        <el-button @click="uploadExcelTemplate">下载Excel模板</el-button>
+                        <div>
+                            <el-button @click="uploadExcelTemplate">下载Excel模板</el-button>
+                        </div>
                         <div class="fileUpload">
                             <input type="file" @change="getFile($event)" id="fileToUpload">
                             <div class="replaceComp">
@@ -212,8 +214,7 @@
             </div>
             <div class="layer-center4" v-show="step4">
                 <div class="success">
-                    <!-- <img src="assets/img/successful.png"> -->
-                    <img src="../../../assets/timg.jpg" alt="">
+                    <img src="../../../assets/img/successful.png">
                     <div class="statusname">发放成功！</div>
                     <div class="btnbox">
                         <el-button type="primary" @click="oneMoreExtend">再次发放</el-button>

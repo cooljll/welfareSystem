@@ -216,17 +216,10 @@ export default {
 		},
 		 //导出员工
         exportExcel() {
-            require.ensure([],()=>{
-                const {export_json_to_excel}=require("../../vendor/Export2Excel")
-                const tHeader=["姓名","性别","身份证编号","部门","手机号","工号","账户状态","邮箱地址","入职时间"]
-                const filterVal=["name","gender","identify","department","phoneNumber","jobNumber","status","email","joindate"]
-                const data=this.formatJson(filterVal,this.employeeInfo)
-                export_json_to_excel(tHeader,data,"员工信息表")
-            })
+            this.$axios.get("/api/api/employee/exportEmployees").then(res=>{
+				console.log(res)
+			})
         },
-        formatJson(filterVal,jsonData){
-            return jsonData.map(v=>filterVal.map(j=>v[j]))
-		},
 		//生成二维码
 		buildQRcode(){
 			const loading = this.$loading({

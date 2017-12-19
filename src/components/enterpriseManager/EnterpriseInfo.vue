@@ -242,7 +242,7 @@ export default{
                     padding:0 40px;
                     .upload-wrapper{
                         .upload_box{
-                            width:50%;
+                            width:60%;
                             margin:0 auto;
                             .updateImg_box{
                                 margin-bottom: 15px;

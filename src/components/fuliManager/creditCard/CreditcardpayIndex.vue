@@ -162,7 +162,9 @@ export default{
         //下载excel模板
         downloadTemplate(){
             this.$axios.get("/api/api/creditCard/excel").then(res=>{
-                console.log(res)
+                if(res){
+                    // window.location.href = "/ExportExcelServer/DownloadExcel"      
+                }
             })
         }
     }

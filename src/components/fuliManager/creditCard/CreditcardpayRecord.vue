@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="page-title">{{$route.name}}</div>
+        <!-- 信用卡还款列表 -->
         <div class="page-center" v-show="isShowList">
             <div class="searchBar">
                 <el-form :inline="true">
@@ -29,7 +30,7 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text">查看详情</el-button>
+                        <el-button type="text" @click="seeDetail(scope.row.id)">查看详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -39,48 +40,49 @@
                 </el-pagination>
             </div>
         </div>
+        <!-- 信用卡还款详情 -->
         <div class="page-center" v-show="isShowDetail">
             <div class="searchBar">
                 <el-form :inline="true">
                     <el-form-item label="信用卡号：">
-                        <el-input v-model="filters.orderNo"></el-input>
+                        <el-input v-model="sendRecordParams.cardNo"></el-input>
                     </el-form-item>
                     <el-form-item label="户名：">
-                        <el-input v-model="filters.orderNo"></el-input>
+                        <el-input v-model="sendRecordParams.cardName"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="info" @click="getSearchResult">搜索</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="info" @click="getSearchResult">返回</el-button>
+                        <el-button type="info" @click="goBack">返回</el-button>
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
-                <el-table-column label="序号" sortable align="center">
+            <el-table :data="sendRecordtable" border resizable highlight-current-row style="width: 100%;">
+                <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
-                <el-table-column prop="name" label="信用卡号" align="center">
+                <el-table-column prop="cardNo" label="信用卡号" align="center" width="158">
                 </el-table-column>
-                <el-table-column prop="depart" label="户名" align="center">
+                <el-table-column prop="cardName" label="户名" align="center">
                 </el-table-column>
-                <el-table-column prop="name" label="银行" align="center">
+                <el-table-column prop="cardBank" label="银行" align="center">
                 </el-table-column>
-                <el-table-column prop="depart" label="还款金额(元)" align="center">
+                <el-table-column prop="money" label="还款金额(元)" align="center">
                 </el-table-column>
                 <el-table-column prop="name" label="是否发送" align="center">
                 </el-table-column>
-                <el-table-column prop="depart" label="手续费(元)" align="center">
+                <el-table-column prop="poundage" label="手续费(元)" align="center">
                 </el-table-column>
-                <el-table-column prop="phoneNumber" label="信息" align="center">
+                <el-table-column prop="errorMsg" label="信息" align="center">
                 </el-table-column>
-                <el-table-column prop="id" label="还款状态" align="center">
+                <el-table-column prop="orderState" label="还款状态" align="center">
                 </el-table-column>
-                <el-table-column prop="id" label="创建时间" align="center">
+                <el-table-column prop="createTime" label="创建时间" align="center">
                 </el-table-column>
             </el-table>
             <div class="toolbar">
-                <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                <el-pagination @size-change="detailSizeChange" @current-change="detailCurrentChange" :current-page="detailPage"
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="detailTotalSize">
                 </el-pagination>
             </div>
         </div>
@@ -103,7 +105,20 @@ export default{
                 pageSize:10
             },
             currentPage:1,
-            totalSize:0
+            totalSize:0,
+            //详情
+            sendRecordtable:[],
+            sendRecordParams:{
+                cardName: "",
+                cardNo: "",
+                endTime: "",
+                orderId: 0,
+                pageNum: 1,
+                pageSize:10,
+                startTime: ""
+            },
+            detailPage:1,
+            detailTotalSize:0
         }
     },
     methods:{
@@ -119,6 +134,7 @@ export default{
             this.filters.startTime=this.formatDate(this.value[0])
             this.filters.endTime=this.formatDate(this.value[1])
         },
+        //信用卡还款记录
         getcreditCardList(){
             this.$axios.post("/api/api/creditCard/queueOrders",this.filters).then(res=>{
                 if(res.data.code==1000){
@@ -137,6 +153,29 @@ export default{
         },
         getSearchResult(){
             this.getcreditCardList()
+        },
+        //查看详情
+        seeDetail(id){
+            this.isShowList=false
+            this.isShowDetail=true
+            this.sendRecordParams.orderId=id
+            this.$axios.post("/api/api/creditCard/queues",this.sendRecordParams).then(res=>{
+                console.log(res)
+                if(res.data.code==1000){
+                    this.sendRecordtable=res.data.data.content
+                    this.detailTotalSize=res.data.data.totalSize
+                }
+            })
+        },
+        detailSizeChange(val){
+            this.sendRecordParams.pageSize=val
+        },
+        detailCurrentChange(val){
+            this.sendRecordParams.pageNum=val
+        },
+        goBack(){
+            this.isShowList=true
+            this.isShowDetail=false
         }
     },
     mounted(){

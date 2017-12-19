@@ -36,7 +36,6 @@ axios.interceptors.response.use(
                 authUtil.removeToken()
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
-                
                 router.replace({
                     path: '/'
                 })

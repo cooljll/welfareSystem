@@ -397,12 +397,12 @@
         <!-- 批量导入员工弹框 -->
         <el-dialog title="批量导入员工" :visible.sync="exportEmployeeVisible" :close-on-click-modal="false" style="top:15%" class="batchExportEmpDialog">
             <div class="tishititle"> 请上传编辑好的员工个人信息EXCEL格式请按模板，顶行内容勿修改！</div>
-            <div class="footer-center">
-                <el-upload class="uploaddemo" :file-list="fileList" action="https://jsonplaceholder.typicode.com/posts/"
-                :show-file-list="false" :on-error="uploadError" :before-upload="beforeFileUpload">
-                    <el-button type="primary">上传</el-button>
-                </el-upload>
-                <el-button>下载excel模板</el-button>
+            <div class="fileUpload footer-center">
+                <input type="file" @change="getFile($event)" id="fileToUpload">
+                <div class="replaceComp">
+                    <el-button type="primary" @click="selectExcelFile">上传</el-button>
+                    <el-button @click="downloadTemplate">下载excel模板</el-button>
+                </div>
             </div>
         </el-dialog>
         <!-- 生成二维码弹窗 -->
@@ -764,6 +764,43 @@ export default{
         //员工导入
         batchExportEmp(){
             this.exportEmployeeVisible=true
+        },
+        //下载excel模板
+        downloadTemplate(){
+            this.$axios.get("/api/api/employee/downloadExcel").then(res=>{
+                console.log(res)
+            })
+        },
+        selectExcelFile(){
+            document.getElementById('fileToUpload').click()
+        },
+        //上传
+        getFile(event) {
+            const loading = this.$loading({
+				lock: true,
+				text: '上传中...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
+            this.file = event.target.files[0]
+            let formData = new FormData()
+            formData.append('uploadexcel', this.file)
+            let config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            this.$axios.post("/api/api/employee/uploadCheckEmps",formData,config).then(res=>{
+                console.log(res)
+                loading.close()
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        // this.$router.go(0)
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,'信息')
+                }
+            })
         },
         //生成二维码(后台获取)
         buildQRcode(){
