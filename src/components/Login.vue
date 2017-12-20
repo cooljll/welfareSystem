@@ -39,7 +39,11 @@ export default{
             authData:{
                 client_id:"233668646673605",
                 client_secret:"33b17e066ee6a4ad383f46ec6e28ea1d"
-            }
+            },
+            // authData:{
+            //     client_id:"233668646605",
+            //     client_secret:"33b17e066ee6a4ad383f28ea1d"
+            // }
         }
     },
     methods:{
@@ -189,29 +193,27 @@ export default{
                         "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
                     }
                 }).then(res=>{
-                    if(res){
-                        if(authUnils.getToken()){
-                            authUnils.removeToken()
-                            localStorage.removeItem("enterpriseInfo")
-                            localStorage.removeItem("loginName")
-                        }else{
-                            authUnils.setToken(res.data.token_type+" "+res.data.access_token)
-                            this.$axios({
-                                method:"post",
-                                url:"/api/api/user/login",
-                                data:this.userInfo
-                            }).then(res=>{
-                                if(res.data.code==1000){
-                                    localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
-                                    this.$router.push("/EnterpriseOverview")
-                                }else if(res.data.code==1001){
-                                    this.$alert(res.data.message,"信息")
-                                    for(var key in this.userInfo){
-                                        this.userInfo[key]=''
-                                    }
+                    if(authUnils.getToken()){
+                        authUnils.removeToken()
+                        localStorage.removeItem("enterpriseInfo")
+                        localStorage.removeItem("loginName")
+                    }else{
+                        authUnils.setToken(res.data.token_type+" "+res.data.access_token,res.data.expires_in)
+                        this.$axios({
+                            method:"post",
+                            url:"/api/api/user/login",
+                            data:this.userInfo
+                        }).then(res=>{
+                            if(res.data.code==1000){
+                                localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
+                                this.$router.push("/EnterpriseOverview")
+                            }else if(res.data.code==1001){
+                                this.$alert(res.data.message,"信息")
+                                for(var key in this.userInfo){
+                                    this.userInfo[key]=''
                                 }
-                            })
-                        }
+                            }
+                        })
                     }
                 })
             }

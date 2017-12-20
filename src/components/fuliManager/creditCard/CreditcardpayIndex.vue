@@ -68,6 +68,8 @@
 </template>
 <script>
 import authUnils from '../../../common/authUnils'
+import fileDownload from 'js-file-download'
+import moment from 'moment'
 export default{
     data(){
         return{
@@ -167,9 +169,10 @@ export default{
                 responseType:'arraybuffer'
             }).then(res=>{
                 if(res){
-                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})   
-                    let objectUrl=URL.createObjectURL(blob)
-                    window.location.href=objectUrl  
+                    // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})   
+                    // let objectUrl=URL.createObjectURL(blob)
+                    // window.location.href=objectUrl  
+                    fileDownload(res.data,"企业还信用卡模板"+moment(new Date()).format("YYYY-MM-DD")+".xls")
                 }
             })
         }

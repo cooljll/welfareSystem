@@ -2,10 +2,10 @@ const TOKENKEY = 'abp.token.key'
 const USERKEY = 'abp.userinfo'
 class AuthUtils {
     // 设置token
-    setToken(token) {
+    setToken(token,expireTime) {
         let tokenObj = {
-            token
-            // expireTime: expireTime.toString() // 2小时过期
+            token,
+            expireTime: expireTime 
         }
         localStorage.setItem(TOKENKEY, JSON.stringify(tokenObj))
     }
@@ -17,26 +17,13 @@ class AuthUtils {
         if (!tokenStr) return null
         let tokenObj = JSON.parse(tokenStr)
         // 如果过期
-        if (tokenObj.expireTime <= Date.now()) return null
+        if (tokenObj.expireTime >= Date.now()) return null
 
         return tokenObj.token
     }
     //清空Token
     removeToken(){
         localStorage.removeItem(TOKENKEY)
-    }
-    // 设置和获取用户信息
-    getUserInfo() {
-        let userStr = localStorage.getItem(USERKEY)
-        if (!userStr) return null
-        return JSON.parse(userStr)
-    }
-
-    setUserInfo(user) {
-        localStorage.setItem(USERKEY, JSON.stringify(user))
-    }
-    removeUserInfo(){
-        localStorage.removeItem(USERKEY)
     }
 }
 

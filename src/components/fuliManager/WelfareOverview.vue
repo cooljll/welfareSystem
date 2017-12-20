@@ -12,13 +12,13 @@
                     </el-select>
                 </div>
                 <div class="consume">
-                    <div class="scores">{{baseData.scoreRecharge}}
+                    <div class="scores">{{rechargeScore}}
                         <span>积分</span>
                     </div>
                     <div class="scoretitle">企业充值积分数</div>
                 </div>
                 <div class="consume">
-                    <div class="scores">{{baseData.postScoreConsume}}
+                    <div class="scores">{{consumeScore}}
                         <span>积分</span>
                     </div>
                     <div class="scoretitle">企业消费积分数</div>
@@ -34,7 +34,7 @@
                         <span class="txt">积分余额</span>
                         <a class="indextitle-btn" @click="creditRechange">充值</a>
                     </div>
-                    <div class="center">{{Math.floor(scoreBalance)}}</div>
+                    <div class="center">{{scoreBalance}}</div>
                 </div>
                 <div class="holiday-approaching">
                     <div class="title">
@@ -93,6 +93,8 @@ export default{
             baseData:{},//基础数据
             newNoticeContent:"",
             enterpriseInfo:{},
+            consumeScore:"",
+            rechargeScore:"",
             scoreBalance:""//企业余额
         }
     },
@@ -213,7 +215,11 @@ export default{
             })).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
-                        this.baseData=res.data.data
+                        let data=res.data.data
+                        this.consumeScore=Math.floor(data.postScoreConsume)
+                        this.rechargeScore=Math.floor(data.scoreRecharge)
+                        this.scoreBalance=Math.floor(data.scoreBalance)
+                        this.baseData=data
                         this.drawPie()
                     }
                 }
@@ -231,13 +237,6 @@ export default{
                     }
                 }
             })
-        },
-        getPointBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
-                if(res.data.code==1000){
-                    this.scoreBalance=res.data.data
-                }
-            })
         }
     },
     mounted(){
@@ -249,7 +248,6 @@ export default{
         this.getPointRecords(this.currentYear)
         this.getBaseData(this.year,parseInt(this.month))
         this.showNewNotice()
-        this.getPointBalance()
     }
 }
 </script>

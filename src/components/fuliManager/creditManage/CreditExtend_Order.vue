@@ -2,7 +2,7 @@
     <div>
         <div class="page-title" v-show="isShowOrder">
             <div class="btn">
-                <el-button type="info" class="declare">
+                <el-button type="info" class="declare" @click="exportCreditOrder">
                     <i class="iconfont icon-gantanhao"></i>
                     导出excel
                 </el-button>
@@ -14,6 +14,7 @@
                 <el-form :inline="true">
                     <el-form-item label="订单类型：">
                         <el-select placeholder="请选择类型" v-model="filters.welfareType">
+                            <el-option label="全部" value="0"></el-option>
                             <el-option label="激励方案" value="1"></el-option>
                             <el-option label="基本节日" value="2"></el-option>
                             <el-option label="自定义福利" value="3"></el-option>
@@ -231,6 +232,21 @@ export default{
         handleCurrentChange(val){
             this.filters.pageNum=val
             this.getPagedOrder()
+        },
+        //导出excel
+        exportCreditOrder(){
+            this.$axios({
+                url:"/api/api/integral/exportExcelIntegarlOrder",
+                method:"get",
+                params:this.filters,
+                responseType:"arraybuffer"
+            }).then(res=>{
+                if(res){
+                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    let objectUrl=URL.createObjectURL(blob)
+                    window.location.href=objectUrl
+                }
+            })
         },
         // 查看详情
         seeOrderDetail(id){

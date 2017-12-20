@@ -225,6 +225,11 @@
                     <span class="indexlefttitle">
                         离职列表
                     </span>
+                    <div class="indexrighttitle">
+                        <input type="file" @change="getFile($event)" id="fileToUpload">
+                        <el-button type="info" @click="downloadDelExcel">下载excel模板</el-button>
+                        <el-button type="info" @click="selectExcelFile">excel批量删除</el-button>
+                    </div>
                 </div>
             </div>
             <el-row class="content-wrapper">
@@ -489,6 +494,7 @@
 <script>
 import qs from "queryString"
 import authUnils from "../../common/authUnils"
+import fileDownload from 'js-file-download'
 export default{
     data(){
         var checkName=(rule,value,callback)=>{
@@ -622,7 +628,6 @@ export default{
             isShowHandle:false,
             selectedEmployee:[],//选中的员工
             exportEmployeeVisible:false,
-            fileList:[],
             qrcodeVisible:false,
             seeDetailsVisible:false,
             examineVisible:false,
@@ -640,21 +645,11 @@ export default{
             confirmBtn:false,
             isShowFrozenBtn:true,
             isShowReleaseBtn:false,
-            companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName
+            companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName,
+            file:""
         }
     },
     methods:{
-        uploadError (response, file, fileList) {
-            this.$alert("上传失败，请重试！","信息")
-        },
-        beforeFileUpload(file){
-            const ext = file.name.split('.')[1] === 'xls'
-            const ext1 = file.name.split('.')[1] === 'xlsx'
-            if (!ext && !ext1) {
-                this.$alert("上传模板的格式不正确!","信息")
-            }
-            return !ext || !ext1
-        },
         //部门序列表
         getDepartmentList(){
             this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
@@ -773,9 +768,10 @@ export default{
                 responseType:"arraybuffer"
             }).then(res=>{
                 if(res){
-                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-                    let objectUrl=URL.createObjectURL(blob)
-                    window.location.href=objectUrl
+                    // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    // let objectUrl=URL.createObjectURL(blob)
+                    // window.location.href=objectUrl
+                    fileDownload(res.data,'员工导入模板.xls')
                 }
             })
         },
@@ -952,6 +948,44 @@ export default{
                         this.$alert(res.data.message)
                     }
                 })
+            })
+        },
+        selectExcelFile(){
+            document.getElementById('fileToUpload').click()
+        },
+        //批量删除离职员工
+        getFile(event) {
+            this.file = event.target.files[0]
+            let formData = new FormData()
+            formData.append('uploadexcel', this.file)
+            let config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            this.$axios.post("/api/api/employee/batchRemoveEmp",formData,config).then(res=>{
+                console.log(res)
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.showDelEmployee()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,'信息')
+                }
+            })
+        },
+        //移出员工模板
+        downloadDelExcel(){
+            this.$axios({
+                url:"/api/api/employee/downloadExcel2",
+                method:'get',
+                responseType:"arraybuffer"
+            }).then(res=>{
+                if(res){
+                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    let objectUrl=URL.createObjectURL(blob)
+                    window.location.href=objectUrl
+                }
             })
         },
         //审批
@@ -1268,5 +1302,10 @@ export default{
                 }
             }
         }
+    }
+    #fileToUpload{
+        opacity: 0;
+        filter: alpha(opacity=0);
+        -moz-opacity: 0;
     }
 </style>

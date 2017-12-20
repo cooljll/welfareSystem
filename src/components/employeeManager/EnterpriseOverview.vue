@@ -46,6 +46,7 @@
 </template>
 <script>
 import authUnils from '../../common/authUnils'
+import fileDownload from 'js-file-download'
 export default {
   	data () {
     	return {
@@ -222,9 +223,10 @@ export default {
 				responseType:"arraybuffer"
 			}).then(res=>{
 				if(res){
-					let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-					let objectUrl=URL.createObjectURL(blob)
-					window.location.href=objectUrl
+					// let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+					// let objectUrl=URL.createObjectURL(blob)
+					// window.location.href=objectUrl
+					fileDownload(res.data,"员工信息表.xls")
 				}
 			})
         },

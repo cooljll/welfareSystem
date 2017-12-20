@@ -128,6 +128,7 @@
 <script>
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
+import fileDownload from 'js-file-download'
 export default {
   	data () {
         //   var tel = /^\d{3,4}-?\d{7,9}$/  电话号码格式：021-12345678
@@ -365,9 +366,14 @@ export default {
                 responseType:"arraybuffer"
             }).then(res=>{
                 if(res){
-                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-                    let objectUrl=URL.createObjectURL(blob)
-                    window.location.href=objectUrl
+                    // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    // let objectUrl=URL.createObjectURL(blob)
+                    // window.location.href=objectUrl
+
+                    // let fileName=res.headers['content-disposition'].split(";")[1].split("=")[1]
+                    // fileDownload(res.data,fileName)
+
+                    fileDownload(res.data,"导入员工模板.xls")
                 }
             })
         },

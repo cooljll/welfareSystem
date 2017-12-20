@@ -66,7 +66,7 @@
                     <el-menu-item-group> 
                         <el-menu-item index="CreditcardpayIndex">信用卡还款首页</el-menu-item>
                         <el-menu-item index="CreditcardpayRecord">信用卡还款记录</el-menu-item>
-                        <el-menu-item index="CreditcardpayQueue">信用卡还款队列</el-menu-item>
+                        <!-- <el-menu-item index="CreditcardpayQueue">信用卡还款队列</el-menu-item> -->
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>

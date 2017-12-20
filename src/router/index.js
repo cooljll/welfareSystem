@@ -90,7 +90,7 @@ export default new Router({
           { path: '/WelfareReport', component: WelfareReport, name: '福利报告' },
           { path: '/CreditcardpayIndex', component: CreditcardpayIndex, name: '信用卡还款首页' },
           { path: '/CreditcardpayRecord', component: CreditcardpayRecord, name: '信用卡还款记录' },
-          { path: '/CreditcardpayQueue', component: CreditcardpayQueue, name: '信用卡还款队列' }
+          // { path: '/CreditcardpayQueue', component: CreditcardpayQueue, name: '信用卡还款队列' }
 
       ]
     },
