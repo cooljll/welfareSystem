@@ -240,32 +240,22 @@ export default {
 	methods:{
         //查询部门
         searchDepartment(){
-            var tempArr=[]
-            var tempObj={}
-            for(var o in this.data){
-                if(this.data[o] instanceof Array){
-                    //子级
-                    this.data.subItems.forEach(item=>{
-                        tempArr.push(this.transferData(item))
-                    })
-                }else{
-                    tempObj[o]=this.data[o]
-                }
-            }
-            tempArr.unshift(this.transferData(tempObj))
-            this.checkedData=tempArr.filter(item=>{
-                if(this.value==item.displayName.split("(")[0]){
-                    return true
-                }
-            })
-            if(this.checkedData.length!==0){
+            if(this.value.trim()!=""){
                 this.isShowAll=false
                 this.isShowChecked=true
+                var tempObj=this.data[0]
+                // if(tempObj.label.indexOf(this.value)==0){
+                //     this.checkedData.push(tempObj)
+                // }
+                this.checkedData=tempObj.subItems.filter(item=>{
+                    if(item.label.indexOf(this.value)==0){
+                        return true
+                    }
+                })
             }else{
                 this.isShowAll=true
                 this.isShowChecked=false
             }
-            console.log(checkedData)
         },
         getTreeDep(){
             this.data=[]
@@ -369,8 +359,16 @@ export default {
         },
         //下载excel模板
         downloadTemplate(){
-            this.$axios.get("/api/api/employee/downloadExcel").then(res=>{
-                console.log(res)
+            this.$axios({
+                url:"/api/api/employee/downloadExcel",
+                method:"get",
+                responseType:"arraybuffer"
+            }).then(res=>{
+                if(res){
+                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    let objectUrl=URL.createObjectURL(blob)
+                    window.location.href=objectUrl
+                }
             })
         },
         selectExcelFile(){

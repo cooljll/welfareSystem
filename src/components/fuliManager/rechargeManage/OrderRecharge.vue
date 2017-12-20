@@ -32,17 +32,17 @@
             <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderID" label="订单编号" sortable align="center">
+                <el-table-column prop="orderNo" label="订单编号" sortable align="center">
                 </el-table-column>
-                <el-table-column prop="orderType" label="订单类型" align="center">
+                <el-table-column prop="payType" label="订单类型" align="center">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center">
+                <el-table-column prop="creationTime" label="创建时间" align="center">
                 </el-table-column>
-                <el-table-column prop="amount_pay" label="充值积分" align="center">
+                <el-table-column prop="score" label="充值积分" align="center">
                 </el-table-column>
-                <el-table-column prop="recharge_point" label="支付金额" align="center">
+                <el-table-column prop="accountPayable" label="支付金额" align="center">
                 </el-table-column>
-                <el-table-column prop="orderState" label="订单状态" align="center">
+                <el-table-column prop="status" label="订单状态" align="center">
                 </el-table-column>
                 <el-table-column prop="taxType" label="发票类型" align="center">
                 </el-table-column>
@@ -119,13 +119,20 @@ export default{
         },
         //导出excel
         exportExcel() {
-            this.$axios.get("/api/api/recharge/dowloadExcel",{
+            this.$axios({
+                url:"/api/api/recharge/dowloadExcel",
+                method:"get",
                 params:{
                     startTime:this.filters.startTime,
                     endTime:this.filters.lastTime
-                }
+                },
+                responseType:"arraybuffer"
             }).then(res=>{
-                console.log(res.data)
+                if(res){
+                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    let objectUrl=URL.createObjectURL(blob)
+                    window.location.href=objectUrl
+                }
             })
         },
         //充值订单

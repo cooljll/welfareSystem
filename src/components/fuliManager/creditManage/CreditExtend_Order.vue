@@ -210,11 +210,7 @@ export default{
         },
         //显示订单列表
         getPagedOrder(){
-            this.$axios.post("/api/api/integral/showOrder",this.filters,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/integral/showOrder",this.filters).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.tableData=res.data.data.content

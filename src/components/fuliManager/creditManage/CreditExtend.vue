@@ -21,10 +21,10 @@
         </div>
         <div class="page-center">
             <el-row class="layer-title">
-                <el-col class="layer-tag" :name="step1?'active':''" @click="handleStep1">1 选择福利类型</el-col>
-                <el-col class="layer-tag" v-show="isShowTag1" :name="step2?'active':''" @click="handleStep2">2 积分发放配置</el-col>
-                <el-col class="layer-tag" v-show="isShowTag2" :name="step3?'active':''" @click="handleStep3">3 支付订单</el-col>
-                <el-col class="layer-tag" v-show="isShowTag3" :name="step4?'active':''" @click="handleStep4">4 订单支付完成</el-col>
+                <el-col class="layer-tag" :name="step1?'active':''">1 选择福利类型</el-col>
+                <el-col class="layer-tag" v-show="isShowTag1" :name="step2?'active':''" @click.native="handleStep2">2 积分发放配置</el-col>
+                <el-col class="layer-tag" v-show="isShowTag2" :name="step3?'active':''" @click.native="handleStep3">3 支付订单</el-col>
+                <el-col class="layer-tag" v-show="isShowTag3" :name="step4?'active':''" @click.native="handleStep4">4 订单支付完成</el-col>
             </el-row>
             <div class="layer-center1" v-show="step1">
                 <div class="title">基本节日</div>
@@ -220,8 +220,7 @@
             </div>
             <div class="layer-center4" v-show="step4">
                 <div class="success">
-                    <!-- <img src="assets/img/successful.png"> -->
-                    <img src="../../../assets/timg.jpg" alt="">
+                    <img src="../../../assets/img/successful.png">
                     <div class="statusname">发放成功！</div>
                     <div class="btnbox">
                         <el-button type="primary" @click="oneMoreExtend">再次发放</el-button>
@@ -402,6 +401,7 @@ export default{
                     this.totalScores=this.totalEmployee*this.specialScores
                 }
                 if(this.deportExtend){
+                    this.getDepartmentList()
                     this.creditExtendData.forEach(item=>{
                         if(item.scores){
                             this.totalEmployee+=item.memberCount
@@ -409,7 +409,6 @@ export default{
                             this.extendScoresData.push(item)
                         }
                     })
-                    this.getDepartmentList()
                 }
                 this.getFrozenEmps()
                 this.getEnterpriseBalance()
@@ -619,12 +618,12 @@ export default{
                 tolPoint:this.totalScores.toString(),
                 depts:arr
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message)
                 }
             })
         },

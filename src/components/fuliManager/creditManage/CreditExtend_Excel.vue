@@ -430,14 +430,18 @@ export default{
                 this.selectedEmpTags.forEach(item=>{
                     tempStr+=","+item.organizationUnitId
                 })
-                this.$axios.get("/api/api/integral/downloadExcel?param="+escape(tempStr.substr(1)),{
-                    headers:{
-                        "Content-Type":"application/x-download",
-                        "Content-Disposition":"attachment;filename=myexcel.xls"
-                    }
+                this.$axios({
+                    url:"/api/api/integral/downloadExcel",
+                    method:"get",
+                    params:{
+                        param:tempStr.substr(1)
+                    },
+                    responseType:"arraybuffer"
                 }).then(res=>{
                     if(res){
-                        // window.open("getExcelList","_blank")
+                        let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                        let objectUrl=URL.createObjectURL(blob)
+                        window.location.href=objectUrl
                     }
                 })
             }
@@ -469,14 +473,14 @@ export default{
               }
             }
             this.$axios.post("/api/api/integral/uploadIntegralByExcel",formData,config).then(res=>{
+                loading.close()
                 if(res.data.code==1000){
-                    loading.close()
                     this.step1=false
                     this.step2=true
                     this.step3=false
                     this.step4=false
                     this.tableData=res.data.data
-                }else if(res.data.code==1){
+                }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }
             })
@@ -486,30 +490,20 @@ export default{
             if(this.selectedType==""){
                 this.$alert("请先选择福利类型","信息")
             }else{
-                this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId},{
-                    headers:{
-                        "Authorization":authUnils.getToken()
-                    }
-                }).then(res=>{
-                    if(res.status==200){
-                        if(res.data.code==1000){
-                            this.messageTemplate=res.data.data
-                        }
+                this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId}).then(res=>{
+                    if(res.data.code==1000){
+                        this.messageTemplate=res.data.data
+                    }else if(res.data.code==1001){
+                        this.$alert(res.data.message,"信息")
                     }
                 })
             }
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.enterpriseBalance=res.data.data
-                    }
+            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.enterpriseBalance=res.data.data
                 }
             })
         },

@@ -185,8 +185,9 @@ export default{
                     if(this.yinhang){
                         this.payByBank()
                     }else if(this.zhifubao){
-                        window.open("https://excashier.alipay.com/standard/auth.htm?payOrderId=2edb112b517644378be21f963315b223.60")
+                        this.payByAlipay()
                     }else if(this.weixin){
+                        this.payByWechat()
                         this.$router.push("/WechatRecharge")
                     }
                 })
@@ -206,6 +207,30 @@ export default{
                         this.isShowSuccess=false
                     })
                 }
+            })
+        },
+        //支付宝支付
+        payByAlipay(){
+            this.$axios.get("/api/api/alipays/web",{
+                params:{
+                    orderNo:"",
+                    payOrder:"",
+                    point:""
+                }
+            }).then(res=>{
+                console.log(res)
+            })
+        },
+        //微信支付
+        payByWechat(){
+            this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                params:{
+                    orderNo:"",
+                    payOrder:"",
+                    point:""
+                }
+            }).then(res=>{
+                console.log(res)
             })
         },
         //再次充值

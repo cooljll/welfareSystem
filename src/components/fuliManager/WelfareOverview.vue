@@ -12,7 +12,7 @@
                     </el-select>
                 </div>
                 <div class="consume">
-                    <div class="scores">{{baseData.ScoreRecharge}}
+                    <div class="scores">{{baseData.scoreRecharge}}
                         <span>积分</span>
                     </div>
                     <div class="scoretitle">企业充值积分数</div>

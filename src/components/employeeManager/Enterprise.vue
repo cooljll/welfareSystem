@@ -245,7 +245,7 @@
                     </el-table-column>
                     <el-table-column prop="department" label="部门" align="center">
                     </el-table-column>
-                    <el-table-column prop="identifyNumber" label="证件号" align="center">
+                    <el-table-column prop="identifyNumber" label="证件号" align="center" width="200">
                     </el-table-column>
                     <el-table-column prop="phone" label="手机号" align="center">
                     </el-table-column>
@@ -767,8 +767,16 @@ export default{
         },
         //下载excel模板
         downloadTemplate(){
-            this.$axios.get("/api/api/employee/downloadExcel").then(res=>{
-                console.log(res)
+            this.$axios({
+                url:"/api/api/employee/downloadExcel",
+                method:"get",
+                responseType:"arraybuffer"
+            }).then(res=>{
+                if(res){
+                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    let objectUrl=URL.createObjectURL(blob)
+                    window.location.href=objectUrl
+                }
             })
         },
         selectExcelFile(){

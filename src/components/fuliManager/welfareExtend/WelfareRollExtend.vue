@@ -21,10 +21,10 @@
         </div>
         <div class="page-center">
             <el-row class="layer-title">
-                <el-col class="layer-tag" :name="step?'active':''" @click="handleStep">1 选购福利卷</el-col>
-                <el-col class="layer-tag" v-show="isShowTag1" :name="step1?'active':''" @click="handleStep1">2 选择福利类型</el-col>
-                <el-col class="layer-tag" v-show="isShowTag2" :name="step2?'active':''" @click="handleStep2">3 福利卷发放配置</el-col>
-                <el-col class="layer-tag" v-show="isShowTag3" :name="step3?'active':''" @click="handleStep3">4 支付订单</el-col>
+                <el-col class="layer-tag" :name="step?'active':''">1 选购福利卷</el-col>
+                <el-col class="layer-tag" v-show="isShowTag1" :name="step1?'active':''" @click.native="handleStep1">2 选择福利类型</el-col>
+                <el-col class="layer-tag" v-show="isShowTag2" :name="step2?'active':''" @click.native="handleStep2">3 福利卷发放配置</el-col>
+                <el-col class="layer-tag" v-show="isShowTag3" :name="step3?'active':''" @click.native="handleStep3">4 支付订单</el-col>
                 <el-col class="layer-tag hidden-md-and-down" :name="step4?'active':''">5 创建订单完成</el-col>
             </el-row>
             <div class="layer-center" v-show="step">
@@ -728,15 +728,13 @@ export default{
         //显示部门序列表
         getDepartmentList(){
             this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.creditExtendData=[]
-                        res.data.data.forEach(item=>{
-                            if(item.memberCount!=0){
-                                this.creditExtendData.push(item)
-                            }
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.creditExtendData=[]
+                    res.data.data.forEach(item=>{
+                        if(item.memberCount!=0){
+                            this.creditExtendData.push(item)
+                        }
+                    })
                 }
             })
         },
@@ -751,18 +749,16 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.notSelectArr=[]
-                        res.data.data.content.forEach(item=>{
-                            if(item.job_Number==""){
-                                item["label"]=item.name
-                            }else{
-                                item["label"]=item.name+"("+item.job_Number+")"
-                            }
-                            this.notSelectArr.push(item)
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.notSelectArr=[]
+                    res.data.data.content.forEach(item=>{
+                        if(item.job_Number==""){
+                            item["label"]=item.name
+                        }else{
+                            item["label"]=item.name+"("+item.job_Number+")"
+                        }
+                        this.notSelectArr.push(item)
+                    })
                 }
             })
         },
@@ -820,10 +816,8 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.welfareRollList=res.data.data
-                    }
+                if(res.data.code==1000){
+                    this.welfareRollList=res.data.data
                 }
             })
         },
@@ -841,17 +835,15 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        loading.close()
-                        this.rollDescription=res.data.data.description
-                        this.rollInvalidtime=res.data.data.invalidtime
-                        this.rollScores=res.data.data.score
-                        this.productName=res.data.data.name
-                        this.welfareRollDialogTitle=res.data.data.name
-                        this.productList=res.data.data.list
-                        this.welfareRollDemoVisible=true
-                    }
+                if(res.data.code==1000){
+                    loading.close()
+                    this.rollDescription=res.data.data.description
+                    this.rollInvalidtime=res.data.data.invalidtime
+                    this.rollScores=res.data.data.score
+                    this.productName=res.data.data.name
+                    this.welfareRollDialogTitle=res.data.data.name
+                    this.productList=res.data.data.list
+                    this.welfareRollDemoVisible=true
                 }
             })
         },
@@ -862,10 +854,8 @@ export default{
                     "Authorization":authUnils.getToken()
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.btnGroups=res.data.data
-                    }
+                if(res.data.code==1000){
+                    this.btnGroups=res.data.data
                 }
             })
         },

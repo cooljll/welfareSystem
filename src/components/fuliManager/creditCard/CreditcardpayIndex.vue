@@ -161,9 +161,15 @@ export default{
         },
         //下载excel模板
         downloadTemplate(){
-            this.$axios.get("/api/api/creditCard/excel").then(res=>{
+            this.$axios({
+                url:"/api/api/creditCard/excel",
+                method:"get",
+                responseType:'arraybuffer'
+            }).then(res=>{
                 if(res){
-                    // window.location.href = "/ExportExcelServer/DownloadExcel"      
+                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})   
+                    let objectUrl=URL.createObjectURL(blob)
+                    window.location.href=objectUrl  
                 }
             })
         }

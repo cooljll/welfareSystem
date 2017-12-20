@@ -216,8 +216,16 @@ export default {
 		},
 		 //导出员工
         exportExcel() {
-            this.$axios.get("/api/api/employee/exportEmployees").then(res=>{
-				console.log(res)
+            this.$axios({
+				url:"/api/api/employee/exportEmployees",
+				method:"get",
+				responseType:"arraybuffer"
+			}).then(res=>{
+				if(res){
+					let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+					let objectUrl=URL.createObjectURL(blob)
+					window.location.href=objectUrl
+				}
 			})
         },
 		//生成二维码
