@@ -35,8 +35,8 @@ axios.interceptors.response.use(
             case 2001:
                 ElementUI.MessageBox.alert("登陆超时,请重新登陆","信息")
                 authUtil.removeToken()
-                localStorage.removeItem("enterpriseInfo")
-                localStorage.removeItem("loginName")
+                sessionStorage.removeItem("enterpriseInfo")
+                sessionStorage.removeItem("loginName")
                 router.replace({
                     path: '/'
                 })

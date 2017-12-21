@@ -144,7 +144,7 @@ export default {
 				if(res.data.code==1000){
 					this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
 					this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
-					localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
+					sessionStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
 					this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
 				}
 			})
@@ -157,7 +157,7 @@ export default {
 		}else{
 			this.getEnterpriseInfo()
 		}
-		this.loginName=localStorage.getItem("loginName")
+		this.loginName=sessionStorage.getItem("loginName")
 	},
 	watch:{
 		'$route'(to, from) {
