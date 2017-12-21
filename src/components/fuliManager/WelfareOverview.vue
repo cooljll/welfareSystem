@@ -191,15 +191,13 @@ export default{
         },
         //积分消费充值记录
         getPointRecords(yearParams){
-            this.$axios.post("/api/api/enterprise/getPostPointRecords",qs.stringify({year:yearParams})).then(res=>{
+            this.$axios.get("/api/api/enterprise/getLineChartData",{
+                params:{"year":yearParams}
+            }).then(res=>{
                 if(res.data.code==1000){
-                    this.consumeData=res.data.data
-                    this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams})).then(res=>{
-                        if(res.data.code==1000){
-                            this.rechargeData=res.data.data
-                            this.drawBrokenLine()
-                        }
-                    })
+                    this.consumeData=res.data.data.consumeArray
+                    this.rechargeData=res.data.data.rechargeArray
+                    this.drawBrokenLine()
                 }
             })
         },
@@ -240,7 +238,7 @@ export default{
         }
     },
     mounted(){
-        this.enterpriseInfo=JSON.parse(localStorage.getItem("enterpriseInfo"))
+        this.enterpriseInfo=JSON.parse(sessionStorage.getItem("enterpriseInfo"))
         let date=new Date()
         this.year=date.getFullYear().toString()
         this.currentYear=date.getFullYear().toString()

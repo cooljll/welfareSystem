@@ -33,8 +33,7 @@
                     </el-form>
                 </div>
                 <div v-show="isShow_success" class="success">
-                    <!-- <img src="assets/img/successful.png"> -->
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/successful.png">
                     <div class="statusname">发放成功！</div>
                     <div class="btnbox">
                         <el-button type="primary" @click="rePublish">再次发布</el-button>
@@ -84,21 +83,23 @@
                             <tbody>
                                 <tr>
                                     <td class="title">公告标题</td>
-                                    <td colspan="3" class="content">发布公告测试</td>
+                                    <td colspan="3" class="content">{{announceDetail.title}}</td>
                                 </tr>
                                 <tr>
                                     <td class="title">公告内容</td>
-                                    <td colspan="3" class="content noticecontent">测试内容</td>
+                                    <td colspan="3" class="content noticecontent">{{announceDetail.content}}</td>
                                 </tr>
                                 <tr>
                                     <td class="title">接收部门</td>
-                                    <td colspan="3" class="content departmentcontent"><span>运营部</span><span>采购部</span></td>
+                                    <td colspan="3" class="content departmentcontent">
+                                        <span v-for="(item,index) in announceDetail.depts" :key="index">{{item}}</span>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="title">接收人员数</td>
-                                    <td class="content">3</td>
+                                    <td class="content">{{announceDetail.nums}}</td>
                                     <td class="title">发布时间</td>
-                                    <td class="content">2017-12-05 15:19:01</td>
+                                    <td class="content">{{announceDetail.createTime}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -149,7 +150,8 @@ export default{
             },
             selectedDepList:[],
             tempStr:"",
-            totalNums:0
+            totalNums:0,
+            announceDetail:{}
         }
     },
     methods:{
@@ -208,12 +210,8 @@ export default{
                 this.totalNums+=item.memberCount
             })
             this.addNoticeParams.configId=this.tempStr.substr(1)
-            this.addNoticeParams.nums=this.totalNums
-            this.$axios.post("/api/api/announcement/do",this.addNoticeParams,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.addNoticeParams.nums=this.totalNums.toString()
+            this.$axios.post("/api/api/announcement/do",this.addNoticeParams,).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.isShow_success=true
@@ -241,12 +239,10 @@ export default{
         seeNoticeDetail(id){
             this.isShow_List=false
             this.isShow_Detail=true
-            this.$axios.post("/api/api/announcement/desc",id,{
-                headers:{
-                    "Content-Type":"application/json"
+            this.$axios.get("/api/api/announcement/desc?id="+id).then(res=>{
+                if(res.data.code==1000){
+                    this.announceDetail=res.data.data
                 }
-            }).then(res=>{
-                console.log(res)
             })
         },
         goBackList(){
@@ -254,11 +250,7 @@ export default{
             this.isShow_Detail=false
         },
         showDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.filter(item=>{
                         if(item.memberCount!=0){

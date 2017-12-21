@@ -125,23 +125,13 @@ export default{
         },
         //积分消费充值记录
         getPointRecords(yearParams){
-            this.$axios.post("/api/api/enterprise/getPostPointRecords",qs.stringify({year:yearParams}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
+            this.$axios.get("/api/api/enterprise/getLineChartData",{
+                params:{"year":yearParams}
             }).then(res=>{
                 if(res.data.code==1000){
-                    this.consumeData=res.data.data
-                    this.$axios.post("/api/api/enterprise/getRecharePointRecords",qs.stringify({year:yearParams}),{
-                        headers:{
-                            "Authorization":authUnils.getToken()
-                        }
-                    }).then(res=>{
-                        if(res.data.code==1000){
-                            this.rechargeData=res.data.data
-                            this.drawBrokenLine()
-                        }
-                    })
+                    this.consumeData=res.data.data.consumeArray
+                    this.rechargeData=res.data.data.rechargeArray
+                    this.drawBrokenLine()
                 }
             })
         },

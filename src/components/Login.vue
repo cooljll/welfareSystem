@@ -189,11 +189,7 @@ export default{
                         "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
                     }
                 }).then(res=>{
-                    if(authUnils.getToken()){
-                        authUnils.removeToken()
-                        sessionStorage.removeItem("enterpriseInfo")
-                        sessionStorage.removeItem("loginName")
-                    }else{
+                    if(res.status==200){
                         authUnils.setToken(res.data.token_type+" "+res.data.access_token,res.data.expires_in)
                         this.$axios({
                             method:"post",
@@ -210,6 +206,11 @@ export default{
                                 }
                             }
                         })
+                    }else{
+                        authUnils.removeToken()
+                        sessionStorage.removeItem("enterpriseInfo")
+                        sessionStorage.removeItem("loginName")
+                        this.$router.push("/")
                     }
                 })
             }

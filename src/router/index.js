@@ -57,10 +57,7 @@ export default new Router({
       path: '/EmpIndex',
       name: '',
       component: EmpIndex,
-      leaf: true,//只有一个节点    
-      meta: {
-          requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-      },    
+      leaf: true,//只有一个节点       
       children: [
           { path: '/EnterpriseOverview', component: EnterpriseOverview, name: '' },
           { path: '/Enterprise/:currentVal?/:id?/:depId?', component: Enterprise, name: '' }
@@ -70,10 +67,7 @@ export default new Router({
       path: '/WelfareIndex',
       component: WelfareIndex,
       name: '',
-      leaf: true,//只有一个节点
-      meta: {
-        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
-      },         
+      leaf: true,//只有一个节点        
       children: [
           { path: '/WelfareOverview', component: WelfareOverview, name: '福利总览' },
           { path: '/CreditRecharge/:count?', component: CreditRecharge, name: '积分充值' },

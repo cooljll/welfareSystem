@@ -645,7 +645,7 @@ export default{
             confirmBtn:false,
             isShowFrozenBtn:true,
             isShowReleaseBtn:false,
-            companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName,
+            companyName:JSON.parse(sessionStorage.getItem("enterpriseInfo")).enterpriseName,
             file:""
         }
     },
@@ -1259,17 +1259,6 @@ export default{
 }
 </script>
 <style lang="scss" scoped>
-    .fileUpload{
-        font-size: 0;
-        &::-webkit-file-upload-button{
-            background: #66b1ff;
-            border-color: #66b1ff;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-    }
     .flexbox{
         display: flex;
         width: 100%;
@@ -1303,6 +1292,7 @@ export default{
             }
         }
     }
+    // 删除员工
     #fileToUpload{
         opacity: 0;
         filter: alpha(opacity=0);

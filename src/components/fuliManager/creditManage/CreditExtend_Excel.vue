@@ -198,9 +198,9 @@
                             <div class="title">发放对象</div>
                             <div class="center">
                                 <div class="showstafflist">
-                                    <el-tag v-for="tag in selectedEmpTags" :key="tag.label" closable class="tagStyle"
+                                    <el-tag v-for="tag in extendEmpTags" :key="tag" closable class="tagStyle"
                                         :disable-transitions="false" @close="handleClose(tag)">
-                                        {{tag.label}}
+                                        {{tag}}
                                     </el-tag>
                                 </div>
                             </div>
@@ -273,6 +273,7 @@
 <script>
 import authUnils from '../../../common/authUnils'
 import qs from 'queryString'
+import fileDownload from 'js-file-download'
 export default{
     data(){
         return{
@@ -327,7 +328,8 @@ export default{
             totalEmployee:0,
             screenWidth:document.body.clientWidth,
             uploadExcelVisible:false,
-            enterpriseName:""
+            enterpriseName:"",
+            extendEmpTags:[]//发放对象
         }
     },
     methods:{
@@ -356,8 +358,12 @@ export default{
         handleNextStep2(){
             this.totalEmployee=this.tableData.length
             this.totalScores=0
+            let tempStr=""
+            this.extendEmpTags=[]
             this.tableData.forEach(item=>{
                 this.totalScores+=item.shopScore
+                tempStr=item.name+"("+item.shopScore+"积分)"
+                this.extendEmpTags.push(tempStr)
             })
             this.getEnterpriseBalance()
             this.step1=false
@@ -426,22 +432,18 @@ export default{
             if(this.selectedEmpTags.length==0){
                 this.$alert("请先选择部门","信息")
             }else{
-                let tempStr=""
+                let str=""
                 this.selectedEmpTags.forEach(item=>{
-                    tempStr+=","+item.organizationUnitId
+                    str+="&depIds="+item.organizationUnitId
                 })
-                this.$axios({
-                    url:"/api/api/integral/downloadExcel",
-                    method:"get",
-                    params:{
-                        param:tempStr.substr(1)
-                    },
+                this.$axios.get("/api/api/integral/downloadExcel?"+str.substr(1),{
                     responseType:"arraybuffer"
                 }).then(res=>{
                     if(res){
-                        let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-                        let objectUrl=URL.createObjectURL(blob)
-                        window.location.href=objectUrl
+                        // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                        // let objectUrl=URL.createObjectURL(blob)
+                        // window.location.href=objectUrl
+                        fileDownload(res.data,"员工积分发放模板.xls")
                     }
                 })
             }
@@ -560,7 +562,7 @@ export default{
             this.$alert("确定要支付订单？","信息").then(()=>{
                 this.$axios.post("/api/api/integral/postIntegralByExcel",{
                     blessMsg:this.messageTemplate,
-                    festivalId:this.festivalId,
+                    festivalId:this.festivalId.toString(),
                     list:this.tableData
                 }).then(res=>{
                     if(res.data.code==1000){

@@ -296,6 +296,7 @@ export default {
 			}
 		},
 		handleCurrentChange(val){
+            console.log(val)
             this.$router.push({path:"/Enterprise/"+val.displayName+"/"+val.level+"/"+val.organizationUnitId})
 		},
 		//获取离职列表

@@ -149,6 +149,7 @@
 </template>
 <script>
 import authUnils from '../../../common/authUnils'
+import fileDownload from 'js-file-download'
 export default{
     data(){
         return{
@@ -193,7 +194,8 @@ export default{
                 pageSize: 10,
                 state: ""
             },
-            welType:""
+            welType:"",
+            orderId:""
         }
     },
     methods:{
@@ -250,6 +252,7 @@ export default{
         },
         // 查看详情
         seeOrderDetail(id){
+            this.orderId=id
             this.isShowOrder=false
             this.isShowOrderDetail=true
             this.isShowExtendList=false
@@ -293,14 +296,22 @@ export default{
         },
         //打印
         printPage(){
-            var div_print=document.querySelector(".printcontent")
-            var newStr=div_print.innerHTML
-            var oldStr=document.body.innerHTML
-            document.body.innerHTML=newStr
-            window.print()
-            window.location.reload()
-            document.body.innerHTML=oldStr
-            return false
+            let newWindow = window.open("_blank")
+            let codestr = document.querySelector(".printcontent").innerHTML
+            newWindow.document.write(codestr)
+            newWindow.document.close()
+            newWindow.print()
+            return true
+            // this.$axios.get("/api/api/integral/exportExcelIntegarlOrderDes",{
+            //     params:{
+            //         orderId:this.orderId
+            //     },
+            //     responseType:"arraybuffer"
+            // }).then(res=>{
+            //     if(res){
+            //         fileDownload(res.data,"积分发放订单详情.xls")
+            //     }
+            // })
         },
         //返回
         goBackPrev(){

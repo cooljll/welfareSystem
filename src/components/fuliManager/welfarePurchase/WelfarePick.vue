@@ -4,13 +4,28 @@
         <div class="page-center">
             <div class="welfare-wrapper">
                 <img src="../../../assets/img/youmina.png" style="width: 100%;height: auto">
-                <a href="rest/purchaseMod/welLogin" target="_blank">前往商城</a>
+                <!-- <a href="rest/purchaseMod/welLogin" target="_blank">前往商城</a> -->
+                <a href="" @click="gotoShop">前往商城</a>
             </div>
         </div>
     </div>
 </template>
 <script>
-    
+import authUnils from '../../../common/authUnils'
+export default{
+    data(){
+        return{
+
+        }
+    },
+    methods:{
+        gotoShop(){
+            this.$axios.get("/api/api/purchase/welLogin").then(res=>{
+                console.log(res)
+            })
+        }
+    }
+} 
 </script>
 <style lang="scss" scoped>
     .page-center{

@@ -239,12 +239,12 @@ export default {
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
 			this.$axios.post("/api/api/service/qrcode",{}).then(res=>{
+				loading.close()
 				if(res.data.data==1000){
 
 				}else if(res.data.code==1001){
 					this.$alert(res.data.message,"信息")
 				}
-				loading.close()
 				this.qrcodeVisible=true
 			})
 		}
