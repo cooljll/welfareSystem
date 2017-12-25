@@ -178,11 +178,7 @@ export default{
         },
         //公告列表
         getNoticeList(){
-            this.$axios.post("/api/api/announcement/info",this.filters,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/announcement/info",this.filters).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.noticeList=res.data.data.content

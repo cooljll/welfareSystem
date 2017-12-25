@@ -51,9 +51,9 @@
                 <el-table-column label="操作" align="center" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" 
-                        v-show='(scope.row.orderState=="已完成"||(scope.row.orderState=="待付款"&&scope.row.orderType=="银行电汇")||(scope.row.orderState==null))?true:false'>再次充值</el-button>
+                        v-show='(scope.row.status=="已完成"||(scope.row.status=="待付款"&&scope.row.payType=="银行电汇")||(scope.row.status==null))?true:false'>再次充值</el-button>
                         <el-button type="text" @click="handleOrder(scope.row)"
-                        v-show='((scope.row.orderState=="待付款"&&scope.row.orderType=="微信支付")||(scope.row.orderState=="待付款"&&scope.row.orderType=="支付宝"))?true:false'>继续支付</el-button>
+                        v-show='((scope.row.status=="待付款"&&scope.row.payType=="微信支付")||(scope.row.status=="待付款"&&scope.row.payType=="支付宝"))?true:false'>继续支付</el-button>
                     </template>
                 </el-table-column>
             </el-table>

@@ -15,7 +15,7 @@
                         <div class="recharge-countbox">
                             <span class="countxt">充值数量:</span>
                             <div class="countinput">
-                                <el-input v-model="invoiceInfo.amount_payable" @keyup.native="countkeyup"></el-input>
+                                <el-input v-model.number="invoiceInfo.amount_payable" @keyup.native="countkeyup"></el-input>
                             </div>
                         </div>
                         <div class="recharge-moneybox">
@@ -134,7 +134,7 @@ export default{
             isShowSuccess:false,
             //积分充值参数
             invoiceInfo:{
-                amount_payable: "0",
+                amount_payable: 0,
                 enterpriseName: "金划算科技股份有限公司",
                 invoice_address: "",
                 invoice_content: "福利费",
@@ -144,7 +144,7 @@ export default{
                 invoice_type: "普通发票",
                 payOrder: "",
                 payType: "",
-                point: ""
+                point: 0
             },
             weChatVisible:false
         }
@@ -183,6 +183,8 @@ export default{
             }else{
                 this.$confirm("确定生成充值订单？","信息").then(()=>{
                     if(this.yinhang){
+                        this.invoiceInfo.point=this.invoiceInfo.amount_payable
+                        this.invoiceInfo.payType=1
                         this.payByBank()
                     }else if(this.zhifubao){
                         this.payByAlipay()

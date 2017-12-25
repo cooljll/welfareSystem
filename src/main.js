@@ -28,63 +28,46 @@ axios.interceptors.request.use(
       return Promise.reject(err)
   })
 // 响应拦截器
-// axios.interceptors.response.use(
-//   response => {
-//       switch(response.data.code){
-//             case 2001:
-//                 ElementUI.MessageBox.alert("登陆超时,请重新登陆","信息")
-//                 authUtil.removeToken()
-//                 sessionStorage.removeItem("enterpriseInfo")
-//                 sessionStorage.removeItem("loginName")
-//                 router.replace({
-//                     path: '/'
-//                 })
-//                 break
-//       }
-//       return response
-//   },
-//   error => {
-//     if (error.response) {
-//         switch (error.response.status) {
-//             case 401: 
-//                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
-//                 // sessionStorage.removeItem("enterpriseInfo")
-//                 // sessionStorage.removeItem("loginName")
-//                 router.replace({
-//                     path: '/'
-//                 })
-//                 break
-//             case 500:
-//                 ElementUI.MessageBox.alert("服务器内部错误","信息")
-//                 authUtil.removeToken()
-//                 sessionStorage.removeItem("enterpriseInfo")
-//                 sessionStorage.removeItem("loginName")
-//                 router.replace({
-//                     path: '/'
-//                 })
-//                 break
-//         }
-//     }
-//       return Promise.reject(error.response.data.code)   // 返回接口返回的错误信息
-//   }
-// )
-//路由拦截器
-// router.beforeEach((to, from, next) => {
-//     if(/^\/[S|B|V]/.test(to.path)){
-//         if (authUtil.getToken()) {//判断token信息的自写方法
-//             next()
-//         }
-//         else {
-//             authUtil.removeToken()
-//             sessionStorage.removeItem("enterpriseInfo")
-//             sessionStorage.removeItem("loginName")
-//             next({ name: 'Login' })//跳转到登录页
-//         }
-//     }
-//     else {
-//         next()
-//     }
-// })
+axios.interceptors.response.use(
+  response => {
+      switch(response.data.code){
+            case 2001:
+                ElementUI.MessageBox.alert("登陆超时,请重新登陆","信息")
+                authUtil.removeToken()
+                sessionStorage.removeItem("enterpriseInfo")
+                sessionStorage.removeItem("loginName")
+                router.replace({
+                    path: '/'
+                })
+                break
+      }
+      return response
+  },
+  error => {
+    if (error.response) {
+        switch (error.response.status) {
+            case 401: 
+                authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
+                sessionStorage.removeItem("enterpriseInfo")
+                sessionStorage.removeItem("loginName")
+                router.replace({
+                    path: '/'
+                })
+                break
+            case 500:
+                ElementUI.MessageBox.alert("服务器内部错误","信息")
+                authUtil.removeToken()
+                sessionStorage.removeItem("enterpriseInfo")
+                sessionStorage.removeItem("loginName")
+                router.replace({
+                    path: '/'
+                })
+                break
+        }
+    }
+      return Promise.reject(error.response.data.code)   // 返回接口返回的错误信息
+  }
+)
 new Vue({
   el: '#app',
   router,

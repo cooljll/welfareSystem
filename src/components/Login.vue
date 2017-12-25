@@ -181,44 +181,56 @@ export default{
             }else if(this.userInfo.password==""){
                 this.$alert("密码不能为空","信息")
             }else{
-                this.$axios({
-                    method:"post",
-                    url:"/api/oauth/token",
-                    data:'grant_type=client_credentials',
-                    headers:{
-                        "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
-                    }
-                }).then(res=>{
-                    if(res.status==200){
-                        authUnils.setToken(res.data.token_type+" "+res.data.access_token,res.data.expires_in)
-                        this.$axios({
-                            method:"post",
-                            url:"/api/api/user/login",
-                            data:this.userInfo
-                        }).then(res=>{
-                            if(res.data.code==1000){
-                                sessionStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
-                                this.$router.push("/EnterpriseOverview")
-                            }else if(res.data.code==1001){
-                                this.$alert(res.data.message,"信息")
-                                for(var key in this.userInfo){
-                                    this.userInfo[key]=''
-                                }
-                            }
-                        })
-                    }else{
-                        authUnils.removeToken()
-                        sessionStorage.removeItem("enterpriseInfo")
-                        sessionStorage.removeItem("loginName")
-                        this.$router.push("/")
-                    }
-                })
+                if(authUnils.getToken()){
+                    this.login()
+                }else{
+                    this.handleAuth()
+                }
             }
         },
         handleReset(){
             for(var key in this.userInfo){
                 this.userInfo[key]=""
             }
+        },
+        //身份验证
+        handleAuth(){
+            this.$axios({
+                method:"post",
+                url:"/api/oauth/token",
+                data:'grant_type=client_credentials',
+                headers:{
+                    "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
+                }
+            }).then(res=>{
+                if(res.status==200){
+                    authUnils.setToken(res.data.token_type+" "+res.data.access_token,res.data.expires_in)
+                    this.login()
+                }else{
+                    authUnils.removeToken()
+                    sessionStorage.removeItem("enterpriseInfo")
+                    sessionStorage.removeItem("loginName")
+                    this.$router.push("/")
+                }
+            })
+        },
+        //登陆请求
+        login(){
+            this.$axios({
+                method:"post",
+                url:"/api/api/user/login",
+                data:this.userInfo
+            }).then(res=>{
+                if(res.data.code==1000){
+                    sessionStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
+                    this.$router.push("/EnterpriseOverview")
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                    for(var key in this.userInfo){
+                        this.userInfo[key]=''
+                    }
+                }
+            })
         }
     }
 }
