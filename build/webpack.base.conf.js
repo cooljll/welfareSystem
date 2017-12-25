@@ -9,7 +9,7 @@ function resolve (dir) {
 }
 
 module.exports = {
-  entry: {
+  entry: {//配置webpack编译入口
     app: './src/main.js'
   },
   output: {

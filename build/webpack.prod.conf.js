@@ -7,8 +7,8 @@ const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')//如果我们想用webpack打包成一个文件，css js分离开，需要这个插件
+const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')//一个用于生成html文件并自动注入依赖文件(link/script)的webpack插件
 
 const env = config.build.env
 
