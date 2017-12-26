@@ -47,6 +47,9 @@ axios.interceptors.response.use(
     if (error.response) {
         switch (error.response.status) {
             case 401: 
+                // console.log(error.response)
+                // console.log(document.cookie("SESSION"))
+                // error.response.headers.set("set-cookie","SESSION=; Max-Age=0; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; HttpOnly")
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
                 sessionStorage.removeItem("enterpriseInfo")
                 sessionStorage.removeItem("loginName")
@@ -65,7 +68,7 @@ axios.interceptors.response.use(
                 break
         }
     }
-      return Promise.reject(error.response.data.code)   // 返回接口返回的错误信息
+      return Promise.reject(error.response)   // 返回接口返回的错误信息
   }
 )
 new Vue({

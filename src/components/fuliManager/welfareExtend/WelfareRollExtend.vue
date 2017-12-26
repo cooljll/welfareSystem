@@ -388,7 +388,8 @@ export default{
                 text:""
             },
             selectedDepArr:[],//选中的部门
-            screenWidth:document.body.clientWidth
+            screenWidth:document.body.clientWidth,
+            enterpriseEmpTotal:0//企业员工总数
         }
     },
     methods:{
@@ -459,7 +460,11 @@ export default{
                     this.getNormalEmps()
                 }
                 if(this.specialEmp){
-                    this.totalEmployee=this.extendEmpArr.length
+                    if(this.specialEmpFlag=="1"){
+                        this.totalEmployee=this.extendEmpArr.length
+                    }else{
+                        this.totalEmployee=this.enterpriseEmpTotal-this.extendEmpArr.length
+                    }
                     this.totalScores=this.totalEmployee*this.rollScores
                 }
                 if(this.deportExtend){
@@ -559,39 +564,30 @@ export default{
         getNormalEmps(){
             this.$axios.post("/api/api/employee/selEmpCount",true,{
                 headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":authUnils.getToken()
+                    "Content-Type":"application/json"
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.totalEmployee=res.data.data
-                        this.totalScores=this.totalEmployee*this.rollScores
-                    }
+                if(res.data.code==1000){
+                    this.totalEmployee=res.data.data
+                    this.totalScores=this.totalEmployee*this.rollScores
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
         //冻结人数
         getFrozenEmps(){
-            this.$axios.post("/api/api/employee/frozenEmpCount",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.frozenEmpCount=res.data.data
-                    }
+            this.$axios.post("/api/api/employee/frozenEmpCount",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.frozenEmpCount=res.data.data
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.enterpriseBalance=res.data.data
@@ -602,13 +598,11 @@ export default{
         //部门树形
         getTreeDep(){
             this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        let ret=this.transferData(res.data.data)
-                        this.enterpriseName=ret.label
-                        this.departments=[]
-                        this.departments=ret.subItems
-                    }
+                if(res.data.code==1000){
+                    let ret=this.transferData(res.data.data)
+                    this.enterpriseName=ret.label
+                    this.departments=[]
+                    this.departments=ret.subItems
                 }
             })
         },
@@ -622,18 +616,13 @@ export default{
                 productPrice:this.rollScores.toString(),
                 sku:this.sku,
                 tolPoint:this.totalScores.toString()
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -652,17 +641,13 @@ export default{
                 sku:this.sku,
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -681,22 +666,18 @@ export default{
                 sku:this.sku,
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
         //部门发放福利卷
-        deportEmpExtendRolls(){
+        deportEmpExtendRolls(arr){
             this.$axios.post("/api/api/voucher/postVoucherByDep",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
@@ -706,17 +687,13 @@ export default{
                 sku:this.sku,
                 tolPoint:this.totalScores.toString(),
                 depts:arr
-            },{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -744,11 +721,7 @@ export default{
         },
         //获取部门人员数
         getDeportEmpNums(){
-            this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
                 if(res.data.code==1000){
                     this.notSelectArr=[]
                     res.data.data.content.forEach(item=>{
@@ -811,13 +784,11 @@ export default{
         },
         //获取福利卷
         getProduct(){
-            this.$axios.post("/api/api/voucher/product",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/voucher/product",{}).then(res=>{
                 if(res.data.code==1000){
                     this.welfareRollList=res.data.data
+                }else if(res.data.code==1001){
+                    this.$alert(res.message,"信息")
                 }
             })
         },
@@ -830,11 +801,7 @@ export default{
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             })
-            this.$axios.post("/api/api/voucher/product/sku",qs.stringify({sku:sku}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/voucher/product/sku",qs.stringify({sku:sku})).then(res=>{
                 if(res.data.code==1000){
                     loading.close()
                     this.rollDescription=res.data.data.description
@@ -844,16 +811,14 @@ export default{
                     this.welfareRollDialogTitle=res.data.data.name
                     this.productList=res.data.data.list
                     this.welfareRollDemoVisible=true
+                }else if(res.data.code==1001){
+                    this.$alert(res.message,"信息")
                 }
             })
         },
         //节日信息
         showFestival(){
-            this.$axios.post("/api/api/integral/showFestival",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
+            this.$axios.post("/api/api/integral/showFestival",{}).then(res=>{
                 if(res.data.code==1000){
                     this.btnGroups=res.data.data
                 }
@@ -873,7 +838,11 @@ export default{
                     }
                 }
                 if(this.isShowDepartExtend){
-                    this.deportEmpExtendRolls()
+                    let tempArr=[]
+                    this.selectedDepArr.forEach(item=>{
+                        tempArr.push(item.organizationUnitId)
+                    })
+                    this.deportEmpExtendRolls(tempArr)
                 }
             })
         },

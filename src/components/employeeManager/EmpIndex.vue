@@ -239,6 +239,20 @@ export default {
 		}
 	},
 	methods:{
+        //数据转化
+        transferData(params){
+            params["label"]=params.displayName+"("+params.memberCount+")"
+            if(params.subItems&&params.subItems.length!==0){
+                //有子级
+                params.subItems.forEach(item=>{
+                    // if(item.subItems&&item.subItems.length!==0){
+                    //     item["label"]=item.displayName+"("+item.memberCount+")"
+                    // }
+                    item["label"]=item.displayName+"("+item.memberCount+")"
+                })
+            }
+            return params
+        },
         //查询部门
         searchDepartment(){
             if(this.value.trim()!=""){
@@ -261,10 +275,8 @@ export default {
         getTreeDep(){
             this.data=[]
             this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:true})).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.data.push(this.transferData(res.data.data))
-                    }
+                if(res.data.code==1000){
+                    this.data.push(this.transferData(res.data.data))
                 }
             })
         },
@@ -296,7 +308,6 @@ export default {
 			}
 		},
 		handleCurrentChange(val){
-            console.log(val)
             this.$router.push({path:"/Enterprise/"+val.displayName+"/"+val.level+"/"+val.organizationUnitId})
 		},
 		//获取离职列表
@@ -407,17 +418,6 @@ export default {
                     this.$alert(res.data.message,'信息')
                 }
             })
-        },
-        //数据转化
-        transferData(params){
-            params["label"]=params.displayName+"("+params.memberCount+")"
-            if(params.subItems&&params.subItems.length!==0){
-                //有子级
-                params.subItems.forEach(item=>{
-                    item["label"]=item.displayName+"("+item.memberCount+")"
-                })
-            }
-            return params
         }
     },
     mounted(){

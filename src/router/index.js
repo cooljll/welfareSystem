@@ -60,7 +60,7 @@ export default new Router({
       leaf: true,//只有一个节点       
       children: [
           { path: '/EnterpriseOverview', component: EnterpriseOverview, name: '' },
-          { path: '/Enterprise/:currentVal?/:id?/:depId?', component: Enterprise, name: '' }
+          { path: '/Enterprise/:currentVal?/:level?/:depId?', component: Enterprise, name: '' }
       ]
     },
     {

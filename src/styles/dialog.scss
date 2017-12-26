@@ -241,15 +241,12 @@
 .updateAccountPwdDialog{
     .el-dialog{
         width:618px;
-        height:430px;
+        height:514px;
         .el-dialog__header{
             background: #F0F0F0;
         }
         .el-dialog__body{
             padding:20px 20px;
-            .el-form-item{
-                margin-bottom:8px;
-            }
         }
         .el-dialog__footer{
             padding:0 15px 15px;

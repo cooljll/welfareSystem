@@ -136,7 +136,7 @@
                     <el-table-column prop="shopScore" label="发放积分" align="center">
                         <template slot-scope="scope">
                             <el-input v-show="scope.row.edit" size="small" v-model="scope.row.shopScore" 
-                            onkeypress="return event.keyCode>=48&&event.keyCode<=57" @change="checkNo(scope.row.shopScore)"></el-input>
+                            @keyup.native="!(/^[1-9][0-9]*$/.test(scope.row.shopScore))?scope.row.shopScore='':scope.row.shopScore"></el-input>
                             <span v-show="!scope.row.edit">{{ scope.row.shopScore }}</span>
                         </template>  
                     </el-table-column>
@@ -542,14 +542,6 @@ export default{
         selectEmpSubmit(){
             this.selectedEmpTags=this.selectedEmpTags.concat(this.selectedArr)
             this.selectEmpVisible=false
-        },
-        checkNo(value){
-            let reg = /^[1-9]\d*$/
-            if (value) {
-                if (value >999999 || new RegExp(reg).test(value) ==false) {
-                    setTimeout(() => {value=""}, 500)
-                }
-            }
         },
         //删除
         delEmpCredit(obj){

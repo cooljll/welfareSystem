@@ -78,7 +78,9 @@
                                 <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
                                 <el-table-column label="发放积分数" align="center">
                                     <template slot-scope="scope">
-                                        <el-input v-model.number="scope.row.scores"></el-input>
+                                        <el-input v-model.number="scope.row.scores"
+                                         @keyup.native="!(/^[1-9][0-9]*$/.test(scope.row.scores))?scope.row.scores='':scope.row.scores">
+                                        </el-input>
                                     </template>
                                 </el-table-column>
                             </el-table>
@@ -111,7 +113,7 @@
                     <div class="row" v-show="specialEmp">
                         <div class="title">积分数</div>
                         <div class="credit_center">
-                            <el-input v-model.number="specialScores"></el-input>
+                            <el-input v-model.number="specialScores" @keyup.native="countkeyup"></el-input>
                             <span>积分/人</span>
                         </div>
                     </div>
@@ -119,7 +121,7 @@
                     <div class="row" v-show="allEmp">
                         <div class="title">积分数</div>
                         <div class="credit_center">
-                            <el-input v-model.number="allScores"></el-input>
+                            <el-input v-model.number="allScores" @keyup.native="countkeyup"></el-input>
                             <span>积分/人</span>
                         </div>
                     </div>
@@ -452,6 +454,17 @@ export default{
             this.isShowStaffList=false
             this.isShowDepartExtend=true
         },
+        //键盘事件
+        countkeyup(){
+            var reg=/^[1-9][0-9]*$/
+            if((!reg.test(this.allScores))||(!reg.test(this.specialScores))){
+               this.allScores='' 
+               this.specialScores=''
+            }else{
+                this.allScores=this.allScores
+                this.specialScores=this.specialScores
+            }
+        },
         //基本节日选中处理
         handleCurrentBtn(val,id){
             this.selectedType=val
@@ -479,11 +492,7 @@ export default{
             if(this.selectedType==""){
                 this.$alert("请先选择福利类型","信息")
             }else{
-                this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId},{
-                    headers:{
-                        "Authorization":authUnils.getToken()
-                    }
-                }).then(res=>{
+                this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId}).then(res=>{
                     if(res.status==200){
                         if(res.data.code==1000){
                             this.messageTemplate=res.data.data
@@ -496,56 +505,39 @@ export default{
         getNormalEmps(){
             this.$axios.post("/api/api/employee/selEmpCount",true,{
                 headers:{
-                    "Content-Type":"application/json",
-                    "Authorization":authUnils.getToken()
+                    "Content-Type":"application/json"
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.totalEmployee=res.data.data
-                        this.totalScores=this.totalEmployee*this.allScores
-                    }
+                if(res.data.code==1000){
+                    this.totalEmployee=res.data.data
+                    this.totalScores=this.totalEmployee*this.allScores
                 }
             })
         },
         //冻结人数
         getFrozenEmps(){
-            this.$axios.post("/api/api/employee/frozenEmpCount",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.frozenEmpCount=res.data.data
-                    }
+            this.$axios.post("/api/api/employee/frozenEmpCount",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.frozenEmpCount=res.data.data
                 }
             })
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.enterpriseBalance=res.data.data
-                    }
+            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.enterpriseBalance=res.data.data
                 }
             })
         },
         //部门树形
         getTreeDep(){
             this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        let ret=this.transferData(res.data.data)
-                        this.enterpriseName=ret.label
-                        this.departments=[]
-                        this.departments=ret.subItems
-                    }
+                if(res.data.code==1000){
+                    let ret=this.transferData(res.data.data)
+                    this.enterpriseName=ret.label
+                    this.departments=[]
+                    this.departments=ret.subItems
                 }
             })
         },
@@ -557,12 +549,12 @@ export default{
                 point:this.allScores.toString(),
                 tolPoint:this.totalScores.toString()
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -579,12 +571,12 @@ export default{
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -599,14 +591,14 @@ export default{
                 festivalId:this.festivalId.toString(),
                 point:this.specialScores,
                 tolPoint:this.totalScores,
-                empCodes:tempArr
+                empCodes:this.specialEmpCodes
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.handleStep4()
-                        })
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleStep4()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -798,7 +790,13 @@ export default{
         screenWidth (val) {
             this.screenWidth = val
             this.handleScreenWidthChange(this.screenWidth)
-        }
+        },
+        allScores(newValue){
+            var reg=/^[1-9][0-9]*$/
+            if(!reg.test(newValue)){
+
+            }
+        },
     }
 }
 </script>

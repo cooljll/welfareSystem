@@ -15,10 +15,10 @@
                 <div v-show="isShow_extend">
                     <el-form label-position="right" label-width="100px">
                         <el-form-item label="公告标题">
-                            <el-input v-model="addNoticeParams.content"></el-input>
+                            <el-input v-model="addNoticeParams.title"></el-input>
                         </el-form-item>
                         <el-form-item label="公告内容">
-                            <el-input type="textarea" v-model="addNoticeParams.title"></el-input>
+                            <el-input type="textarea" v-model="addNoticeParams.content"></el-input>
                         </el-form-item>
                         <el-form-item label="接收部门">
                             <el-table style="width:660px;margin-top:20px;" :data="tableData" :header-row-style="tableHeader" @selection-change="handleSelectionChange">
@@ -201,20 +201,27 @@ export default{
         },
         //发布公告
         releaseNotice(){
-            this.selectedDepList.forEach(item=>{
-                this.tempStr+=","+item.organizationUnitId
-                this.totalNums+=item.memberCount
-            })
-            this.addNoticeParams.configId=this.tempStr.substr(1)
-            this.addNoticeParams.nums=this.totalNums.toString()
-            this.$axios.post("/api/api/announcement/do",this.addNoticeParams,).then(res=>{
-                if(res.status==200){
+            if(this.addNoticeParams.title.trim()==""){
+                this.$alert("公告标题不能为空","信息")
+            }else if(this.addNoticeParams.content.trim()==""){
+                this.$alert("公告内容不能为空","信息")
+            }else if(this.selectedDepList.length==0){
+                this.$alert("请先选择一个部门","信息")
+            }else{
+                this.selectedDepList.forEach(item=>{
+                    this.tempStr+=","+item.organizationUnitId
+                    this.totalNums+=item.memberCount
+                })
+                this.addNoticeParams.configId=this.tempStr.substr(1)
+                this.addNoticeParams.nums=this.totalNums.toString()
+                this.$axios.post("/api/api/announcement/do",this.addNoticeParams).then(res=>{
                     if(res.data.code==1000){
+                        this.$alert(res.data.message,"信息")
                         this.isShow_success=true
                         this.isShow_extend=false
                     }
-                }
-            })
+                })
+            }
         },
         rePublish(){
             this.isShow_success=false

@@ -63,7 +63,7 @@
             </div>
         </el-dialog>
         <!-- 账号密码修改弹窗(主账号修改密码) -->
-        <el-dialog title="账号信息" :visible.sync="updateAccountVisible" :close-on-click-modal="false" class="updateAccountPwdDialog" style="top:10%">
+        <el-dialog title="账号信息" :visible.sync="updateAccountVisible" :close-on-click-modal="false" class="updateAccountPwdDialog" style="top:8%">
             <el-form label-position="right" label-width="80px" class="form-center" :model="updatePwdParams" status-icon :rules="updatePwdRule" ref="updatePwdParams">
                 <el-form-item label="账号名称">
                     {{accountInfo.accountName}}

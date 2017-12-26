@@ -1,13 +1,13 @@
 <template>
     <div>
         <!-- 企业通讯录 -->
-        <div v-show="($route.params.id=='0'||$route.params.id=='1')?true:false">
+        <div v-show="($route.params.level=='0'||$route.params.level=='1')?true:false">
             <div class="indextitle">
                 <div class="indextitlebox">
                     <span class="indexlefttitle">
                         当前部门：{{$route.params.currentVal}}
                     </span>
-                    <div class="indexrighttitle" v-show="$route.params.id=='0'?true:false">
+                    <div class="indexrighttitle" v-show="$route.params.level=='0'?true:false">
                         <el-button type="info" @click="addDepartment">
                             <i class="iconfont icon-tianjia"></i>
                             添加部门
@@ -17,7 +17,7 @@
                             生成二维码
                         </el-button>
                     </div>
-                    <div class="indexrighttitle" v-show="$route.params.id=='1'?true:false">
+                    <div class="indexrighttitle" v-show="$route.params.level=='1'?true:false">
                         <el-button type="info" @click="editDepartment(Number($route.params.depId))">
                             <i class="iconfont icon-bianji"></i>
                             编辑
@@ -219,7 +219,7 @@
             </el-row>
         </div>
         <!-- 离职列表 -->
-        <div v-show="$route.params.id=='2'?true:false">
+        <div v-show="$route.params.level=='2'?true:false">
             <div class="indextitle">
                 <div class="indextitlebox">
                     <span class="indexlefttitle">
@@ -270,7 +270,7 @@
             </el-row>
         </div>
         <!-- 审批中心 -->
-        <div v-show="$route.params.id=='3'?true:false">
+        <div v-show="$route.params.level=='3'?true:false">
             <div class="indextitle">
                 <div class="indextitlebox">
                     <span class="indexlefttitle">
@@ -730,7 +730,7 @@ export default{
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.$router.push("/EnterpriseOverview")
                         })
-                    }else if(res.data.code==1){
+                    }else if(res.data.code==1001){
                         this.$alert(res.data.message,"信息")
                     }
                 })
@@ -914,6 +914,7 @@ export default{
             this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,'信息').then(()=>{
+                        this.$router.go(0)
                         this.goBackList()
                     })
                 }else if(res.data.code==1){
