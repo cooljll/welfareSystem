@@ -22,9 +22,9 @@
         <div class="page-center">
             <el-row class="layer-title">
                 <el-col class="layer-tag" :name="step1?'active':''">1 选择福利类型</el-col>
-                <el-col class="layer-tag" v-show="isShowTag1" :name="step2?'active':''" @click="errorMessage">2 人员名单检查</el-col>
-                <el-col class="layer-tag" v-show="isShowTag2" :name="step3?'active':''" @click="errorMessage">3 支付订单</el-col>
-                <el-col class="layer-tag" v-show="isShowTag3" :name="step4?'active':''" @click="errorMessage">4 订单支付完成</el-col>
+                <el-col class="layer-tag" v-show="isShowTag1" :name="step2?'active':''" @click.native="errorMessage">2 人员名单检查</el-col>
+                <el-col class="layer-tag" v-show="isShowTag2" :name="step3?'active':''" @click.native="errorMessage">3 支付订单</el-col>
+                <el-col class="layer-tag" v-show="isShowTag3" :name="step4?'active':''" @click.native="errorMessage">4 订单支付完成</el-col>
             </el-row>
             <div class="layer-center1" v-show="step1">
                 <!-- 福利类型 -->
@@ -105,7 +105,7 @@
             </div>
             <div class="layer-center2" v-show="step2">
                 <div class="searchBar">
-                    <div class="handleBar">
+                    <div class="handleBar" @click="batchDelete">
                         <i class="iconfont icon-caozuo"></i>
                         <span>批量删除</span>
                     </div>
@@ -136,7 +136,8 @@
                     <el-table-column prop="shopScore" label="发放积分" align="center">
                         <template slot-scope="scope">
                             <el-input v-show="scope.row.edit" size="small" v-model="scope.row.shopScore" 
-                            @keyup.native="!(/^[1-9][0-9]*$/.test(scope.row.shopScore))?scope.row.shopScore='':scope.row.shopScore"></el-input>
+                            @keyup.native="!(/^[1-9][0-9]*$/.test(scope.row.shopScore))?scope.row.shopScore='0':scope.row.shopScore">
+                            </el-input>
                             <span v-show="!scope.row.edit">{{ scope.row.shopScore }}</span>
                         </template>  
                     </el-table-column>
@@ -150,7 +151,7 @@
                 </el-table>
                 <div class="toolbar">
                     <el-pagination @current-change="handleCurrentChange" :current-page="currentPage"
-                        :page-sizes="[100, 200, 300, 400]" :page-size="100"  layout="total, sizes, prev, pager, next, jumper" :total="400">
+                        :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="10">
                     </el-pagination>
                 </div>
                 <div class="stepBar" v-show="step2">
@@ -287,13 +288,6 @@ export default{
             step3:false,
             step4:false,
             uploadConfig:false,
-            creditExtendData:[
-                {
-                    name:"市场部",
-                    nums:14,
-                    scores:1
-                }
-            ],
             scores:1,
             tableHeader:{
                 background:"#A4AABE",
@@ -303,7 +297,6 @@ export default{
             btnGroups:[],
             selectedType:"",
             festivalId:"",//节日id
-            value:"",
             selectEmpVisible:false,
             tableData:[],
             currentPage:1,
@@ -329,7 +322,8 @@ export default{
             screenWidth:document.body.clientWidth,
             uploadExcelVisible:false,
             enterpriseName:"",
-            extendEmpTags:[]//发放对象
+            extendEmpTags:[],//发放对象
+            selectedExcelEmp:[]
         }
     },
     methods:{
@@ -509,11 +503,6 @@ export default{
                 }
             })
         },
-        handleSelectionChange(val){
-            if(val.length==0){
-                this.$alert("请先选择一个人员进行删除","信息")
-            }
-        },
         //标签删除
         handleClose(tag){
             this.selectedEmpTags.splice(this.selectedEmpTags.indexOf(tag), 1)
@@ -548,6 +537,19 @@ export default{
             this.$alert("确认是否删除？(如果删除错误请重新上传excel)","信息").then(()=>{
                 this.tableData.splice(this.tableData.indexOf(obj), 1)
             })
+        },
+        handleSelectionChange(val){
+            this.selectedExcelEmp=val
+        },
+        //批量删除
+        batchDelete(){
+            if(this.selectedExcelEmp.length==0){
+                this.$alert("请先选择一个人员进行删除","信息")
+            }else{
+                this.$alert("确认是否删除？(如果删除错误请重新上传excel)","信息").then(()=>{
+                    // this.tableData.splice(this.tableData.indexOf(obj), 1)
+                })
+            }
         },
         //支付订单
         payOrder(){

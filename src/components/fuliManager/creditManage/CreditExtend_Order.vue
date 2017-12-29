@@ -36,7 +36,7 @@
                 </el-table-column>
                 <el-table-column prop="welfareType" label="福利类型" align="center">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center">
+                <el-table-column prop="createTime" label="创建时间" align="center" width="180">
                 </el-table-column>
                 <el-table-column prop="consume_point" label="消费积分" align="center">
                 </el-table-column>
@@ -125,7 +125,7 @@
                 <div class="goback">
                     <el-button type="info" @click="returnList">返回列表</el-button>
                 </div>
-                <div class="exportbox">导出excel</div>
+                <div class="exportbox" @click="exportOrderDetail">导出excel</div>
             </div>
             <el-table :data="extendEmpTable" border resizable highlight-current-row style="width: 100%;" border>
                 <el-table-column type="selection" align="center">
@@ -136,7 +136,9 @@
                 </el-table-column>
                 <el-table-column prop="welType" label="福利类型" align="center">
                 </el-table-column>
-                <el-table-column prop="state" label="是否兑换" align="center">
+                <el-table-column prop="departmentName" label="部门名称" align="center">
+                </el-table-column>
+                <el-table-column prop="point" label="获得积分" align="center">
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">
@@ -150,6 +152,7 @@
 <script>
 import authUnils from '../../../common/authUnils'
 import fileDownload from 'js-file-download'
+import moment from 'moment'
 export default{
     data(){
         return{
@@ -244,9 +247,10 @@ export default{
                 responseType:"arraybuffer"
             }).then(res=>{
                 if(res){
-                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-                    let objectUrl=URL.createObjectURL(blob)
-                    window.location.href=objectUrl
+                    // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    // let objectUrl=URL.createObjectURL(blob)
+                    // window.location.href=objectUrl
+                    fileDownload(res.data,"积分发放订单记录"+moment(new Date()).format("YYYY-MM-DD")+".xls")
                 }
             })
         },
@@ -302,16 +306,6 @@ export default{
             newWindow.document.close()
             newWindow.print()
             return true
-            // this.$axios.get("/api/api/integral/exportExcelIntegarlOrderDes",{
-            //     params:{
-            //         orderId:this.orderId
-            //     },
-            //     responseType:"arraybuffer"
-            // }).then(res=>{
-            //     if(res){
-            //         fileDownload(res.data,"积分发放订单详情.xls")
-            //     }
-            // })
         },
         //返回
         goBackPrev(){
@@ -347,6 +341,19 @@ export default{
             this.isShowOrder=true
             this.isShowOrderDetail=false
             this.isShowExtendList=false
+        },
+        //导出excel
+        exportOrderDetail(){
+            this.$axios.get("/api/api/integral/exportExcelIntegarlOrderDes",{
+                params:{
+                    orderId:this.orderId
+                },
+                responseType:"arraybuffer"
+            }).then(res=>{
+                if(res){
+                    fileDownload(res.data,"积分发放订单详情.xls")
+                }
+            })
         }
     },
     mounted(){
@@ -481,6 +488,7 @@ export default{
             line-height: 60px;
             color:#fff;
             font-size: 14px;
+            cursor: pointer;
         }
     }
 </style>

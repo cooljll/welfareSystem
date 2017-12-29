@@ -310,7 +310,7 @@ export default{
             extendScoresData:[],
             tableHeader:{
                 background:"#A4AABE",
-                color:"#fff"
+                color:"#000"
             },
             customWelfareType:"",
             btnGroups:[],//节日信息

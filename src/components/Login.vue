@@ -203,14 +203,12 @@ export default{
                     "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
                 }
             }).then(res=>{
-                console.log(res.headers)
                 if(res.status==200){
                     authUnils.setToken(res.data.token_type+" "+res.data.access_token,res.data.expires_in)
                     this.login()
                 }else{
-                    authUnils.removeToken()
-                    sessionStorage.removeItem("enterpriseInfo")
-                    sessionStorage.removeItem("loginName")
+                    localStorage.removeItem("enterpriseInfo")
+                    localStorage.removeItem("loginName")
                     this.$router.push("/")
                 }
             })
@@ -223,7 +221,7 @@ export default{
                 data:this.userInfo
             }).then(res=>{
                 if(res.data.code==1000){
-                    sessionStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
+                    localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
                     this.$router.push("/EnterpriseOverview")
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")

@@ -38,7 +38,7 @@
                 </el-table-column>
                 <el-table-column prop="welType" label="福利类型" align="center">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center">
+                <el-table-column prop="createTime" label="创建时间" align="center" width="180">
                 </el-table-column>
                 <el-table-column prop="consume_point" label="消费积分" align="center">
                 </el-table-column>
@@ -134,6 +134,7 @@
 <script>
 import authUnils from "../../../common/authUnils"
 import qs from 'queryString'
+import fileDownload from 'js-file-download'
 export default{
     data(){
         return{
@@ -190,11 +191,11 @@ export default{
                 method:"get",
                 responseType:"arraybuffer"
             }).then(res=>{
-                console.log(res)
                 if(res){
-                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-                    let objectUrl=URL.createObjectURL(blob)
-                    window.location.href=objectUrl
+                    // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    // let objectUrl=URL.createObjectURL(blob)
+                    // window.location.href=objectUrl
+                    fileDownload(res.data,'福利卷订单记录.xls')
                 }
             })
         },
@@ -229,6 +230,7 @@ export default{
                 }
             })
         },
+        //详细发放人员
         extendEmpList(id){
             this.orderDetailVisible=false
             this.isShowExtendList=true
@@ -252,7 +254,9 @@ export default{
         //导出福利卷订单详情
         exportToExcel(){
             this.$axios.get("/api/api/voucher/exportExcelVoucherOrderDes").then(res=>{
-                console.log(res)
+                if(res){
+                    fileDownload(res.data,"福利卷订单详情.xls")
+                }
             })
         }
     },

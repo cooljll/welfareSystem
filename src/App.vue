@@ -127,8 +127,8 @@ export default {
 					if(res.data.code==0){
 						this.$alert(res.data.message,"信息").then(()=>{
 							authUnils.removeToken()
-							sessionStorage.removeItem("enterpriseInfo")
-							sessionStorage.removeItem("loginName")
+							localStorage.removeItem("enterpriseInfo")
+							localStorage.removeItem("loginName")
 							this.$router.push("/")
 						})
 					}
@@ -144,7 +144,7 @@ export default {
 				if(res.data.code==1000){
 					this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
 					this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
-					sessionStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
+					localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
 					this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
 				}
 			})
@@ -157,7 +157,7 @@ export default {
 		}else{
 			this.getEnterpriseInfo()
 		}
-		this.loginName=sessionStorage.getItem("loginName")
+		this.loginName=localStorage.getItem("loginName")
 	},
 	watch:{
 		'$route'(to, from) {

@@ -7,12 +7,12 @@ class AuthUtils {
             token,
             expireTime: expireTime 
         }
-        sessionStorage.setItem(TOKENKEY, JSON.stringify(tokenObj))
+        localStorage.setItem(TOKENKEY, JSON.stringify(tokenObj))
     }
 
     // 获取token
     getToken() {
-        let tokenStr = sessionStorage.getItem(TOKENKEY)
+        let tokenStr = localStorage.getItem(TOKENKEY)
         // 如果获取不到
         if (!tokenStr) return null
         let tokenObj = JSON.parse(tokenStr)
@@ -23,7 +23,13 @@ class AuthUtils {
     }
     //清空Token
     removeToken(){
-        sessionStorage.removeItem(TOKENKEY)
+        localStorage.removeItem(TOKENKEY)
+    }
+    //删除cookie
+    delCookie(name){
+        var date=new Date()          
+        date.setTime(date.getTime()-10000)           
+        document.cookie = name + "=;expires=" + (new Date(0)).toGMTString()+";domain=192.168.1.197;path=/"
     }
 }
 

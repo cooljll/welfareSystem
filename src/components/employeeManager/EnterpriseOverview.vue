@@ -51,19 +51,6 @@ export default {
   	data () {
     	return {
 			qrcodeVisible:false,
-			employeeInfo:[
-				{
-					name:"张三",
-					gender:"男",
-					identify:"341227188412143412",
-					department:"市场部",
-					phoneNumber:"18812569098",
-					jobNumber:"1001",
-					status:"正常",
-					email:"zs@163.com",
-					joindate:"2017-8-21"
-				}
-			],
 			totalEmployee:0,
 			genderScope:{},
 			ageScope:{},
@@ -217,11 +204,18 @@ export default {
 		},
 		 //导出员工
         exportExcel() {
+			const empLoading = this.$loading({
+				lock: true,
+				text: '正在载入中。。。',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.$axios({
 				url:"/api/api/employee/exportEmployees",
 				method:"get",
 				responseType:"arraybuffer"
 			}).then(res=>{
+				empLoading.close()
 				if(res){
 					// let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
 					// let objectUrl=URL.createObjectURL(blob)

@@ -18,15 +18,20 @@
                 </el-col>
                 <el-col class="uploadInfo">
                     <div class="get-excel-info" v-show="isShowUpload">
-                        <!-- <img src="/creditcard/images/excel.png" alt=""> -->
-                        <img src="../../../assets/timg.jpg" alt="">
+                        <img src="../../../assets/img/excel.png" alt="">
                         <p class="excel-name">{{fileName}}</p>
                         <el-button type="primary" size="large" @click="uploadFile">开始上传</el-button>
                     </div>
                 </el-col>
                 <el-col class="up-txt">
                     <span>上传要求：</span>
-                    1.仅支持Excel文件  2.请按照模板格式录入正确的信息  3.第一次请勿导入太多数据，导致判卡时间过长影响体验。
+                    1.仅支持Excel文件  2.请按照模板格式录入正确的信息,不要修改模板的格式  
+                    3.第一次导入数据需要判卡，请耐心等候，不要导入太多数据，导致等候时间过长影响体验。
+                </el-col>
+                <el-col class="up-txt">
+                    <span>细则说明：</span>
+                    1.金额必须为整数，模板格式切勿改动  2.单张信用卡每日限还款一次，多还一次会自动转为明日还款。 3.对于单张信用卡金额超过两万的金额，
+                    系统会拆单处理。案例：户名：王** ，卡号：3600 **** **** ****，还款金额：3万， 系统第一天还款两万，第二天还款一万。 
                 </el-col>
                 <el-col>
                     <div class="up-template">
@@ -42,9 +47,9 @@
                         </el-table-column>
                         <el-table-column prop="cardNo" label="卡号" align="center">
                         </el-table-column>
-                        <el-table-column prop="cardName" label="姓名" align="center">
+                        <el-table-column prop="cardName" label="姓名" align="center" width="140">
                         </el-table-column>
-                        <el-table-column prop="money" label="金额" align="center">
+                        <el-table-column prop="money" label="金额" align="center" width="120">
                         </el-table-column>
                         <el-table-column prop="message" label="信息" align="center">
                         </el-table-column>
@@ -110,18 +115,20 @@ export default{
                 'Content-Type': 'multipart/form-data'
               }
             }
+            const loading = this.$loading({
+				lock: true,
+				text: '正在上传。。。',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.$axios.post("/api/api/creditCard/checkExcel",formData,config).then(res=>{
+                loading.close()
                 if(res.data.code==1000){
                     this.excelParams.excelId=res.data.data
-                    this.$axios.post("/api/api/creditCard/uploadExcel",formData,config).then(res=>{
-                        if(res.data.code==1000){
-                            this.$alert(res.data.message,'信息').then(()=>{
-                                this.isShowIndex=false
-                                this.isShowList=true
-                                this.getExcelInfo()
-                            })
-                        }
-                    })
+                    this.$alert(res.data.message,"信息")
+                    this.isShowIndex=false
+                    this.isShowList=true
+                    this.getExcelInfo()
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }
@@ -130,10 +137,11 @@ export default{
         //查看上传的excel信息
         getExcelInfo(){
             this.$axios.post("/api/api/creditCard/excelInfo",this.excelParams).then(res=>{
-                console.log(res)
                 if(res.data.code==1000){
                     this.excelTable=res.data.data.content
                     this.totalSize=res.data.data.totalSize
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -157,7 +165,7 @@ export default{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息")
                 }else if(res.data.code==1001){
-                    this.$alert(res.data.message,"信息")
+                    this.$alert(res.data.message+"!,请修改正确后重新上传!","信息")
                 }
             })
         },

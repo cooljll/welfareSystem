@@ -86,6 +86,11 @@ export default{
                         this.isShowNext=false
                         this.prevNews=this.newsDetailContent.previousArticleDetailsFoot
                         this.nextNews={}
+                    }else if(this.newsDetailContent.previousArticleDetailsFoot==null&&this.newsDetailContent.nextArticleDetailsFoot==null){
+                        this.isShowPrev=true
+                        this.isShowNext=true
+                        this.prevNews={}
+                        this.nextNews={}
                     }else{
                         this.isShowPrev=true
                         this.isShowNext=true

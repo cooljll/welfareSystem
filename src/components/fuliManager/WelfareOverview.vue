@@ -41,7 +41,10 @@
                         <span class="txt">临近节日</span>
                         <a class="indextitle-btn" @click="creditExtend">发送积分</a>
                     </div>
-                    <div class="center"></div>
+                    <div class="center">
+                        <div>元旦</div>
+                        <div style="color:#7B7D7F;font-size:12px;">2018-01-01</div>
+                    </div>
                 </div>
                 <div class="enterprise-announcement">
                     <div class="title">
@@ -90,7 +93,6 @@ export default{
             currentYear:"",
             consumeData:[],
             rechargeData:[],
-            baseData:{},//基础数据
             newNoticeContent:"",
             enterpriseInfo:{},
             consumeScore:"",
@@ -112,31 +114,42 @@ export default{
             this.$router.push("/EnterpriseInfo")
         },
         //饼图
-        drawPie(){
-            let option = {
-                tooltip : {
-                    trigger: 'item',
-                    formatter: "{a} <br/>{b} : {c} ({d}%)"
-                },
-                calculable : true,
-                color:['#F3AC45', '#3BAB4B', '#7F8386', '#19A195'],
-                series : [
-                    {
-                        name:'访问来源',
-                        type:'pie',
-                        radius : '55%',
-                        data:[
-                            {value:this.baseData.purchaseConsume, name:'福利采购'},
-                            {value:this.baseData.VoucherConsume, name:'福利卷'},
-                            {value:this.baseData.postScoreConsume, name:'积分发放'},
-                            {value:this.baseData.postCardConsume, name:'积分卡'}
+        drawPie(year,month){
+            this.$axios.post("/api/api/enterprise/getBaseData",qs.stringify({
+                year:year,
+                month:month
+            })).then(res=>{
+                if(res.data.code==1000){
+                    this.consumeScore=Math.floor(res.data.data.postScoreConsume)
+                    this.rechargeScore=Math.floor(res.data.data.scoreRecharge)
+                    this.scoreBalance=Math.floor(res.data.data.scoreBalance)
+                    let option = {
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        calculable : true,
+                        color:['#F3AC45', '#3BAB4B', '#7F8386', '#19A195' ,'#87CEEB'],
+                        series : [
+                            {
+                                name:'访问来源',
+                                type:'pie',
+                                radius : '55%',
+                                data:[
+                                    {value:res.data.data.VoucherConsume, name:'福利卷'},
+                                    {value:res.data.data.postCardConsume, name:'积分卡'},
+                                    {value:res.data.data.postScoreConsume, name:'积分发放'},
+                                    {value:res.data.data.purchaseConsume, name:'福利采购'},
+                                    {value:res.data.data.creditCard, name:'福利采购'},
+                                ]
+                            }
                         ]
                     }
-                ]
-            }
-            let myChart=this.$echarts.init(document.querySelector(".echartslist"))
-            myChart.setOption(option)
-            window.onresize = myChart.resize
+                    let myChart=this.$echarts.init(document.querySelector(".echartslist"))
+                    myChart.setOption(option)
+                    window.onresize = myChart.resize
+                }
+            })
         },
         //折线图
         drawBrokenLine(){
@@ -205,26 +218,8 @@ export default{
         handlePointRecord(){
             this.getPointRecords(this.currentYear)
         },
-        // 基础数据
-        getBaseData(year,month){
-            this.$axios.post("/api/api/enterprise/getBaseData",qs.stringify({
-                year:year,
-                month:month
-            })).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        let data=res.data.data
-                        this.consumeScore=Math.floor(data.postScoreConsume)
-                        this.rechargeScore=Math.floor(data.scoreRecharge)
-                        this.scoreBalance=Math.floor(data.scoreBalance)
-                        this.baseData=data
-                        this.drawPie()
-                    }
-                }
-            })
-        },
         changeBaseData(){
-            this.getBaseData(this.year,parseInt(this.month))
+            this.drawPie(this.year,parseInt(this.month))
         },
         //显示最新公告信息
         showNewNotice(){
@@ -244,7 +239,7 @@ export default{
         this.currentYear=date.getFullYear().toString()
         this.month=date.getMonth()+1+"月"
         this.getPointRecords(this.currentYear)
-        this.getBaseData(this.year,parseInt(this.month))
+        this.drawPie(this.year,parseInt(this.month))
         this.showNewNotice()
     }
 }
@@ -384,6 +379,9 @@ export default{
                             box-shadow: 0 0 4px 0 #ccc;
                             color:#333;
                         }
+                    }
+                    .center{
+                        color: #2D2E2E;
                     }
                 }
                 .enterprise-announcement{

@@ -21,6 +21,10 @@ axios.interceptors.request.use(
   config => {
     if(authUtil.getToken()){ // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
        config.headers.Authorization = authUtil.getToken()
+    }else{
+        router.replace({
+            path: '/'
+        })
     }
     return config
   },
@@ -31,15 +35,15 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => {
       switch(response.data.code){
-            case 2001:
-                ElementUI.MessageBox.alert("登陆超时,请重新登陆","信息")
-                authUtil.removeToken()
-                sessionStorage.removeItem("enterpriseInfo")
-                sessionStorage.removeItem("loginName")
-                router.replace({
-                    path: '/'
-                })
-                break
+            // case 2001:
+            //     ElementUI.MessageBox.alert(response.data.message,"信息")
+            //     // authUtil.removeToken()
+            //     localStorage.removeItem("enterpriseInfo")
+            //     localStorage.removeItem("loginName")
+            //     router.replace({
+            //         path: '/'
+            //     })
+            //     break
       }
       return response
   },
@@ -47,12 +51,9 @@ axios.interceptors.response.use(
     if (error.response) {
         switch (error.response.status) {
             case 401: 
-                // console.log(error.response)
-                // console.log(document.cookie("SESSION"))
-                // error.response.headers.set("set-cookie","SESSION=; Max-Age=0; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; HttpOnly")
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
-                sessionStorage.removeItem("enterpriseInfo")
-                sessionStorage.removeItem("loginName")
+                localStorage.removeItem("enterpriseInfo")
+                localStorage.removeItem("loginName")
                 router.replace({
                     path: '/'
                 })
@@ -60,8 +61,8 @@ axios.interceptors.response.use(
             case 500:
                 ElementUI.MessageBox.alert("服务器内部错误","信息")
                 authUtil.removeToken()
-                sessionStorage.removeItem("enterpriseInfo")
-                sessionStorage.removeItem("loginName")
+                localStorage.removeItem("enterpriseInfo")
+                localStorage.removeItem("loginName")
                 router.replace({
                     path: '/'
                 })
@@ -71,6 +72,24 @@ axios.interceptors.response.use(
       return Promise.reject(error.response)   // 返回接口返回的错误信息
   }
 )
+//路由拦截
+router.beforeEach((to, from, next) => {
+    if(to.path=="/"){
+        localStorage.removeItem("enterpriseInfo")
+        localStorage.removeItem("loginName")
+        authUtil.delCookie("accessToken")
+    }
+    let token=authUtil.getToken()
+    if (token==null && to.path !== '/') {
+        authUtil.removeToken()
+        localStorage.removeItem("enterpriseInfo")
+        localStorage.removeItem("loginName")
+        authUtil.delCookie("accessToken")
+        next({ path: '/' })
+    } else {
+        next()
+    }
+})
 new Vue({
   el: '#app',
   router,

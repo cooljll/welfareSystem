@@ -3,7 +3,13 @@
         <div class="page-title">{{$route.name}}</div>
         <el-row class="page-center">
             <el-col class="echart" :md="24" :lg="12">
-                <div class="left"></div>
+                <div class="left">
+                </div>
+                <div class="selectBox">
+                    <el-select v-model="shopParams.text" @change="handleEmpShopData">
+                        <el-option v-for="item in year" :value="item" :label="item" :key="item"></el-option>
+                    </el-select>
+                </div>
             </el-col>
             <el-col class="echart" :md="24" :lg="12">
                 <div class="right">
@@ -29,11 +35,12 @@ export default{
         return{
             year:["2017","2016","2015","2014","2013","2012"],
             currentYear:"",
-            shoppingData:[
-                {name: "服饰日用", value: "2"},
-                {name: "数码家电", value: "2"},
-                {name: "营养保健", value: "1"}
-            ],
+            shoppingData:[],
+            shopName:[],//商品名称
+            shopParams:{
+                text:"",
+                type:"1"
+            },
             consumeData:[],
             rechargeData:[]
         }
@@ -50,7 +57,7 @@ export default{
 					orient: 'horizontal',
 					x: 'center',
 					y:"bottom",
-					data:['服饰日用','数码家电','营养保健']
+					data:this.shopName
 				},
                 color:["rgb(131, 178, 127)","rgb(140, 188, 187)","rgb(234, 171, 22)"],
 				series: [
@@ -123,6 +130,21 @@ export default{
             myChart.setOption(option)
             window.onresize = myChart.resize//实现自适应的效果
         },
+        //员工购买商品数据
+        getEmpShoppingData(){
+            this.$axios.post("/api/api/enterprise/getEmpShoppingData",this.shopParams).then(res=>{
+                if(res.data.code==1000){
+                    res.data.data.forEach(item=>{
+                        this.shopName.push(item.name)
+                    })
+                    this.shoppingData=res.data.data
+                    this.drawPie()
+                }
+            })
+        },
+        handleEmpShopData(){
+            this.getEmpShoppingData()
+        },
         //积分消费充值记录
         getPointRecords(yearParams){
             this.$axios.get("/api/api/enterprise/getLineChartData",{
@@ -144,7 +166,9 @@ export default{
         this.drawPie()
         let date=new Date()
         this.currentYear=date.getFullYear().toString()
-        this.getPointRecords(this.currentYear)
+        this.shopParams.text=date.getFullYear().toString()
+        this.getEmpShoppingData()
+        this.getPointRecords(this.currentYear) 
     }
 }
 </script>
@@ -158,6 +182,13 @@ export default{
             margin-bottom:20px;
             background: #fff !important;
             box-shadow: 0 0 2px 0 rgba(58, 77, 98, 0.20);
+            position: relative;
+            .selectBox{
+                position: absolute;
+                right: 60px;
+                top:30px;
+                width: 80px;
+            }
             .left,.right{
                 height:100%;
                 width:100%;
