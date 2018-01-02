@@ -645,7 +645,7 @@ export default{
             confirmBtn:false,
             isShowFrozenBtn:true,
             isShowReleaseBtn:false,
-            companyName:JSON.parse(sessionStorage.getItem("enterpriseInfo")).enterpriseName,
+            companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName,
             file:""
         }
     },

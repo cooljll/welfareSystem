@@ -15,7 +15,7 @@
                         <el-form-item label="密码：">
                             <el-input type="password" v-model="userInfo.password"></el-input>
                         </el-form-item>
-                        <el-button type="info" @click="loginin">登陆</el-button>
+                        <el-button type="info" @click="loginin"  :loading="loginLoad">登陆</el-button>
                         <el-button @click="handleReset">重置</el-button>
                     </el-form>
                 </div>
@@ -39,7 +39,8 @@ export default{
             authData:{
                 client_id:"233668646673605",
                 client_secret:"33b17e066ee6a4ad383f46ec6e28ea1d"
-            }
+            },
+            loginLoad:false
         }
     },
     methods:{
@@ -215,11 +216,13 @@ export default{
         },
         //登陆请求
         login(){
+            this.loginLoad=true
             this.$axios({
                 method:"post",
                 url:"/api/api/user/login",
                 data:this.userInfo
             }).then(res=>{
+                this.loginLoad=false
                 if(res.data.code==1000){
                     localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
                     this.$router.push("/EnterpriseOverview")

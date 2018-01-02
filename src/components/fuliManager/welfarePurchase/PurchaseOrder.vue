@@ -4,13 +4,19 @@
         <div class="page-center">
             <div class="welfare-wrapper">
                 <img src="../../../assets/img/order_bg.png" style="width: 100%;height: auto">
-                <a href="rest/purchaseMod/welLogin?ReturnUrl=%2forder%2fhistory" target="_blank">查看订单</a>
+                <a href="javascript:;" @click="seeOrder">查看订单</a>
             </div>
         </div>
     </div>
 </template>
 <script>
-    
+    export default{
+        methods:{
+            seeOrder(){
+                window.open("http://www.youmina.com/order/history")
+            }
+        }
+    }
 </script>
 <style lang="scss" scoped>
     .page-center{

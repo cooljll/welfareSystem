@@ -70,32 +70,32 @@ export default{
         }
     },
     methods:{
-        getNewsDetail(id){
-            this.$axios.get("/api/api/welfareNews/newsInfo",{params:{
-                id:id
-            }}).then(res=>{
+        getNewsDetail(id){ 
+            this.$axios.get("/api/api/welfareNews/newsInfo",{params:{id:id}}).then(res=>{
                 if(res.data.code==1000){
                     this.newsDetailContent=res.data.data
-                    if(this.newsDetailContent.previousArticleDetailsFoot==null){
+                    let prevTitle=this.newsDetailContent.previousArticleDetailsFoot
+                    let nextTile=this.newsDetailContent.nextArticleDetailsFoot
+                    if(prevTitle==null&&nextTile!=null){
                         this.isShowPrev=false
                         this.isShowNext=true
-                        this.nextNews=this.newsDetailContent.nextArticleDetailsFoot
+                        this.nextNews=nextTile
                         this.prevNews={}
-                    }else if(this.newsDetailContent.nextArticleDetailsFoot==null){
+                    }else if(prevTitle!=null&&nextTile==null){
                         this.isShowPrev=true
                         this.isShowNext=false
-                        this.prevNews=this.newsDetailContent.previousArticleDetailsFoot
+                        this.prevNews=prevTitle
                         this.nextNews={}
-                    }else if(this.newsDetailContent.previousArticleDetailsFoot==null&&this.newsDetailContent.nextArticleDetailsFoot==null){
-                        this.isShowPrev=true
-                        this.isShowNext=true
+                    }else if(prevTitle==null&&nextTile==null){
+                        this.isShowPrev=false
+                        this.isShowNext=false
                         this.prevNews={}
                         this.nextNews={}
                     }else{
                         this.isShowPrev=true
                         this.isShowNext=true
-                        this.prevNews=this.newsDetailContent.previousArticleDetailsFoot
-                        this.nextNews=this.newsDetailContent.nextArticleDetailsFoot
+                        this.prevNews=prevTitle
+                        this.nextNews=nextTile
                     }
                 }
             })

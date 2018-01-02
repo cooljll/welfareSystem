@@ -21,231 +21,238 @@
         </div>
         <div class="page-center">
             <el-row class="layer-title">
-                <el-col class="layer-tag" :name="step?'active':''">1 选购福利卷</el-col>
+                <el-col class="layer-tag" :name="step?'active':''" @click.native="handleStep">1 选购福利卷</el-col>
                 <el-col class="layer-tag" v-show="isShowTag1" :name="step1?'active':''" @click.native="handleStep1">2 选择福利类型</el-col>
                 <el-col class="layer-tag" v-show="isShowTag2" :name="step2?'active':''" @click.native="handleStep2">3 福利卷发放配置</el-col>
                 <el-col class="layer-tag" v-show="isShowTag3" :name="step3?'active':''" @click.native="handleStep3">4 支付订单</el-col>
                 <el-col class="layer-tag hidden-md-and-down" :name="step4?'active':''">5 创建订单完成</el-col>
             </el-row>
-            <div class="layer-center" v-show="step">
-                <div class="voucherlist">
-                    <div v-for="(item,index) in welfareRollList" :key="index" @click="getWelfareRolls(item.sku)">
-                        <div class="imgbox">
-                            <img :src="item.urlImg">
-                        </div>
-                        <div class="title">{{item.name}}</div>
-                        <div class="scorebox">
-                            <span class="score">{{item.score}}</span>
-                            <span class="company">积分</span>
-                            <span class="oldscore">市场价: {{item.shop_score}}积分</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="layer-center1" v-show="step1">
-                <div class="title">福利卷
-                    <span>{{welfareRollDialogTitle}}</span>
-                </div>
-                <div class="title">基本节日</div>
-                <div class="checkboxdiv">
-                    <el-button v-for="item in btnGroups" :label="item.name" :key="item.id"  @click="handleCurrentBtn(item.name,item.id)">{{item.name}}</el-button>        
-                </div>
-                <div class="title">激励方案</div>
-                <div class="checkboxdiv">
-                    <el-button @click="handleIncentiveScheme">员工激励</el-button>
-                </div>
-                <div class="title">自定义福利</div>
-                <div class="checkboxdiv">
-                    <el-form :inline="true">
-                        <el-form-item>
-                            <el-input v-model="customWelfareType"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button @click="customSubmit">确定</el-button>
-                        </el-form-item>
-                    </el-form>    
-                </div>
-                <div class="title" v-show="isShow">已选中福利类型</div>
-                <div class="checkedbox" v-show="isShow">
-                    <div>
-                        {{selectedType}}
-                        <span @click="deleteCheckedType">x</span>
-                    </div>
-                </div>
-                <el-button type="primary" @click="handleStep2">下一步</el-button>
-            </div>
-            <div class="layer-center2" v-show="step2">
-                <div class="choose-title">
-                    <a :class="allEmp?'active':''" @click="handleStep2_1">全体员工</a>
-                    <a :class="specialEmp?'active':''" @click="handleStep2_2">特定员工</a>
-                    <a :class="deportExtend?'active':''" @click="handleStep2_3">部门发放</a>
-                </div>
-                <div class="choose-center">
-                    <!-- 福利卷 -->
-                    <div class="row">
-                        <div class="title">福利卷</div>
-                        <div class="center">
-                            <span class="fulitype">{{welfareRollDialogTitle}}</span>
-                        </div>
-                    </div>
-                    <!-- 福利类型 -->
-                    <div class="row">
-                        <div class="title">福利类型</div>
-                        <div class="center">
-                            <span class="fulitype">{{selectedType}}</span>
-                        </div>
-                    </div>
-                    <!-- 特定人员 -->
-                    <div class="row" v-show="specialEmp">
-                        <div class="title">人员筛选</div>
-                        <div class="center">
-                            <el-button @click="selectEmployee">选择人员</el-button>
-                        </div>
-                    </div>
-                    <div v-show="specialEmp">
-                        <div class="selectedEmp">
-                            <el-tag v-for="tag in extendEmpArr" :key="tag.name" closable class="tagStyle"
-                                :disable-transitions="false" @close="handleClose(tag.name)">
-                                {{tag.name}}
-                            </el-tag>
-                        </div>
-                    </div>
-                    <div class="row" v-show="specialEmp">
-                        <div class="title">发放模式</div>
-                        <div class="center">
-                            <el-select v-model="specialEmpFlag" placeholder="请选择">
-                                <el-option label="特定人员发放" value="1"></el-option>
-                                <el-option label="特定人员不发放" value="2"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <!-- 部门发放 -->
-                    <div class="row" v-show="deportExtend">
-                        <div class="title">选择部门</div>
-                        <div class="center">
-                            <el-table style="width:660px;margin-top:20px;" :data="creditExtendData" :header-row-style="tableHeader" @selection-change="handleSelectionChange">
-                                <el-table-column type="selection" align="center" class-name="reset"></el-table-column>
-                                <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
-                                <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
-                            </el-table>
-                        </div>
-                    </div>
-                    <!-- 模板寄语 -->
-                    <div class="row">
-                        <div class="title">邮件寄语</div>
-                        <div class="center">
-                            <a class="btnmessage" @click="getRandomMessage">
-                                <img src="http://192.168.1.197:8082/assets/img/template.png">
-                                <span>寄语模板 (点击自动生成)</span>
-                            </a>
-                            <el-input type="textarea" v-model="messageTemplate" style="border-radius:0;"></el-input>
-                        </div>
-                    </div>
-                    <!-- 上下步操作 -->
-                    <div class="row">
-                        <div class="title">&nbsp;</div>
-                        <div class="center">
-                            <el-button type="primary" @click="handleStep3">下一步</el-button>
-                            <el-button @click="handleStep1">上一步</el-button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="title">&nbsp;</div>
-                        <div class="center">
-                            <span class="warning">* 全部在职员工不包含冻结帐户</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="layer-center3" v-show="step3">
-                <div class="information-check-center">
-                    <div class="left-box">
-                        <div class="centerrow">
-                            <div class="title">消耗总积分</div>
-                            <div class="center-left">
-                                <div class="allscorerow">
-                                    <span class="scoreallcount">{{totalScores}}</span>
-                                    <span>积分</span>
-                                </div>
-                                <div class="rowbottom">发放总人数:&nbsp;<span>{{totalEmployee}}</span></div>
-                                <div class="rowbottom">冻结总人数:&nbsp;<span>{{frozenEmpCount}}</span></div>
+            <div v-show="isShowWelfareRoll">
+                <div class="layer-center" v-show="step">
+                    <div class="voucherlist">
+                        <div v-for="(item,index) in welfareRollList" :key="index" @click="getWelfareRolls(item.id)">
+                            <div class="imgbox">
+                                <img :src="item.welfareVoucherLogoUrl">
+                            </div>
+                            <div class="title">{{item.name}}</div>
+                            <div class="scorebox">
+                                <span class="score">{{item.price}}</span>
+                                <span class="company">积分</span>
+                                <span class="oldscore">市场价: {{item.oldPrice}}积分</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="information-center">
-                    <div class="right-box">
-                        <div class="centerrow">
-                            <div class="title scoretitle">企业余额</div>
+                <div class="layer-center1" v-show="step1">
+                    <div class="title">福利卷
+                        <span>{{welfareRollDialogTitle}}</span>
+                    </div>
+                    <div class="title">基本节日</div>
+                    <div class="checkboxdiv">
+                        <el-button v-for="item in btnGroups" :label="item.name" :key="item.id"  @click="handleCurrentBtn(item.name,item.id)">{{item.name}}</el-button>        
+                    </div>
+                    <div class="title">激励方案</div>
+                    <div class="checkboxdiv">
+                        <el-button @click="handleIncentiveScheme">员工激励</el-button>
+                    </div>
+                    <div class="title">自定义福利</div>
+                    <div class="checkboxdiv">
+                        <el-form :inline="true">
+                            <el-form-item>
+                                <el-input v-model="customWelfareType"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button @click="customSubmit">确定</el-button>
+                            </el-form-item>
+                        </el-form>    
+                    </div>
+                    <div class="title" v-show="isShow">已选中福利类型</div>
+                    <div class="checkedbox" v-show="isShow">
+                        <div>
+                            {{selectedType}}
+                            <span @click="deleteCheckedType">x</span>
+                        </div>
+                    </div>
+                    <el-button type="primary" @click="handleStep2">下一步</el-button>
+                </div>
+                <div class="layer-center2" v-show="step2">
+                    <div class="choose-title">
+                        <a :class="allEmp?'active':''" @click="handleStep2_1">全体员工</a>
+                        <a :class="specialEmp?'active':''" @click="handleStep2_2">特定员工</a>
+                        <a :class="deportExtend?'active':''" @click="handleStep2_3">部门发放</a>
+                    </div>
+                    <div class="choose-center">
+                        <!-- 福利卷 -->
+                        <div class="row">
+                            <div class="title">福利卷</div>
                             <div class="center">
-                                <span class="score">{{enterpriseBalance}}</span>
-                                <span>积分</span>
+                                <span class="fulitype">{{welfareRollDialogTitle}}</span>
                             </div>
                         </div>
-                        <div class="centerrow">
+                        <!-- 福利类型 -->
+                        <div class="row">
                             <div class="title">福利类型</div>
-                            <div class="center">{{selectedType}}</div>
-                        </div>
-                        <div class="centerrow">
-                            <div class="title">发放时间</div>
-                            <div class="center">立即发放</div>
-                        </div>
-                        <div class="centerrow">
-                            <div class="title">邮件寄语</div>
-                            <div class="center">{{messageTemplate}}</div>
-                        </div>
-                        <div class="bottomrow">
-                            <div class="title">发放对象</div>
                             <div class="center">
-                                <div v-show="isShowAllEmp">{{extendWelfareRollType}}</div>
-                                <!-- 特定员工发放 -->
-                                <div class="showstafflist" v-show="isShowStaffList">
-                                    <el-tag v-for="tag in extendEmpArr" :key="tag.name" closable class="tagStyle"
-                                        :disable-transitions="false" @close="handleClose(tag.name)">
-                                        {{tag.name}}
-                                    </el-tag>
-                                </div>
-                                <!-- 按部门发放 -->
-                                <el-table style="width:660px;margin-top:20px;" :data="selectedDepArr" :header-row-style="tableHeader" v-show="isShowDepartExtend">
-                                     <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
-                                     <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
+                                <span class="fulitype">{{selectedType}}</span>
+                            </div>
+                        </div>
+                        <!-- 特定人员 -->
+                        <div class="row" v-show="specialEmp">
+                            <div class="title">人员筛选</div>
+                            <div class="center">
+                                <el-button @click="selectEmployee">选择人员</el-button>
+                            </div>
+                        </div>
+                        <div v-show="specialEmp">
+                            <div class="selectedEmp">
+                                <el-tag v-for="tag in extendEmpArr" :key="tag.name" closable class="tagStyle"
+                                    :disable-transitions="false" @close="handleClose(tag.name)">
+                                    {{tag.name}}
+                                </el-tag>
+                            </div>
+                        </div>
+                        <div class="row" v-show="specialEmp">
+                            <div class="title">发放模式</div>
+                            <div class="center">
+                                <el-select v-model="specialEmpFlag" placeholder="请选择">
+                                    <el-option label="特定人员发放" value="1"></el-option>
+                                    <el-option label="特定人员不发放" value="2"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <!-- 部门发放 -->
+                        <div class="row" v-show="deportExtend">
+                            <div class="title">选择部门</div>
+                            <div class="center">
+                                <el-table style="width:660px;margin-top:20px;" :data="creditExtendData" @selection-change="handleSelectionChange">
+                                    <el-table-column type="selection" align="center" class-name="reset"></el-table-column>
+                                    <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
+                                    <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
                                 </el-table>
                             </div>
                         </div>
+                        <!-- 模板寄语 -->
+                        <div class="row">
+                            <div class="title">邮件寄语</div>
+                            <div class="center">
+                                <a class="btnmessage" @click="getRandomMessage">
+                                    <img src="http://192.168.1.197:8082/assets/img/template.png">
+                                    <span>寄语模板 (点击自动生成)</span>
+                                </a>
+                                <el-input type="textarea" v-model="messageTemplate" style="border-radius:0;"></el-input>
+                            </div>
+                        </div>
+                        <!-- 上下步操作 -->
+                        <div class="row">
+                            <div class="title">&nbsp;</div>
+                            <div class="center">
+                                <el-button type="primary" @click="handleStep3">下一步</el-button>
+                                <el-button @click="handleStep1">上一步</el-button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="title">&nbsp;</div>
+                            <div class="center">
+                                <span class="warning">* 全部在职员工不包含冻结帐户</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="information-btn">
-                    <el-button type="primary" @click="paymentOrder">支付订单</el-button>
-                    <el-button @click="handleStep2">上一步</el-button>
+                <div class="layer-center3" v-show="step3">
+                    <div class="information-check-center">
+                        <div class="left-box">
+                            <div class="centerrow">
+                                <div class="title">消耗总积分</div>
+                                <div class="center-left">
+                                    <div class="allscorerow">
+                                        <span class="scoreallcount">{{totalScores}}</span>
+                                        <span>积分</span>
+                                    </div>
+                                    <div class="rowbottom">发放总人数:&nbsp;<span>{{totalEmployee}}</span></div>
+                                    <div class="rowbottom">冻结总人数:&nbsp;<span>{{frozenEmpCount}}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="information-center">
+                        <div class="right-box">
+                            <div class="centerrow">
+                                <div class="title scoretitle">企业余额</div>
+                                <div class="center">
+                                    <span class="score">{{enterpriseBalance}}</span>
+                                    <span>积分</span>
+                                </div>
+                            </div>
+                            <div class="centerrow">
+                                <div class="title">福利类型</div>
+                                <div class="center">{{selectedType}}</div>
+                            </div>
+                            <div class="centerrow">
+                                <div class="title">发放时间</div>
+                                <div class="center">立即发放</div>
+                            </div>
+                            <div class="centerrow">
+                                <div class="title">邮件寄语</div>
+                                <div class="center">{{messageTemplate}}</div>
+                            </div>
+                            <div class="bottomrow">
+                                <div class="title">发放对象</div>
+                                <div class="center">
+                                    <div v-show="isShowAllEmp">{{extendWelfareRollType}}</div>
+                                    <!-- 特定员工发放 -->
+                                    <div class="showstafflist" v-show="isShowStaffList">
+                                        <el-tag v-for="tag in extendEmpArr" :key="tag.name" closable class="tagStyle"
+                                            :disable-transitions="false" @close="handleClose(tag.name)">
+                                            {{tag.name}}
+                                        </el-tag>
+                                    </div>
+                                    <!-- 按部门发放 -->
+                                    <el-table style="width:660px;margin-top:20px;" :data="selectedDepArr" v-show="isShowDepartExtend">
+                                        <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
+                                        <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
+                                    </el-table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="information-btn">
+                        <el-button type="primary" @click="paymentOrder">支付订单</el-button>
+                        <el-button @click="handleStep2">上一步</el-button>
+                    </div>
+                </div>
+                <div class="layer-center4" v-show="step4">
+                    <div class="success">
+                        <img src="../../../assets/img/successful.png">
+                        <div class="statusname">发放成功！</div>
+                        <div class="btnbox">
+                            <el-button type="primary" @click="$router.push('/WelfareRollExtend')">再次发放</el-button>
+                            <el-button @click="$router.push('/WelfareRollOrder')">查看订单</el-button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="layer-center4" v-show="step4">
-                <div class="success">
-                    <img src="../../../assets/img/successful.png">
-                    <div class="statusname">发放成功！</div>
-                    <div class="btnbox">
-                        <el-button type="primary">再次发放</el-button>
-                        <el-button>查看订单</el-button>
-                    </div>
-                </div>
+            <!-- 无福利卷 -->
+            <div class="nonData" v-show="isShowNotData">
+                <img src="../../../assets/img/dataerror.png">
+                <span>暂无福利卷</span>
             </div>
         </div>
         <!-- 福利卷弹窗 -->
         <el-dialog :title="welfareRollDialogTitle" :visible.sync="welfareRollDemoVisible" :close-on-click-modal="false" class="welfareRollDialog">
             <div class="welfare_wrapper">
-                <div class="pro_content" v-for="(item,index) in productList" :key="index" @click="window.open(item.shopUrl)">
+                <div class="pro_content" v-for="(item,index) in productList" :key="index" @click="goToMall(item.url)">
                     <div class="imgbox">
-                        <img :src="item.shopImg" alt="">
+                        <img :src="item.imageUrl" alt="">
                     </div>
                     <div class="info">
                         <div class="title">
-                            {{item.shopName}}
+                            {{item.name}}
                         </div>
                         <div class="desc">
                             {{item.shortDescription}}
                         </div>
-                        <div class="shop_score">市场价 {{item.marketPrice}}</div>
-                        <div class="cur_score">{{item.shopPrice}} 积分</div>
+                        <div class="shop_score">市场价 {{item.oldPrice}}</div>
+                        <div class="cur_score">{{item.price}} 积分</div>
                     </div>
                 </div>
             </div>
@@ -347,10 +354,6 @@ export default{
             festivalId:0,//节日类型id
             specialEmpFlag:"",//特定人员发放与不发放标志
             creditExtendData:[],
-            tableHeader:{
-                background:"#A4AABE",
-                color:"#fff"
-            },
             welfareRollDemoVisible:false,
             welfareRollDialogTitle:"",
             flag:false,
@@ -376,7 +379,7 @@ export default{
             rollDescription:"",
             rollInvalidtime:"",
             productName:"",//福利卷名称
-            sku:"",
+            welfareVoucherId:"",//福利卷id
             rollScores:0,//福利卷积分
             totalScores:0,//总积分数
             totalEmployee:0,//总人数（正常）
@@ -389,7 +392,13 @@ export default{
             },
             selectedDepArr:[],//选中的部门
             screenWidth:document.body.clientWidth,
-            enterpriseEmpTotal:0//企业员工总数
+            enterpriseEmpTotal:0,//企业员工总数
+            productParams:{
+                pageNum:1,
+                pageSize:10
+            },
+            isShowWelfareRoll:true,
+            isShowNotData:false
         }
     },
     methods:{
@@ -614,7 +623,7 @@ export default{
                 nums:this.totalEmployee.toString(),
                 productName:this.productName,
                 productPrice:this.rollScores.toString(),
-                sku:this.sku,
+                welfareVoucherId:this.welfareVoucherId,
                 tolPoint:this.totalScores.toString()
             }).then(res=>{
                 if(res.data.code==1000){
@@ -638,7 +647,7 @@ export default{
                 nums:this.totalEmployee.toString(),
                 productName:this.productName,
                 productPrice:this.rollScores.toString(),
-                sku:this.sku,
+                welfareVoucherId:this.welfareVoucherId,
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
             }).then(res=>{
@@ -663,7 +672,7 @@ export default{
                 nums:this.totalEmployee.toString(),
                 productName:this.productName,
                 productPrice:this.rollScores.toString(),
-                sku:this.sku,
+                welfareVoucherId:this.welfareVoucherId,
                 tolPoint:this.totalScores.toString(),
                 empCodes:this.specialEmpCodes
             }).then(res=>{
@@ -684,7 +693,7 @@ export default{
                 nums:this.totalEmployee.toString(),
                 productName:this.productName,
                 productPrice:this.rollScores.toString(),
-                sku:this.sku,
+                welfareVoucherId:this.welfareVoucherId,
                 tolPoint:this.totalScores.toString(),
                 depts:arr
             }).then(res=>{
@@ -784,37 +793,49 @@ export default{
         },
         //获取福利卷
         getProduct(){
-            this.$axios.post("/api/api/voucher/product",{}).then(res=>{
+            this.$axios.post("/api/api/voucher/product",this.productParams).then(res=>{
                 if(res.data.code==1000){
-                    this.welfareRollList=res.data.data
+                    let welfareRolls=res.data.data.content
+                    if(welfareRolls.length==0){
+                        this.isShowWelfareRoll=false
+                        this.isShowNotData=true
+                    }else{
+                        this.isShowWelfareRoll=true
+                        this.isShowNotData=false
+                        this.welfareRollList=welfareRolls
+                    }
                 }else if(res.data.code==1001){
                     this.$alert(res.message,"信息")
                 }
             })
         },
         //获取福利卷详情
-        getWelfareRolls(sku){
-            this.sku=sku
+        getWelfareRolls(id){
+            this.welfareVoucherId=id
             const loading = this.$loading({
                 lock: true,
                 text: '正在获取福利卷',
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             })
-            this.$axios.post("/api/api/voucher/product/sku",qs.stringify({sku:sku})).then(res=>{
+            this.$axios.post("/api/api/voucher/product/sku",qs.stringify({voucherId:id})).then(res=>{
                 if(res.data.code==1000){
                     loading.close()
-                    this.rollDescription=res.data.data.description
-                    this.rollInvalidtime=res.data.data.invalidtime
-                    this.rollScores=res.data.data.score
-                    this.productName=res.data.data.name
                     this.welfareRollDialogTitle=res.data.data.name
-                    this.productList=res.data.data.list
+                    this.productList=res.data.data.welfareProducts
+                    this.rollScores=res.data.data.price
+                    this.productName=res.data.data.name
+                    this.rollDescription=res.data.data.summary
+                    this.rollInvalidtime=res.data.data.endDate
                     this.welfareRollDemoVisible=true
                 }else if(res.data.code==1001){
                     this.$alert(res.message,"信息")
                 }
             })
+        },
+        //跳转到商城查看商品详情
+        goToMall(url){
+            window.open(url)
         },
         //节日信息
         showFestival(){
@@ -1136,6 +1157,23 @@ export default{
                 margin-bottom:30px;
                 text-align: center;
             }
+        }
+    }
+    .nonData{
+        margin-bottom: 10px;
+        img{
+            display: block;
+            margin: 95px auto 30px;
+            border:0;
+            width:317px;
+            height:181px;
+        }
+        span{
+            display: block;
+            text-align: center;
+            font-size: 24px;
+            color: #A8A9AB;
+            margin-bottom: 120px;
         }
     }
     .welfare_wrapper{

@@ -120,9 +120,8 @@ export default{
                 month:month
             })).then(res=>{
                 if(res.data.code==1000){
-                    this.consumeScore=Math.floor(res.data.data.postScoreConsume)
+                    this.consumeScore=Math.floor(res.data.data.totalConsume)
                     this.rechargeScore=Math.floor(res.data.data.scoreRecharge)
-                    this.scoreBalance=Math.floor(res.data.data.scoreBalance)
                     let option = {
                         tooltip : {
                             trigger: 'item',
@@ -136,11 +135,10 @@ export default{
                                 type:'pie',
                                 radius : '55%',
                                 data:[
-                                    {value:res.data.data.VoucherConsume, name:'福利卷'},
+                                    {value:res.data.data.voucherConsume, name:'福利卷'},
                                     {value:res.data.data.postCardConsume, name:'积分卡'},
                                     {value:res.data.data.postScoreConsume, name:'积分发放'},
-                                    {value:res.data.data.purchaseConsume, name:'福利采购'},
-                                    {value:res.data.data.creditCard, name:'福利采购'},
+                                    {value:res.data.data.purchaseConsume, name:'福利采购'}
                                 ]
                             }
                         ]
@@ -230,10 +228,18 @@ export default{
                     }
                 }
             })
+        },
+        //企业余额
+        getEnterpriseBalance(){
+            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.scoreBalance=Math.floor(res.data.data)
+                }
+            })
         }
     },
     mounted(){
-        this.enterpriseInfo=JSON.parse(sessionStorage.getItem("enterpriseInfo"))
+        this.enterpriseInfo=JSON.parse(localStorage.getItem("enterpriseInfo"))
         let date=new Date()
         this.year=date.getFullYear().toString()
         this.currentYear=date.getFullYear().toString()
@@ -241,6 +247,7 @@ export default{
         this.getPointRecords(this.currentYear)
         this.drawPie(this.year,parseInt(this.month))
         this.showNewNotice()
+        this.getEnterpriseBalance()
     }
 }
 </script>

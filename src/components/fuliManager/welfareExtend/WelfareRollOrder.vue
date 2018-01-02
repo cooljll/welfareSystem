@@ -69,7 +69,7 @@
                 </el-table-column>
                 <el-table-column prop="name" label="姓名" align="center">
                 </el-table-column>
-                <el-table-column prop="phoneNumber" label="手机号" align="center">
+                <el-table-column prop="phone" label="手机号" align="center">
                 </el-table-column>
                 <el-table-column prop="welType" label="福利类型" align="center">
                 </el-table-column>
@@ -218,7 +218,6 @@ export default{
         },
         //查看详情
         seeOrderDetail(id){
-            this.orderDetailVisible=true
             this.$axios.post("/api/api/voucher/orderDetail",{
                 orderId:id,
                 pageNum:1,
@@ -226,7 +225,10 @@ export default{
                 state:""
             }).then(res=>{
                 if(res.data.code==1000){
+                    this.orderDetailVisible=true
                     this.orderInfo=res.data.data
+                }else if(res.data.code==500){
+                    this.$alert("数据无法获取失败,请尝试重新获取",'信息')
                 }
             })
         },
@@ -238,6 +240,9 @@ export default{
             this.extendEmpParams.orderId=id
             this.$axios.post("/api/api/voucher/orderDetailEmp",this.extendEmpParams).then(res=>{
                 console.log(res)
+                if(res.data.code==1000){
+                    this.extendEmpTable=res.data.data.content
+                }
             })
         },
         //返回列表

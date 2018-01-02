@@ -70,7 +70,7 @@ export default {
 					y:"bottom",
 					data:['总人数']
 				},
-				color:["rgb(147, 154, 177)"],
+				color:["#939AB1"],
 				series: [
 					{
 						name:'总人数',
@@ -103,7 +103,7 @@ export default {
 					y:"bottom",
 					data:["其他",'男','女']
 				},
-				color:["rgb(147, 154, 177)","rgb(131, 178, 127)","rgb(246, 141, 135)"],
+				color:["#939AB1","#83B27F","#F68D87"],
 				series: [
 					{
 						name:'总人数',
@@ -138,7 +138,7 @@ export default {
 					y:"bottom",
 					data:['70后','80后','90后','00后','其他']
 				},
-				color:["rgb(131, 178, 127)","rgb(140, 188, 187)","rgb(234, 171, 22)","rgb(246, 141, 135)","rgb(147, 154, 177)"],
+				color:["#83B27F","#8CBCBB","#EAAB16","#F68D87","#939AB1"],
 				series: [
 					{
 						name:'总人数',
@@ -176,12 +176,10 @@ export default {
                     "Content-Type":"application/json"
                 }
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-						this.totalEmployee=res.data.data
-						this.drawTotal()
-                    }
-                }
+                if(res.data.code==1000){
+					this.totalEmployee=res.data.data
+					this.drawTotal()
+				}
             })
 		},
 		//获取男女比例

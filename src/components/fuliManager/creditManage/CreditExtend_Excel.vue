@@ -143,8 +143,8 @@
                     </el-table-column>
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
-                            <el-button type="text" class="handlebtn" v-show='!scope.row.edit' @click="scope.row.edit=true">修改积分</el-button>
-                            <el-button type="text" class="handlebtn" v-show='scope.row.edit' @click="scope.row.edit=false">保存</el-button>
+                            <el-button type="text" class="handlebtn" v-show='!scope.row.edit' @click.native="scope.row.edit=true">修改积分</el-button>
+                            <el-button type="text" class="handlebtn" v-show='scope.row.edit' @click.native="scope.row.edit=false">保存</el-button>
                             <el-button type="text" class="handlebtn" @click="delEmpCredit(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>

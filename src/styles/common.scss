@@ -330,18 +330,22 @@
                 box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.20);
                 cursor: pointer;
                 .imgbox{
-                    display: block;
                     height: 192px;
                     width: 265px;
                     margin: 10px;
                     cursor: pointer;
                     box-shadow: none;//清除边框阴影（继承）
+                    position: relative;  
+                    overflow: hidden;  
                     img{
-                        display: block;
                         max-height: 192px;
                         max-width: 265px;
-                        margin: 0px auto;
-                        cursor: pointer;
+                        position: absolute;  
+                        margin: auto;  
+                        top: 0;  
+                        right: 0;  
+                        bottom: 0;  
+                        left: 0;  
                     }
                 }
                 .title{

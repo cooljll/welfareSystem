@@ -59,7 +59,7 @@ export default{
 					y:"bottom",
 					data:this.shopName
 				},
-                color:["rgb(131, 178, 127)","rgb(140, 188, 187)","rgb(234, 171, 22)"],
+                color:["#83B27F","#8CBCBB","#EAAB16"],
 				series: [
 					{
 						name:'员工购买商品类型统计',
@@ -134,10 +134,15 @@ export default{
         getEmpShoppingData(){
             this.$axios.post("/api/api/enterprise/getEmpShoppingData",this.shopParams).then(res=>{
                 if(res.data.code==1000){
-                    res.data.data.forEach(item=>{
-                        this.shopName.push(item.name)
-                    })
-                    this.shoppingData=res.data.data
+                    if(res.data.data.length==0){
+                        this.shoppingData=[{name: "暂无数据", value: 0}]
+                        this.shopName=["暂无数据"]
+                    }else{
+                        res.data.data.forEach(item=>{
+                            this.shopName.push(item.name)
+                        })
+                        this.shoppingData=res.data.data
+                    }
                     this.drawPie()
                 }
             })

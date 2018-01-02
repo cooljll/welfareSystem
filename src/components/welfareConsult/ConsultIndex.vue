@@ -112,7 +112,6 @@ export default{
         //分页咨询
         getNewsPageInfo(){
             this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
-                console.log(res)
                 if(res.data.code==1000){
                     if(res.data.data.length==0){
                         this.isShowMore=false

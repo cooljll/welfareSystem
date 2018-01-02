@@ -32,11 +32,11 @@
             <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderNo" label="订单编号" sortable align="center">
+                <el-table-column prop="orderNo" label="订单编号" sortable align="center" width="225">
                 </el-table-column>
-                <el-table-column prop="payType" label="订单类型" align="center">
+                <el-table-column prop="payType" label="付款方式" align="center">
                 </el-table-column>
-                <el-table-column prop="creationTime" label="创建时间" align="center">
+                <el-table-column prop="creationTime" label="创建时间" align="center" width="200">
                 </el-table-column>
                 <el-table-column prop="score" label="充值积分" align="center">
                 </el-table-column>
