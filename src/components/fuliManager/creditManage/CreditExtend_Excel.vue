@@ -135,7 +135,7 @@
                     </el-table-column>
                     <el-table-column prop="shopScore" label="发放积分" align="center">
                         <template slot-scope="scope">
-                            <el-input v-show="scope.row.edit" size="small" v-model="scope.row.shopScore" 
+                            <el-input v-show="scope.row.edit" size="small" v-model.number="scope.row.shopScore" 
                             @keyup.native="!(/^[1-9][0-9]*$/.test(scope.row.shopScore))?scope.row.shopScore='0':scope.row.shopScore">
                             </el-input>
                             <span v-show="!scope.row.edit">{{ scope.row.shopScore }}</span>
@@ -143,8 +143,8 @@
                     </el-table-column>
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
-                            <el-button type="text" class="handlebtn" v-show='!scope.row.edit' @click.native="scope.row.edit=true">修改积分</el-button>
-                            <el-button type="text" class="handlebtn" v-show='scope.row.edit' @click.native="scope.row.edit=false">保存</el-button>
+                            <el-button type="text" class="handlebtn" v-show='!scope.row.edit' @click="scope.row.edit=true">修改积分</el-button>
+                            <el-button type="text" class="handlebtn" v-show='scope.row.edit' @click="scope.row.edit=false">保存</el-button>
                             <el-button type="text" class="handlebtn" @click="delEmpCredit(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
@@ -475,6 +475,9 @@ export default{
                     this.step2=true
                     this.step3=false
                     this.step4=false
+                    res.data.data.forEach(item=>{
+                        item.edit=false
+                    })
                     this.tableData=res.data.data
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")

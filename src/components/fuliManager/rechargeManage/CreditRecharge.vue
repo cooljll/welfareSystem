@@ -217,7 +217,7 @@ export default{
         },
         //立即充值
         immediateRechange(){
-            if(this.invoiceInfo.amount_payable=="0"){
+            if(this.invoiceInfo.point=="0"){
                 this.$alert("积分数量不能为0或负数","信息")
             }else if(this.invoiceInfo.invocieTitle==""){
                 this.$alert("发票抬头不能为空","信息")

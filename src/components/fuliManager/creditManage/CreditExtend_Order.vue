@@ -105,7 +105,7 @@
 
                         <!-- 部门发放 -->
                         <div class="listbox" v-show="deportExtend">
-                            <el-table style="width:100%" :data="creditExtendData" :header-row-style="tableHeader">
+                            <el-table style="width:100%" :data="creditExtendData">
                                 <el-table-column prop="depName" label="部门名称" align="center"></el-table-column>
                                 <el-table-column prop="nums" label="部门人数" align="center"></el-table-column>
                                 <el-table-column prop="point" label="发放积分数" align="center"></el-table-column>
@@ -262,26 +262,23 @@ export default{
             this.isShowExtendList=false
             this.creditDescParams.orderId=id
             this.$axios.post("/api/api/integral/orderDetail",this.creditDescParams).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.creditOrderDesc=res.data.data
-                        this.postType=res.data.data.postType
-                        if(this.postType=="1"){
-                            this.specialEmp=false
-                            this.deportExtend=false
-                        }else if(this.postType=="2"){
-                            this.specialEmp=true
-                            this.deportExtend=false
-                            this.extendEmpArr=JSON.parse(res.data.data.msg)
-                        }else if(this.postType=="7"){
-                            // this.specialEmp=false
-                            // this.deportExtend=true
-                        }else if(this.postType=="4"){
-                            this.specialEmp=false
-                            this.deportExtend=true
-                            this.creditExtendData=JSON.parse(res.data.data.msg)
-                        }
+                if(res.data.code==1000){
+                    this.creditOrderDesc=res.data.data
+                    this.postType=res.data.data.postType
+                    if(this.postType=="1"){
+                        this.specialEmp=false
+                        this.deportExtend=false
+                    }else if(this.postType=="2"){
+                        this.specialEmp=true
+                        this.deportExtend=false
+                        this.extendEmpArr=JSON.parse(res.data.data.msg)
+                    }else if(this.postType=="7"){
+                        // this.specialEmp=false
+                        // this.deportExtend=true
+                    }else if(this.postType=="4"){
+                        this.specialEmp=false
+                        this.deportExtend=true
+                        this.creditExtendData=JSON.parse(res.data.data.msg)
                     }
                 }
             })
