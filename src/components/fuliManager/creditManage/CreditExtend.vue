@@ -113,7 +113,8 @@
                     <div class="row" v-show="specialEmp">
                         <div class="title">积分数</div>
                         <div class="credit_center">
-                            <el-input v-model.number="specialScores" @keyup.native="countkeyup"></el-input>
+                            <el-input v-model.number="specialScores" 
+                            @keyup.native="!(/^[1-9][0-9]*$/.test(specialScores))?specialScores='':specialScores"></el-input>
                             <span>积分/人</span>
                         </div>
                     </div>
@@ -121,7 +122,8 @@
                     <div class="row" v-show="allEmp">
                         <div class="title">积分数</div>
                         <div class="credit_center">
-                            <el-input v-model.number="allScores" @keyup.native="countkeyup"></el-input>
+                            <el-input v-model.number="allScores"
+                            @keyup.native="!(/^[1-9][0-9]*$/.test(allScores))?allScores='':allScores"></el-input>
                             <span>积分/人</span>
                         </div>
                     </div>
@@ -395,23 +397,7 @@ export default{
             }else if(this.messageTemplate==""){
                 this.$alert("模板寄语不能为空","信息")
             }else{
-                if(this.allEmp){
-                    this.getNormalEmps()
-                }
-                if(this.specialEmp){
-                    this.totalEmployee=this.extendEmpArr.length
-                    this.totalScores=this.totalEmployee*this.specialScores
-                }
-                if(this.deportExtend){
-                    this.getDepartmentList()
-                    this.creditExtendData.forEach(item=>{
-                        if(item.scores){
-                            this.totalEmployee+=item.memberCount
-                            this.totalScores+=item.memberCount*item.scores
-                            this.extendScoresData.push(item)
-                        }
-                    })
-                }
+                this.getNormalEmps()//计算消费总积分
                 this.getFrozenEmps()
                 this.getEnterpriseBalance()
                 this.step1=false
@@ -474,10 +460,12 @@ export default{
         //自定义福利确定
         customSubmit(){
             this.selectedType="自定义福利："+this.customWelfareType
+            this.festivalId=this.customWelfareType
             this.isShow=true
         },
         //员工激励
         handleIncentiveScheme(val){
+            this.festivalId="2"
             this.selectedType=val.srcElement.innerText
             this.isShow=true
         },
@@ -509,8 +497,30 @@ export default{
                 }
             }).then(res=>{
                 if(res.data.code==1000){
-                    this.totalEmployee=res.data.data
-                    this.totalScores=this.totalEmployee*this.allScores
+                    if(this.allEmp){
+                        this.totalEmployee=res.data.data
+                        this.totalScores=this.totalEmployee*this.allScores
+                    }
+                    if(this.specialEmp){
+                        if(this.specialEmpFlag=="1"){
+                            this.totalEmployee=this.extendEmpArr.length
+                        }else{
+                            this.totalEmployee=res.data.data-this.extendEmpArr.length
+                        }
+                        this.totalScores=this.totalEmployee*this.specialScores
+                    }
+                    if(this.deportExtend){
+                        this.getDepartmentList()
+                        this.creditExtendData.forEach(item=>{
+                            if(item.scores){
+                                this.totalEmployee+=item.memberCount
+                                this.totalScores+=item.memberCount*item.scores
+                                this.extendScoresData.push(item)
+                            }
+                        })
+                    }
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },

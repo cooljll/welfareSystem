@@ -465,23 +465,7 @@ export default{
             }else if(this.messageTemplate==""){
                 this.$alert("模板寄语不能为空","信息")
             }else{
-                if(this.allEmp){
-                    this.getNormalEmps()
-                }
-                if(this.specialEmp){
-                    if(this.specialEmpFlag=="1"){
-                        this.totalEmployee=this.extendEmpArr.length
-                    }else{
-                        this.totalEmployee=this.enterpriseEmpTotal-this.extendEmpArr.length
-                    }
-                    this.totalScores=this.totalEmployee*this.rollScores
-                }
-                if(this.deportExtend){
-                    this.selectedDepArr.forEach(item=>{
-                        this.totalEmployee+=item.memberCount
-                        this.totalScores+=item.memberCount*this.rollScores
-                    })
-                }
+                this.getNormalEmps()//计算消费总积分
                 this.getFrozenEmps()
                 this.getEnterpriseBalance()
                 this.step=false
@@ -542,10 +526,12 @@ export default{
         //自定义福利确定
         customSubmit(){
             this.selectedType="自定义福利："+this.customWelfareType
+            this.festivalId=this.customWelfareType
             this.isShow=true
         },
         //员工激励
         handleIncentiveScheme(val){
+            this.festivalId="2"
             this.selectedType=val.srcElement.innerText
             this.isShow=true
         },
@@ -577,8 +563,24 @@ export default{
                 }
             }).then(res=>{
                 if(res.data.code==1000){
-                    this.totalEmployee=res.data.data
-                    this.totalScores=this.totalEmployee*this.rollScores
+                    if(this.allEmp){
+                        this.totalEmployee=res.data.data
+                        this.totalScores=this.totalEmployee*this.rollScores
+                    }
+                    if(this.specialEmp){
+                        if(this.specialEmpFlag=="1"){
+                            this.totalEmployee=this.extendEmpArr.length
+                        }else{
+                            this.totalEmployee=res.data.data-this.extendEmpArr.length
+                        }
+                        this.totalScores=this.totalEmployee*this.rollScores
+                    }
+                    if(this.deportExtend){
+                        this.selectedDepArr.forEach(item=>{
+                            this.totalEmployee+=item.memberCount
+                            this.totalScores+=item.memberCount*this.rollScores
+                        })
+                    }
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }

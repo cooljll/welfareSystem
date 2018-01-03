@@ -15,12 +15,12 @@
                         <div class="recharge-countbox">
                             <span class="countxt">充值数量:</span>
                             <div class="countinput">
-                                <el-input v-model.number="invoiceInfo.amount_payable" @keyup.native="countkeyup"></el-input>
+                                <el-input v-model.number="invoiceInfo.point" @keyup.native="countkeyup"></el-input>
                             </div>
                         </div>
                         <div class="recharge-moneybox">
                             <div class="countxt">应付金额:</div>
-                            <div class="money">¥ {{invoiceInfo.amount_payable}}</div>
+                            <div class="money">¥ {{invoiceInfo.point}}</div>
                         </div>
                         <div class="information-txt">温馨提示: 1积分等于1元<br><br>财务审核完成后，将会用短信通知到账情况</div>
                     </div>
@@ -60,9 +60,7 @@
                                 <div class="recharge-row">
                                     <div class="row-txt">选择方式</div>
                                     <div class="row-input">
-                                        <el-button type="info" @click="bankPay">银行电汇</el-button>
-                                        <el-button type="info" @click="aliPay">支付宝</el-button>
-                                        <el-button type="info" @click="wechatPay">微信支付</el-button>
+                                        <el-button type="info" v-for="(item,index) in payTypes" :key="index" @click="selectPayType(index+1)">{{item}}</el-button>
                                     </div>
                                 </div>
                                 <div class="paybox-row">
@@ -127,6 +125,7 @@ import authUnils from '../../../common/authUnils'
 export default{
     data(){
         return{
+            payTypes:["银行电汇","支付宝","微信支付"],
             yinhang:true,
             zhifubao:false,
             weixin:false,
@@ -136,43 +135,85 @@ export default{
             invoiceInfo:{
                 amount_payable: 0,
                 enterpriseName: "金划算科技股份有限公司",
-                invoice_address: "",
+                invoice_address: "上海市浦东新区金湘路201弄15号1132室",
                 invoice_content: "福利费",
-                invoice_name: "",
-                invoice_phone: "",
+                invoice_name: "田发波",
+                invoice_phone: "13918116502",
                 invoice_title: "",
                 invoice_type: "普通发票",
-                payOrder: "",
-                payType: "",
+                payType: 0,
                 point: 0
             },
-            weChatVisible:false
+            weChatVisible:false,
+            orderNo:"",
+            payOrder:""
         }
     },
     methods:{
-        bankPay(){
-            this.yinhang=true
-            this.zhifubao=false
-            this.weixin=false
-        },
-        aliPay(){
-            this.yinhang=false
-            this.zhifubao=true
-            this.weixin=false
-        },
-        wechatPay(){
-            this.yinhang=false
-            this.zhifubao=false
-            this.weixin=true
+        selectPayType(i){
+            if(i==1){
+                this.yinhang=true
+                this.zhifubao=false
+                this.weixin=false
+            }else if(i==2){
+                this.yinhang=false
+                this.zhifubao=true
+                this.weixin=false
+            }else if(i==3){
+                this.yinhang=false
+                this.zhifubao=false
+                this.weixin=true
+            }
+            this.invoiceInfo.payType=i
         },
         //键盘事件
         countkeyup(){
             var reg=/^[1-9][0-9]*$/
-            if(!reg.test(this.invoiceInfo.amount_payable)){
-               this.invoiceInfo.amount_payable="0" 
+            if(!reg.test(this.invoiceInfo.point)){
+               this.invoiceInfo.point="0" 
             }else{
-                this.invoiceInfo.amount_payable=this.invoiceInfo.amount_payable
+                this.invoiceInfo.point=this.invoiceInfo.point
             }
+        },
+        //支付订单
+        buildPayOrder(){
+            this.invoiceInfo.amount_payable=this.invoiceInfo.point
+            this.$axios.post("/api/api/recharge/pay",this.invoiceInfo).then(res=>{
+                if(res.data.code==1000){
+                    if(this.yinhang){//银行支付
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.isShowRecharge=false
+                            this.isShowSuccess=true
+                        })
+                    }else if(this.zhifubao){//支付宝支付
+                        this.$axios.get("/api/api/alipays/web",{
+                            params:{
+                                orderNo:"",
+                                payOrder:"",
+                                point:this.invoiceInfo.point.toString()
+                            }
+                        }).then(res=>{
+                            console.log(res)
+                        })
+                    }else if(this.weixin){//微信支付
+                        this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                            params:{
+                                orderNo:"",
+                                payOrder:"",
+                                point:this.invoiceInfo.point.toString()
+                            }
+                        }).then(res=>{
+                            console.log(res)
+                        })
+                        this.$router.push("/WechatRecharge")
+                    }
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.isShowRecharge=true
+                        this.isShowSuccess=false
+                    })
+                }
+            })
         },
         //立即充值
         immediateRechange(){
@@ -182,67 +223,15 @@ export default{
                 this.$alert("发票抬头不能为空","信息")
             }else{
                 this.$confirm("确定生成充值订单？","信息").then(()=>{
-                    if(this.yinhang){
-                        this.invoiceInfo.point=this.invoiceInfo.amount_payable
-                        this.invoiceInfo.payType=1
-                        this.payByBank()
-                    }else if(this.zhifubao){
-                        this.payByAlipay()
-                    }else if(this.weixin){
-                        this.payByWechat()
-                        this.$router.push("/WechatRecharge")
-                    }
+                    this.buildPayOrder()
                 })
             }
-        },
-        //银行支付
-        payByBank(){
-            this.$axios.post("/api/api/recharge/pay",this.invoiceInfo).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        this.isShowRecharge=false
-                        this.isShowSuccess=true
-                    })
-                }else if(res.data.code==1001){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        this.isShowRecharge=true
-                        this.isShowSuccess=false
-                    })
-                }
-            })
-        },
-        //支付宝支付
-        payByAlipay(){
-            this.$axios.get("/api/api/alipays/web",{
-                params:{
-                    orderNo:"",
-                    payOrder:"",
-                    point:""
-                }
-            }).then(res=>{
-                console.log(res)
-            })
-        },
-        //微信支付
-        payByWechat(){
-            this.$axios.get("/api/api/wechatPay/nativeOrder",{
-                params:{
-                    orderNo:"",
-                    payOrder:"",
-                    point:""
-                }
-            }).then(res=>{
-                console.log(res)
-            })
         },
         //再次充值
         rechargeOneMore(){
             this.isShowRecharge=true
             this.isShowSuccess=false
         }
-    },
-    mounted(){
-      
     }
 }
 </script>
