@@ -188,9 +188,9 @@ export default{
                     }else if(this.zhifubao){//支付宝支付
                         this.$axios.get("/api/api/alipays/web",{
                             params:{
-                                orderNo:"",
-                                payOrder:"",
-                                point:this.invoiceInfo.point.toString()
+                                orderNo:res.data.data.orderNo,
+                                payOrder:res.data.data.payOrder,
+                                point:res.data.data.point.toString()
                             }
                         }).then(res=>{
                             console.log(res)
@@ -198,9 +198,9 @@ export default{
                     }else if(this.weixin){//微信支付
                         this.$axios.get("/api/api/wechatPay/nativeOrder",{
                             params:{
-                                orderNo:"",
-                                payOrder:"",
-                                point:this.invoiceInfo.point.toString()
+                                orderNo:res.data.data.orderNo,
+                                payOrder:res.data.data.payOrder,
+                                point:res.data.data.point.toString()
                             }
                         }).then(res=>{
                             console.log(res)
