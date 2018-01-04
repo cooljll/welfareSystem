@@ -73,7 +73,7 @@
                     <div class="row" v-show="deportExtend">
                         <div class="title">选择部门</div>
                         <div class="center">
-                            <el-table style="width:660px;margin-top:20px;" :data="creditExtendData" :header-row-style="tableHeader">
+                            <el-table style="width:660px;margin-top:20px;" :data="creditExtendData">
                                 <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
                                 <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
                                 <el-table-column label="发放积分数" align="center">
@@ -199,7 +199,7 @@
                         <div class="bottomrow">
                             <div class="title">发放对象</div>
                             <div class="center">
-                               <div v-show="isShowAllEmp">{{extendWelfareRollType}}</div>
+                               {{extendWelfareRollType}}
                                <!-- 特定员工发放 -->
                                 <div class="showstafflist" v-show="isShowStaffList">
                                     <el-tag v-for="tag in extendEmpArr" :key="tag.name" closable class="tagStyle"
@@ -208,7 +208,7 @@
                                     </el-tag>
                                 </div>
                                 <!-- 按部门发放 -->
-                                <el-table style="width:660px;margin-top:20px;" :data="extendScoresData" :header-row-style="tableHeader" v-show="isShowDepartExtend">
+                                <el-table style="width:660px;margin-top:20px;" :data="extendScoresData" v-show="isShowDepartExtend">
                                      <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
                                      <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
                                      <el-table-column prop="scores" label="发放积分数" align="center"></el-table-column>
@@ -310,10 +310,6 @@ export default{
             deportExtend:false,
             creditExtendData:[],
             extendScoresData:[],
-            tableHeader:{
-                background:"#A4AABE",
-                color:"#000"
-            },
             customWelfareType:"",
             btnGroups:[],//节日信息
             selectedType:"",
@@ -325,7 +321,6 @@ export default{
             totalScores:0,//总积分数
             messageTemplate:"",//模板寄语
             extendWelfareRollType:"全体员工",
-            isShowAllEmp:true,
             isShowStaffList:false,
             isShowDepartExtend:false,
             departments:[],//部门列表
@@ -417,16 +412,13 @@ export default{
             this.specialEmp=false
             this.deportExtend=false
             this.extendWelfareRollType="全体员工"
-            this.isShowAllEmp=true
             this.isShowStaffList=false
             this.isShowDepartExtend=false
         },
         handleStep2_2(){
             this.allEmp=false
             this.specialEmp=true
-            this.deportExtend=false
-            this.extendWelfareRollType="按特定人员发放"
-            this.isShowAllEmp=false            
+            this.deportExtend=false         
             this.isShowStaffList=true
             this.isShowDepartExtend=false
         },
@@ -435,8 +427,7 @@ export default{
             this.specialEmp=false
             this.deportExtend=true
             this.extendWelfareRollType="按部门发放"
-            this.getDepartmentList()
-            this.isShowAllEmp=false           
+            this.getDepartmentList()         
             this.isShowStaffList=false
             this.isShowDepartExtend=true
         },
@@ -503,8 +494,10 @@ export default{
                     }
                     if(this.specialEmp){
                         if(this.specialEmpFlag=="1"){
+                            this.extendWelfareRollType="按特定人员发放"
                             this.totalEmployee=this.extendEmpArr.length
                         }else{
+                            this.extendWelfareRollType="按特定人员不发放"
                             this.totalEmployee=res.data.data-this.extendEmpArr.length
                         }
                         this.totalScores=this.totalEmployee*this.specialScores
@@ -632,51 +625,63 @@ export default{
         //选择员工
         selectEmployee(){
             this.selectEmpVisible=true
+            this.notSelectArr=[]
             this.getTreeDep()
         },
         //显示部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true}),{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.creditExtendData=[]
-                        res.data.data.forEach(item=>{
-                            if(item.memberCount!=0){
-                                this.creditExtendData.push(item)
-                            }
-                        })
-                    }
-                }
-            })
-        },
-        handleChange(){
-            this.selectEmpParams.depId=this.checkedDepart[this.checkedDepart.length-1].organizationUnitId
-            this.getDeportEmpNums()
-            console.log(this.checkedDepart)
-        },
-        //获取部门人员数
-        getDeportEmpNums(){
-            this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
+            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
-                    this.notSelectArr=[]
-                    res.data.data.content.forEach(item=>{
-                        if(item.job_Number==""){
-                            item["label"]=item.name
-                        }else{
-                            item["label"]=item.name+"("+item.job_Number+")"
+                    this.creditExtendData=[]
+                    res.data.data.forEach(item=>{
+                        if(item.memberCount!=0){
+                            this.creditExtendData.push(item)
                         }
-                        this.notSelectArr.push(item)
                     })
                 }
             })
         },
+        handleChange(){
+            this.selectEmpParams.text=""
+            this.notSelectArr=[]
+            this.checkedDepart.forEach(item=>{
+                this.$axios.post("/api/api/employee/selectEmployee",{
+                    depId:item.organizationUnitId,
+                    text:this.selectEmpParams.text
+                }).then(res=>{
+                    if(res.data.code==1000){
+                        res.data.data.content.forEach(item=>{
+                            if(item.job_Number==""){
+                                item["label"]=item.name
+                            }else{
+                                item["label"]=item.name+"("+item.job_Number+")"
+                            }
+                            this.notSelectArr.unshift(item)
+                        })
+                    }
+                })
+            })
+        },
         //搜索员工
         getSearchEmpResult(){
-            this.getDeportEmpNums()
+            if(this.selectEmpParams.text.trim()==""){
+                return 
+            }else{
+                this.checkedDepart=[]
+                this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
+                    if(res.data.code==1000){
+                        this.notSelectArr=[]
+                        res.data.data.content.forEach(item=>{
+                            if(item.job_Number==""){
+                                item["label"]=item.name
+                            }else{
+                                item["label"]=item.name+"("+item.job_Number+")"
+                            }
+                            this.notSelectArr.push(item)
+                        })
+                    }
+                })
+            }
         },
         allMoveToRight(){
             this.notSelectArr.forEach((item,index)=>{
@@ -711,8 +716,9 @@ export default{
             this.selectedEmp=[]
         },
         selectedEmpSubmit(){
-            this.selectEmpVisible=false
+            this.extendEmpArr=[]
             this.extendEmpArr=this.extendEmpArr.concat(this.selectedArr)
+            this.selectEmpVisible=false
         },
         //标签删除
         handleClose(tag){
@@ -735,17 +741,13 @@ export default{
         //支付订单
         paymentOrder(){
             this.$alert("确定支付订单吗？","信息").then(()=>{
-                if(this.isShowAllEmp){
-                    this.allEmpExtendScores()
-                }
                 if(this.isShowStaffList){
                     if(this.specialEmpFlag=="1"){
                         this.specialEmpExtendScores()
                     }else{
                         this.specialEmpNotExtendScores()
                     }
-                }
-                if(this.isShowDepartExtend){
+                }else if(this.isShowDepartExtend){
                     var tempDepArr=[]
                     this.extendScoresData.forEach(item=>{
                         let obj={}
@@ -756,6 +758,8 @@ export default{
                         tempDepArr.push(obj)
                     })
                     this.deportEmpExtendScores(tempDepArr)
+                }else{
+                    this.allEmpExtendScores()
                 }
             })
         },
@@ -800,13 +804,7 @@ export default{
         screenWidth (val) {
             this.screenWidth = val
             this.handleScreenWidthChange(this.screenWidth)
-        },
-        allScores(newValue){
-            var reg=/^[1-9][0-9]*$/
-            if(!reg.test(newValue)){
-
-            }
-        },
+        }
     }
 }
 </script>

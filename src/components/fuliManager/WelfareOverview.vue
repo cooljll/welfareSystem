@@ -42,8 +42,8 @@
                         <a class="indextitle-btn" @click="creditExtend">发送积分</a>
                     </div>
                     <div class="center">
-                        <div>元旦</div>
-                        <div style="color:#7B7D7F;font-size:12px;">2018-01-01</div>
+                        <div>{{holiday.displayName}}</div>
+                        <div style="color:#7B7D7F;font-size:12px;">{{holiday.startDate}}</div>
                     </div>
                 </div>
                 <div class="enterprise-announcement">
@@ -97,7 +97,8 @@ export default{
             enterpriseInfo:{},
             consumeScore:"",
             rechargeScore:"",
-            scoreBalance:""//企业余额
+            scoreBalance:"",//企业余额
+            holiday:{}
         }
     },
     methods:{
@@ -138,7 +139,8 @@ export default{
                                     {value:res.data.data.voucherConsume, name:'福利卷'},
                                     {value:res.data.data.postCardConsume, name:'积分卡'},
                                     {value:res.data.data.postScoreConsume, name:'积分发放'},
-                                    {value:res.data.data.purchaseConsume, name:'福利采购'}
+                                    {value:res.data.data.purchaseConsume, name:'福利采购'},
+                                    {value:res.data.data.creditCard, name:'信用卡还款'}
                                 ]
                             }
                         ]
@@ -222,10 +224,8 @@ export default{
         //显示最新公告信息
         showNewNotice(){
             this.$axios.post("/api/api/announcement/newNotice",{}).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.newNoticeContent=res.data.data.content
-                    }
+                if(res.data.code==1000){
+                    this.newNoticeContent=res.data.data.content
                 }
             })
         },
@@ -234,6 +234,14 @@ export default{
             this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
                 if(res.data.code==1000){
                     this.scoreBalance=Math.floor(res.data.data)
+                }
+            })
+        },
+        //临近节日
+        getHoliday(){
+            this.$axios.post("/api/api/service/holiday",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.holiday=res.data.data
                 }
             })
         }
@@ -248,6 +256,7 @@ export default{
         this.drawPie(this.year,parseInt(this.month))
         this.showNewNotice()
         this.getEnterpriseBalance()
+        this.getHoliday()
     }
 }
 </script>

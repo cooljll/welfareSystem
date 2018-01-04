@@ -137,7 +137,7 @@
                                 <el-col class="center">
                                     <el-col>
                                         <el-form-item label="姓名：">
-                                            <el-input placeholder="姓名" v-model="employeeInfo.name"></el-input>
+                                            <el-input placeholder="姓名" v-model="employeeInfo.name" :disabled="showEdit"></el-input>
                                         </el-form-item>
                                         <el-form-item label="出生年月：">
                                             <el-input placeholder="出生年月" v-model="employeeInfo.birthday" :disabled="true"></el-input>
@@ -148,11 +148,11 @@
                                             <el-input placeholder="年龄" v-model="employeeInfo.age" :disabled="true"></el-input>
                                         </el-form-item>
                                         <el-form-item label="身份证号：">
-                                            <el-input placeholder="身份证号" v-model="employeeInfo.identifyNumber"></el-input>
+                                            <el-input placeholder="身份证号" v-model="employeeInfo.identifyNumber":disabled="showEdit"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-form-item label="性别：">
-                                        <el-select placeholder="请选择性别" v-model="employeeInfo.sex">
+                                        <el-select placeholder="请选择性别" v-model="employeeInfo.sex" :disabled="showEdit">
                                             <el-option label="男" value="男"></el-option>
                                             <el-option label="女" value="女"></el-option>
                                         </el-select>
@@ -164,10 +164,10 @@
                                 <el-col class="title">联系方式</el-col>
                                 <el-col class="center">
                                     <el-form-item label="手机号：">
-                                        <el-input v-model="employeeInfo.phone"></el-input>
+                                        <el-input v-model="employeeInfo.phone" :disabled="showEdit"></el-input>
                                     </el-form-item>
                                     <el-form-item label="邮箱：">
-                                        <el-input v-model="employeeInfo.email"></el-input>
+                                        <el-input v-model="employeeInfo.email" :disabled="showEdit"></el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-col>
@@ -182,11 +182,11 @@
                                     </el-col>
                                     <el-col>
                                         <el-form-item label="工号：">
-                                            <el-input v-model="employeeInfo.job_Number"></el-input>
+                                            <el-input v-model="employeeInfo.job_Number" :disabled="showEdit"></el-input>
                                         </el-form-item>
                                         <el-form-item label="部门：">
-                                            <el-select v-model.number="departId">
-                                                <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                            <el-select v-model.number="departId" :disabled="showEdit">
+                                                <el-option v-for="(item,index) in departmentList" :key="index" :label="item.label" :value="item.value"></el-option>
                                             </el-select>
                                         </el-form-item>
                                     </el-col>
@@ -195,7 +195,8 @@
                                             <el-input v-model="employeeInfo.isFrozen" :disabled="true"></el-input>
                                         </el-form-item>
                                         <el-form-item label="入职时间：">
-                                            <el-date-picker v-model="employeeInfo.joinedDate" type="date" placeholder="选择日期" :picker-options="pickerOptions"></el-date-picker>
+                                            <el-date-picker v-model="employeeInfo.joinedDate" type="date" :disabled="showEdit"
+                                             placeholder="选择日期" :picker-options="pickerOptions"></el-date-picker>
                                         </el-form-item>
                                     </el-col>
                                 </el-col>
@@ -646,7 +647,8 @@ export default{
             isShowFrozenBtn:true,
             isShowReleaseBtn:false,
             companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName,
-            file:""
+            file:"",
+            showEdit:true
         }
     },
     methods:{
@@ -679,6 +681,8 @@ export default{
                         this.handleDepartmentVisible=false
                         this.$router.go(0)
                     })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -690,18 +694,18 @@ export default{
             this.isShowAddDept=false
             this.isShowUpdateDept=true
             this.$axios.post("/api/api/organize/depInfo",qs.stringify({depId:id})).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.deptId_pre=res.data.data.organizationUnitId
-                        if(res.data.data.parentOrganizationUnitId){
-                            this.addDepParams.deptId_sup="0"
-                        }else{
-                            this.addDepParams.deptId_sup=res.data.data.parentOrganizationUnitId
-                        }
-                        this.addDepParams.deptName_cur=res.data.data.displayName
-                        this.addDepParams.sortId=res.data.data.displayOrder
-                        this.addDepParams.remark=res.data.data.remark
+                if(res.data.code==1000){
+                    this.deptId_pre=res.data.data.organizationUnitId
+                    if(res.data.data.parentOrganizationUnitId){
+                        this.addDepParams.deptId_sup="0"
+                    }else{
+                        this.addDepParams.deptId_sup=res.data.data.parentOrganizationUnitId
                     }
+                    this.addDepParams.deptName_cur=res.data.data.displayName
+                    this.addDepParams.sortId=res.data.data.displayOrder
+                    this.addDepParams.remark=res.data.data.remark
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -713,13 +717,13 @@ export default{
                 remark:this.addDepParams.remark,
                 sortId:this.addDepParams.sortId
             }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                       this.$alert(res.data.message,"信息").then(()=>{
-                           this.handleDepartmentVisible=false
-                           this.$router.go(0)
-                       })   
-                    }
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.handleDepartmentVisible=false
+                        this.$router.go(0)
+                    })   
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -749,7 +753,7 @@ export default{
                         this.addEmployeeVisible=false
                         this.showEmployee(Number(this.$route.params.depId))
                     })
-                }else if(res.data.code==1){
+                }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
                         this.showEmployee(Number(this.$route.params.depId))
@@ -1065,6 +1069,7 @@ export default{
                 this.isShowFrozenBtn=false
             }
             this.getDepartmentList()
+            console.log(this.departmentList)
             this.employeeInfo=obj
             this.departId=this.employeeInfo.department
             this.isShowEmpList=false
@@ -1165,6 +1170,7 @@ export default{
         modifyEmployeeInfo(){
             this.handleBtn=false
             this.confirmBtn=true
+            this.showEdit=false
         },
         // 员工修改提交
         modifyEmpInfoSubmit(){
@@ -1184,14 +1190,18 @@ export default{
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleBtn=true
                         this.confirmBtn=false
+                        this.showEdit=false
                         this.$router.go(0)
                     })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data,message,'信息')
                 }
             }))
         },
         cancel(){
             this.handleBtn=true
             this.confirmBtn=false
+            this.showEdit=true
         },
         //返回列表
         goBackList(){

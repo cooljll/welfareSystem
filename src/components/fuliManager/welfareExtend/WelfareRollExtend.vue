@@ -198,7 +198,7 @@
                             <div class="bottomrow">
                                 <div class="title">发放对象</div>
                                 <div class="center">
-                                    <div v-show="isShowAllEmp">{{extendWelfareRollType}}</div>
+                                    {{extendWelfareRollType}}
                                     <!-- 特定员工发放 -->
                                     <div class="showstafflist" v-show="isShowStaffList">
                                         <el-tag v-for="tag in extendEmpArr" :key="tag.name" closable class="tagStyle"
@@ -299,7 +299,7 @@
                     <div class="title">待选人员</div>
                     <div class="center">
                         <el-checkbox-group v-model="notSelectEmp">
-                            <el-checkbox v-for="(item,index) in notSelectArr" :label="item" :key="index">{{item.name}}</el-checkbox>
+                            <el-checkbox v-for="(item,index) in notSelectArr" :label="item" :key="index">{{item.label}}</el-checkbox>
                         </el-checkbox-group> 
                     </div>
                 </div>
@@ -317,14 +317,14 @@
                     <div class="title">已选人员</div>
                     <div class="center">
                         <el-checkbox-group v-model="selectedEmp">
-                            <el-checkbox v-for="(item,index) in selectedArr" :label="item" :key="index">{{item.name}}</el-checkbox>
+                            <el-checkbox v-for="(item,index) in selectedArr" :label="item" :key="index">{{item.label}}</el-checkbox>
                         </el-checkbox-group> 
                     </div>
                 </div>
             </div>
             <div slot="footer" class="dialog-footer footer-center">
                 <el-button type="primary" @click="selectedEmpSubmit">确定</el-button>
-                <el-button @click.native="addEmployeeVisible = false">取消</el-button>
+                <el-button @click.native="selectEmpVisible = false">取消</el-button>
             </div>
         </el-dialog>
     </div>
@@ -363,7 +363,6 @@ export default{
             customWelfareType:'',
             messageTemplate:"",//模板寄语
             extendWelfareRollType:"全体员工",
-            isShowAllEmp:true,
             isShowStaffList:false,
             isShowDepartExtend:false,
             selectEmpVisible:false,
@@ -488,7 +487,6 @@ export default{
             this.specialEmp=false
             this.deportExtend=false
             this.extendWelfareRollType="全体员工"
-            this.isShowAllEmp=true
             this.isShowStaffList=false
             this.isShowDepartExtend=false
         },
@@ -496,8 +494,6 @@ export default{
             this.allEmp=false
             this.specialEmp=true
             this.deportExtend=false
-            this.extendWelfareRollType="按特定人员发放"
-            this.isShowAllEmp=false
             this.isShowStaffList=true
             this.isShowDepartExtend=false
         },
@@ -507,7 +503,6 @@ export default{
             this.deportExtend=true
             this.extendWelfareRollType="按部门发放"
             this.getDepartmentList()
-            this.isShowAllEmp=false
             this.isShowStaffList=false
             this.isShowDepartExtend=true
         },
@@ -569,8 +564,10 @@ export default{
                     }
                     if(this.specialEmp){
                         if(this.specialEmpFlag=="1"){
+                            this.extendWelfareRollType="按特定人员发放"
                             this.totalEmployee=this.extendEmpArr.length
                         }else{
+                            this.extendWelfareRollType="按特定人员不发放"
                             this.totalEmployee=res.data.data-this.extendEmpArr.length
                         }
                         this.totalScores=this.totalEmployee*this.rollScores
@@ -711,6 +708,7 @@ export default{
         //选择员工
         selectEmployee(){
             this.selectEmpVisible=true
+            this.notSelectArr=[]
             this.getTreeDep()
         },
         //显示部门序列表
@@ -727,28 +725,46 @@ export default{
             })
         },
         handleChange(){
-            this.selectEmpParams.depId=this.checkedDepart[this.checkedDepart.length-1].organizationUnitId
-            this.getDeportEmpNums()
-        },
-        //获取部门人员数
-        getDeportEmpNums(){
-            this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
-                if(res.data.code==1000){
-                    this.notSelectArr=[]
-                    res.data.data.content.forEach(item=>{
-                        if(item.job_Number==""){
-                            item["label"]=item.name
-                        }else{
-                            item["label"]=item.name+"("+item.job_Number+")"
-                        }
-                        this.notSelectArr.push(item)
-                    })
-                }
+            this.selectEmpParams.text=""
+            this.notSelectArr=[]
+            this.checkedDepart.forEach(item=>{
+                this.$axios.post("/api/api/employee/selectEmployee",{
+                    depId:item.organizationUnitId,
+                    text:this.selectEmpParams.text
+                }).then(res=>{
+                    if(res.data.code==1000){
+                        res.data.data.content.forEach(item=>{
+                            if(item.job_Number==""){
+                                item["label"]=item.name
+                            }else{
+                                item["label"]=item.name+"("+item.job_Number+")"
+                            }
+                            this.notSelectArr.unshift(item)
+                        })
+                    }
+                })
             })
         },
         //搜索员工
         getSearchEmpResult(){
-            this.getDeportEmpNums()
+            if(this.selectEmpParams.text.trim()==""){
+                return 
+            }else{
+                this.checkedDepart=[]
+                this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
+                    if(res.data.code==1000){
+                        this.notSelectArr=[]
+                        res.data.data.content.forEach(item=>{
+                            if(item.job_Number==""){
+                                item["label"]=item.name
+                            }else{
+                                item["label"]=item.name+"("+item.job_Number+")"
+                            }
+                            this.notSelectArr.push(item)
+                        })
+                    }
+                })
+            }
         },
         allMoveToRight(){
             this.notSelectArr.forEach((item,index)=>{
@@ -783,8 +799,9 @@ export default{
             this.selectedEmp=[]
         },
         selectedEmpSubmit(){
-            this.selectEmpVisible=false
+            this.extendEmpArr=[]
             this.extendEmpArr=this.extendEmpArr.concat(this.selectedArr)
+            this.selectEmpVisible=false
         },
         handleClose(tag){
             this.extendEmpArr.splice(this.extendEmpArr.indexOf(tag), 1)
@@ -850,22 +867,20 @@ export default{
         //支付订单
         paymentOrder(){
             this.$alert("确定支付订单吗？","信息").then(()=>{
-                if(this.isShowAllEmp){
-                    this.allEmpExtendRolls()
-                }
                 if(this.isShowStaffList){
                     if(this.specialEmpFlag=="1"){
                         this.specialEmpExtendRolls()
                     }else{
                         this.specialEmpNotExtendRolls()
                     }
-                }
-                if(this.isShowDepartExtend){
+                }else if(this.isShowDepartExtend){
                     let tempArr=[]
                     this.selectedDepArr.forEach(item=>{
                         tempArr.push(item.organizationUnitId)
                     })
                     this.deportEmpExtendRolls(tempArr)
+                }else{
+                    this.allEmpExtendRolls()
                 }
             })
         },

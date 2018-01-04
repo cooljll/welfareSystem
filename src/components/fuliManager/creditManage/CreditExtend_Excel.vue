@@ -394,10 +394,12 @@ export default{
         //自定义福利确定
         customSubmit(){
             this.selectedType="自定义福利："+this.customWelfareType
+            this.festivalId=this.customWelfareType
             this.isShow=true
         },
         //员工激励
         handleIncentiveScheme(val){
+            this.festivalId="2"
             this.selectedType=val.srcElement.innerText
             this.isShow=true
         },

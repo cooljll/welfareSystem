@@ -3,7 +3,7 @@
         <div class="page-title">
             {{$route.name}}
         </div>
-        <div class="page-center">
+        <div class="page-center" v-show="isShowRechargeCenter">
             <div class="recharge_center" v-show="isShowRecharge">
                 <div class="information">
                     <i class="iconfont icon-home information-icon"></i>
@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="paybox-row">
                                     <div class="row-txt"></div>
-                                    <div class="row-input">
+                                    <div class="row-input" v-show="isShow">
                                         <div class="paytype" v-show="yinhang">
                                             <div class="row">
                                                 <span>户名</span>
@@ -108,10 +108,31 @@
                 </div>
             </div>
         </div>
+        <div class="page-center" v-show="isShowWechatPay">
+            <div class="titleimg">
+                <img class="titleimg" src="../../../assets/img/weixinzhifu.png">
+            </div>
+            <div class="titlenamebox">
+                <span class="bigname">有米拿</span>
+                <span class="smallname">收款方: 金划算科技股份有限公司</span>
+            </div>
+            <div class="QRbox">
+                <div class="QRleft">
+                    <img class="QRimg" :src="WechatImg">
+                    <span class="QRtitle">
+                        请使用微信扫一扫<br>
+                        扫描二维码支付
+                    </span>
+                </div>
+                <div class="QRright">
+                    <img src="../../../assets/img/phone-bg.png">
+                </div>
+            </div>
+        </div>
         <!-- 微信支付弹框 -->
         <el-dialog title="扫码支付" :visible.sync="weChatVisible" :close-on-click-modal="false" style="top:15%" class="weChatDialog">
            <div class="weixinpaybox">
-                <img class="QRimg" src="rest/wechatPay/nativeOrder?payOrder=1000000617526030&amp;orderNo=61E80986-251C-449D-BB7F-0B81FCB3F1D4">
+                <img class="QRimg" :src="WechatImg">
                 <span class="QRtitle">
                     请使用微信扫一扫<br>
                     扫描二维码支付
@@ -145,8 +166,11 @@ export default{
                 point: 0
             },
             weChatVisible:false,
-            orderNo:"",
-            payOrder:""
+            screenWidth:document.body.clientWidth,
+            isShow:true,
+            isShowRechargeCenter:true,
+            isShowWechatPay:false,
+            WechatImg:""
         }
     },
     methods:{
@@ -181,10 +205,8 @@ export default{
             this.$axios.post("/api/api/recharge/pay",this.invoiceInfo).then(res=>{
                 if(res.data.code==1000){
                     if(this.yinhang){//银行支付
-                        this.$alert(res.data.message,"信息").then(()=>{
-                            this.isShowRecharge=false
-                            this.isShowSuccess=true
-                        })
+                        this.isShowRecharge=false
+                        this.isShowSuccess=true
                     }else if(this.zhifubao){//支付宝支付
                         this.$axios.get("/api/api/alipays/web",{
                             params:{
@@ -193,8 +215,10 @@ export default{
                                 point:res.data.data.point.toString()
                             }
                         }).then(res=>{
-                            console.log(res)
+                            // console.log(res.data)
+                            // window.open(url)
                         })
+                        window.open("/assets/alipay.html")
                     }else if(this.weixin){//微信支付
                         this.$axios.get("/api/api/wechatPay/nativeOrder",{
                             params:{
@@ -203,9 +227,16 @@ export default{
                                 point:res.data.data.point.toString()
                             }
                         }).then(res=>{
-                            console.log(res)
+                            if(res){
+                                this.isShowRechargeCenter=false
+                                this.isShowWechatPay=true
+                                // let blob=new Blob([res.data],{type:"image/png"})
+                                // this.WechatImg=URL.createObjectURL(blob)
+                            }else{
+                                this.isShowRechargeCenter=true
+                                this.isShowWechatPay=false
+                            }
                         })
-                        this.$router.push("/WechatRecharge")
                     }
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
@@ -219,8 +250,14 @@ export default{
         immediateRechange(){
             if(this.invoiceInfo.point=="0"){
                 this.$alert("积分数量不能为0或负数","信息")
-            }else if(this.invoiceInfo.invocieTitle==""){
+            }else if(this.invoiceInfo.invoice_title==""){
                 this.$alert("发票抬头不能为空","信息")
+            }else if(this.invoiceInfo.invoice_name==""){
+                this.$alert("收票人姓名不能为空","信息")
+            }else if(this.invoiceInfo.invoice_address==""){
+                this.$alert("收票邮寄地址不能为空","信息")
+            }else if(this.invoiceInfo.invoice_phone==""){
+                this.$alert("收票联系方式不能为空","信息")
             }else{
                 this.$confirm("确定生成充值订单？","信息").then(()=>{
                     this.buildPayOrder()
@@ -231,6 +268,30 @@ export default{
         rechargeOneMore(){
             this.isShowRecharge=true
             this.isShowSuccess=false
+        },
+        //处理屏幕宽度变化
+        handleScreenWidthChange(width){
+            if(width<1157){
+                this.isShow=false
+            }else{
+                this.isShow=true
+            }
+        }
+    },
+    mounted(){
+        const that = this
+        window.onresize = () => {
+            return (() => {
+                window.screenWidth = document.body.clientWidth
+                that.screenWidth = window.screenWidth
+            })()
+        }
+        this.handleScreenWidthChange(this.screenWidth)
+    },
+    watch: {
+        screenWidth (val) {
+            this.screenWidth = val
+            this.handleScreenWidthChange(this.screenWidth)
         }
     }
 }
@@ -490,6 +551,59 @@ export default{
             line-height: 23px;
             text-align: center;
             padding: 20px 25px;
+        }
+    }
+    //微信支付中心
+    .titleimg{
+        height:50px;
+    }
+    .titlenamebox{
+        margin-top:15px;
+        overflow: hidden;
+        .bigname{
+            font-size: 18px;
+            float: left;
+            margin-right: 15px;
+        }
+        .smallname{
+            font-size: 16px;
+            float: left;
+            line-height: 28px;
+        }
+    }
+    .QRbox{
+        display: flex;
+        margin-top: 20px;
+        padding: 15px 0px 20px;
+        border-top: 1px solid rgba(58, 77, 98, 0.20);
+        .QRleft{
+            width:100%;
+            .QRimg{
+                width: 300px;
+                height: 300px;
+                display: block;
+                float: right;
+                margin-top: 35px;
+                border:none;
+            }
+            .QRtitle{
+                display: block;
+                width: 300px;
+                float: right;
+                text-align: center;
+                font-size: 16px;
+                clear: both;
+                line-height: 28px;
+                margin-top: 15px;
+            }
+        }
+        .QRright{
+            width:100%;
+            img{
+                margin-left: 20px;
+                display: inline-block;
+                border: none;
+            }
         }
     }
 </style>

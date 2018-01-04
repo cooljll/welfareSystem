@@ -239,12 +239,23 @@ export default {
 				}
 				this.qrcodeVisible=true
 			})
+		},
+		//系统公告
+		getSystemNotice(){
+			this.$axios.post("/api/api/service/systemNotice",{}).then(res=>{
+				if(res.data.code==1000){
+					
+				}else if(res.data.code==1001){
+					this.$alert(res.data.message,"信息")
+				}
+			})
 		}
 	},
 	mounted(){
 		this.getTotalEmp()
 		this.getGenderNums()
 		this.getAgeNums()
+		this.getSystemNotice()
 	}
 }
 </script>

@@ -51,9 +51,10 @@
                 <el-table-column label="操作" align="center" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" 
-                        v-show='(scope.row.status=="已完成"||(scope.row.status=="待付款"&&scope.row.payType=="银行电汇")||(scope.row.status==null))?true:false'>再次充值</el-button>
+                        v-show='(scope.row.status=="已付款"||(scope.row.status=="待付款"&&scope.row.payType=="银行电汇")||(scope.row.status==null))?true:false'
+                        @click="$router.push('/CreditRecharge')">再次充值</el-button>
                         <el-button type="text" @click="handleOrder(scope.row)"
-                        v-show='((scope.row.status=="待付款"&&scope.row.payType=="微信支付")||(scope.row.status=="待付款"&&scope.row.payType=="支付宝"))?true:false'>继续支付</el-button>
+                        v-show='((scope.row.status=="待付款"&&scope.row.payType=="微信")||(scope.row.status=="待付款"&&scope.row.payType=="支付宝"))?true:false'>继续支付</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -151,6 +152,7 @@ export default{
         },
         //订单操作
         handleOrder(obj){
+            console.log(obj)
             if(obj.orderState=="待付款"&&obj.orderType=="支付宝"){
                 this.$axios.get("/api/api/alipays/web",{
                     params:{
@@ -161,7 +163,7 @@ export default{
                 }).then(res=>{
                     console.log(res)
                 })
-            }else if(obj.orderState=="待付款"&&obj.orderType=="微信支付"){
+            }else if(obj.orderState=="待付款"&&obj.orderType=="微信"){
                 this.weChatVisible=true
                 this.$axios.get("/api/api/wechatPay/nativeOrder",{
                     params:{

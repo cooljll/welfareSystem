@@ -11,7 +11,6 @@ import WelfareOverview from '@/components/fuliManager/WelfareOverview'
 // 充值管理
 import CreditRecharge from '@/components/fuliManager/rechargeManage/CreditRecharge' 
 import OrderRecharge from '@/components/fuliManager/rechargeManage/OrderRecharge'
-import WechatRecharge from '@/components/fuliManager/rechargeManage/WechatRecharge' 
 //积分管理
 import CreditExtend from '@/components/fuliManager/creditManage/CreditExtend' 
 import CreditExtend_Excel from '@/components/fuliManager/creditManage/CreditExtend_Excel'
@@ -71,7 +70,6 @@ export default new Router({
       children: [
           { path: '/WelfareOverview', component: WelfareOverview, name: '福利总览' },
           { path: '/CreditRecharge/:count?', component: CreditRecharge, name: '积分充值' },
-          { path: '/WechatRecharge', component: WechatRecharge, name: '积分充值 ' },
           { path: '/OrderRecharge', component: OrderRecharge, name: '订单充值' },
           { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },
           { path: '/CreditExtend_Excel', component: CreditExtend_Excel, name: 'Excel积分发放' },
