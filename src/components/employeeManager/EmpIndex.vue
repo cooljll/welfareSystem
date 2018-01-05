@@ -129,6 +129,7 @@
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
 import fileDownload from 'js-file-download'
+import Store from '../../vuex/store'
 export default {
   	data () {
         //   var tel = /^\d{3,4}-?\d{7,9}$/  电话号码格式：021-12345678
@@ -332,6 +333,8 @@ export default {
                         this.isShowHandle=false
                         this.getTreeDep()
                     })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -346,8 +349,7 @@ export default {
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
                         this.isShowHandle=false
-                        // this.getTreeDep()
-                        this.$router.go(0)
+                        this.$store.commit('reLoad')
                     })
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
@@ -422,6 +424,20 @@ export default {
     },
     mounted(){
         this.getTreeDep()
+    },
+    computed: {
+        getFlag() {
+            return this.$store.state.flag
+        }
+    },
+    //watch监视vuex内部数据变化
+    watch:{
+        getFlag(val,oldVal){
+            if(val){
+                this.getTreeDep()
+                this.$store.commit("notReLoad")
+            }
+        }
     }
 }
 </script>

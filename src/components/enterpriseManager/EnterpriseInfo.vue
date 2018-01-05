@@ -78,7 +78,7 @@
                                 <el-input :disabled="true" v-model="enterpriseInfo.taxAccount"></el-input>
                             </el-form-item>
                             <el-form-item label="公司坐标">
-                                <el-input :disabled="true" v-model="enterpriseInfo.enterpriseScope"></el-input>
+                                <el-input :disabled="true" v-model="entCoord"></el-input>
                             </el-form-item>
                             <el-form-item label="企业经营内容">
                                 <el-input :disabled="true" type="textarea" v-model="enterpriseInfo.enterpriseScope"></el-input>
@@ -147,18 +147,13 @@ export default{
     methods:{
         //获取企业信息
         getEnterpriseInfo(){
-            this.$axios.post("/api/api/enterprise/entInfo",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.enterpriseInfo=res.data.data
-                        console.log(this.enterpriseInfo)
-                        this.entCoord=this.enterpriseInfo.lon+","+this.enterpriseInfo.lat
-                        this.enterpriseLogoUrl=this.enterpriseInfo.enterpriseLogoUrl
-                    }
+            this.$axios.post("/api/api/enterprise/entInfo",{},).then(res=>{
+                if(res.data.code==1000){
+                    this.enterpriseInfo=res.data.data
+                    // this.entCoord=this.enterpriseInfo.lon+","+this.enterpriseInfo.lat
+                    this.enterpriseLogoUrl=this.enterpriseInfo.enterpriseLogoUrl
+                    this.companyBanner=this.enterpriseInfo.enterpriseBannerUrl
+                    this.loginBanner=this.enterpriseInfo.logingBannerUrl
                 }
             })
         },

@@ -8,6 +8,7 @@ import 'element-ui/lib/theme-chalk/display.css'
 import './styles/vars.scss'
 import authUtil from './common/authUnils'
 import router from './router'
+import store from './vuex/store'
 import echarts from 'echarts/dist/echarts.min'
 Vue.prototype.$echarts=echarts      
 import axios from 'axios'  
@@ -111,6 +112,7 @@ router.beforeEach((to, from, next) => {
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 })

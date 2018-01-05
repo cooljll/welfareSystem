@@ -227,9 +227,9 @@
                         离职列表
                     </span>
                     <div class="indexrighttitle">
-                        <input type="file" @change="getFile($event)" id="fileToUpload">
+                        <input type="file" @change="getBatchDelFile($event)" id="batchRemoveFile">
                         <el-button type="info" @click="downloadDelExcel">下载excel模板</el-button>
-                        <el-button type="info" @click="selectExcelFile">excel批量删除</el-button>
+                        <el-button type="info" @click="excelBatchDel">excel批量删除</el-button>
                     </div>
                 </div>
             </div>
@@ -490,6 +490,26 @@
                 <el-button @click.native="moveToDepVisible = false">取消</el-button>
             </div>
         </el-dialog>
+        <!-- 批量导入员工提示框 -->
+        <el-dialog title="选择员工" :visible.sync="messageTipVisible" :close-on-click-modal="false" style="top:10%" class="messageTipDialog">
+            <el-table :data="batchExportEmpData" resizable highlight-current-row style="width: 100%;">
+                    <el-table-column prop="name" label="姓名" align="center" width="60">
+                    </el-table-column>
+                    <el-table-column prop="sex" label="性别" align="center" width="50">
+                    </el-table-column>
+                    <el-table-column prop="identifyNo" label="身份证" align="center" width="180">
+                    </el-table-column>
+                    <el-table-column prop="phone" label="手机号" align="center" width="120">
+                    </el-table-column>
+                    <el-table-column prop="email" label="邮箱" align="center">
+                    </el-table-column>
+                    <el-table-column prop="jobNumber" label="工号" align="center" width="80">
+                    </el-table-column>
+                    <el-table-column prop="error" label="错误信息" align="center">
+                    </el-table-column>
+                </el-table>
+           <div class="message">{{messageTips}}</div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -648,7 +668,11 @@ export default{
             isShowReleaseBtn:false,
             companyName:JSON.parse(localStorage.getItem("enterpriseInfo")).enterpriseName,
             file:"",
-            showEdit:true
+            batchDelFile:'',
+            showEdit:true,
+            messageTips:"",
+            messageTipVisible:false,
+            batchExportEmpData:[]
         }
     },
     methods:{
@@ -679,7 +703,7 @@ export default{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
-                        this.$router.go(0)
+                        this.$store.commit('reLoad')
                     })
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
@@ -733,6 +757,7 @@ export default{
                 this.$axios.post("/api/api/organize/deleteDep",qs.stringify({depId:id})).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
+                            this.$store.commit('reLoad')
                             this.$router.push("/EnterpriseOverview")
                         })
                     }else if(res.data.code==1001){
@@ -751,6 +776,7 @@ export default{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
+                        this.$store.commit("reLoad")//触发vuex中状态的变更
                         this.showEmployee(Number(this.$route.params.depId))
                     })
                 }else if(res.data.code==1001){
@@ -785,12 +811,6 @@ export default{
         },
         //上传
         getFile(event) {
-            const loading = this.$loading({
-				lock: true,
-				text: '上传中...',
-				spinner: 'el-icon-loading',
-				background: 'rgba(0, 0, 0, 0.7)'
-			})
             this.file = event.target.files[0]
             let formData = new FormData()
             formData.append('uploadexcel', this.file)
@@ -799,13 +819,23 @@ export default{
                 'Content-Type': 'multipart/form-data'
               }
             }
+            const loading = this.$loading({
+				lock: true,
+				text: '上传中...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.$axios.post("/api/api/employee/uploadCheckEmps",formData,config).then(res=>{
-                console.log(res)
                 loading.close()
                 if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        // this.$router.go(0)
+                    this.messageTips=res.data.message
+                    res.data.data.forEach(item=>{
+                        item.emp.error=item.error
+                        this.batchExportEmpData.push(item.emp)
                     })
+                    this.exportEmployeeVisible=false
+                    this.messageTipVisible=true
+                    this.$store.commit('reLoad')
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,'信息')
                 }
@@ -859,6 +889,23 @@ export default{
                 this.handleMoveToDept([obj])
             }
         },
+        //移至部门操作
+        handleMoveToDept(arr){
+            this.$axios.post("/api/api/employee/removeToDept",{
+                depId_next:this.departId,
+                list:arr
+            }).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.moveToDepVisible=false
+                        this.$store.commit('reLoad')
+                        this.goBackList()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,'信息')
+                }
+            })
+        },
         //移出企业
         moveoutOfEnterprise(){
             if(this.selectedEmployee.length==0){
@@ -871,6 +918,21 @@ export default{
                     this.handleRemoveEmployee(this.empCodes)
                 })
             }
+        },
+        //移出企业操作
+        handleRemoveEmployee(arr){
+            this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.$store.commit('reLoad')
+                        this.goBackList()
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        this.selectedEmployee=[]
+                    })
+                }
+            })
         },
         //冻结
         freezeEmployee(){
@@ -897,37 +959,6 @@ export default{
                     this.handleFrozenEmployee(this.empCodes,0)
                 })
             }  
-        },
-        //移至部门操作
-        handleMoveToDept(arr){
-            this.$axios.post("/api/api/employee/removeToDept",{
-                depId_next:this.departId,
-                list:arr
-            }).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,'信息').then(()=>{
-                        this.moveToDepVisible=false
-                        this.goBackList()
-                    })
-                }else if(res.data.code==1){
-                    this.$alert(res.data.message,'信息')
-                }
-            })
-        },
-        //移出企业操作
-        handleRemoveEmployee(arr){
-            this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,'信息').then(()=>{
-                        this.$router.go(0)
-                        this.goBackList()
-                    })
-                }else if(res.data.code==1){
-                    this.$alert(res.data.message,'信息').then(()=>{
-                        this.selectedEmployee=[]
-                    })
-                }
-            })
         },
         //冻结,解冻员工
         handleFrozenEmployee(codeArr,i){
@@ -956,21 +987,20 @@ export default{
                 })
             })
         },
-        selectExcelFile(){
-            document.getElementById('fileToUpload').click()
+        excelBatchDel(){
+            document.getElementById('batchRemoveFile').click()
         },
         //批量删除离职员工
-        getFile(event) {
-            this.file = event.target.files[0]
+        getBatchDelFile(event) {
+            this.batchDelFile = event.target.files[0]
             let formData = new FormData()
-            formData.append('uploadexcel', this.file)
+            formData.append('uploadexcel', this.batchDelFile)
             let config = {
               headers: {
                 'Content-Type': 'multipart/form-data'
               }
             }
             this.$axios.post("/api/api/employee/batchRemoveEmp",formData,config).then(res=>{
-                console.log(res)
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.showDelEmployee()
@@ -1255,6 +1285,11 @@ export default{
         this.showDelEmployee()
         this.showExmineLists()
     },
+    computed: {
+        getFlag() {
+            return this.$store.state.flag
+        }
+    },
     //监视地址栏的变化
     watch:{
         '$route' (to, from) {
@@ -1266,6 +1301,12 @@ export default{
                 this.showExmineLists()
             }
             this.showEmployee(Number(to.params.depId))
+        },
+        getFlag(val,oldVal){
+            if(val){
+                this.showEmployee(Number(this.$route.params.depId))
+                this.$store.commit("notReLoad")
+            }
         }
     }
 }

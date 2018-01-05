@@ -129,6 +129,7 @@
                 </div>
             </div>
         </div>
+        <iframe v-show="iframeState" id="show-iframe"  frameborder=0 name="showHere" scrolling=auto src="../../../assets/aa.html"></iframe>
         <!-- 微信支付弹框 -->
         <el-dialog title="扫码支付" :visible.sync="weChatVisible" :close-on-click-modal="false" style="top:15%" class="weChatDialog">
            <div class="weixinpaybox">
@@ -170,7 +171,8 @@ export default{
             isShow:true,
             isShowRechargeCenter:true,
             isShowWechatPay:false,
-            WechatImg:""
+            WechatImg:"",
+            iframeState:false
         }
     },
     methods:{
@@ -208,35 +210,33 @@ export default{
                         this.isShowRecharge=false
                         this.isShowSuccess=true
                     }else if(this.zhifubao){//支付宝支付
-                        this.$axios.get("/api/api/alipays/web",{
-                            params:{
-                                orderNo:res.data.data.orderNo,
-                                payOrder:res.data.data.payOrder,
-                                point:res.data.data.point.toString()
-                            }
-                        }).then(res=>{
-                            // console.log(res.data)
-                            // window.open(url)
-                        })
-                        window.open("/assets/alipay.html")
+                        this.iframeState=true
+                        // this.$axios.get("/api/api/alipays/web",{
+                        //     params:{
+                        //         orderNo:res.data.data.orderNo,
+                        //         payOrder:res.data.data.payOrder,
+                        //         point:res.data.data.point.toString()
+                        //     }
+                        // }).then(res=>{
+                        //     // this.alipayData=res.data
+                        // })
                     }else if(this.weixin){//微信支付
-                        this.$axios.get("/api/api/wechatPay/nativeOrder",{
-                            params:{
-                                orderNo:res.data.data.orderNo,
-                                payOrder:res.data.data.payOrder,
-                                point:res.data.data.point.toString()
-                            }
-                        }).then(res=>{
-                            if(res){
-                                this.isShowRechargeCenter=false
-                                this.isShowWechatPay=true
-                                // let blob=new Blob([res.data],{type:"image/png"})
-                                // this.WechatImg=URL.createObjectURL(blob)
-                            }else{
-                                this.isShowRechargeCenter=true
-                                this.isShowWechatPay=false
-                            }
-                        })
+                        // this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                        //     params:{
+                        //         orderNo:res.data.data.orderNo,
+                        //         payOrder:res.data.data.payOrder,
+                        //         point:res.data.data.point.toString()
+                        //     }
+                        // }).then(res=>{
+                        //     if(res){
+                        //         this.isShowRechargeCenter=false
+                        //         this.isShowWechatPay=true
+                        //         this.WechatImg=res.data
+                        //     }else{
+                        //         this.isShowRechargeCenter=true
+                        //         this.isShowWechatPay=false
+                        //     }
+                        // })
                     }
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
@@ -279,6 +279,11 @@ export default{
         }
     },
     mounted(){
+        const oIframe = document.getElementById('show-iframe')
+        const deviceWidth = document.documentElement.clientWidth
+        const deviceHeight = document.documentElement.clientHeight
+        oIframe.style.width = deviceWidth + 'px'
+        oIframe.style.height = deviceHeight + 'px'
         const that = this
         window.onresize = () => {
             return (() => {
