@@ -122,6 +122,26 @@
                 </div>
             </div>
         </el-dialog>
+        <!-- 批量导入员工提示框 -->
+        <el-dialog title="选择员工" :visible.sync="messageTipVisible" :close-on-click-modal="false" style="top:10%" class="messageTipDialog">
+            <el-table :data="batchExportEmpData" resizable highlight-current-row style="width: 100%;">
+                    <el-table-column prop="name" label="姓名" align="center" width="60">
+                    </el-table-column>
+                    <el-table-column prop="sex" label="性别" align="center" width="50">
+                    </el-table-column>
+                    <el-table-column prop="identifyNo" label="身份证" align="center" width="180">
+                    </el-table-column>
+                    <el-table-column prop="phone" label="手机号" align="center" width="120">
+                    </el-table-column>
+                    <el-table-column prop="email" label="邮箱" align="center">
+                    </el-table-column>
+                    <el-table-column prop="jobNumber" label="工号" align="center" width="80">
+                    </el-table-column>
+                    <el-table-column prop="error" label="错误信息" align="center">
+                    </el-table-column>
+                </el-table>
+           <div class="message">{{messageTips}}</div>
+        </el-dialog>
 	</div>
 </template>
 
@@ -129,7 +149,6 @@
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
 import fileDownload from 'js-file-download'
-import Store from '../../vuex/store'
 export default {
   	data () {
         //   var tel = /^\d{3,4}-?\d{7,9}$/  电话号码格式：021-12345678
@@ -236,7 +255,10 @@ export default {
                 ]
             },
             exportEmployeeVisible:false,
-            file:""
+            file:"",
+            messageTips:"",
+            messageTipVisible:false,
+            batchExportEmpData:[]
 		}
 	},
 	methods:{
@@ -395,12 +417,6 @@ export default {
             document.getElementById('fileToUpload').click()
         },
         getFile(event) {
-            const loading = this.$loading({
-				lock: true,
-				text: '上传中...',
-				spinner: 'el-icon-loading',
-				background: 'rgba(0, 0, 0, 0.7)'
-			})
             this.file = event.target.files[0]
             let formData = new FormData()
             formData.append('uploadexcel', this.file)
@@ -409,13 +425,23 @@ export default {
                 'Content-Type': 'multipart/form-data'
               }
             }
+            const loading = this.$loading({
+				lock: true,
+				text: '上传中...',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.$axios.post("/api/api/employee/uploadCheckEmps",formData,config).then(res=>{
-                console.log(res)
                 loading.close()
                 if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        // this.$router.go(0)
+                    this.messageTips=res.data.message
+                    res.data.data.forEach(item=>{
+                        item.emp.error=item.error
+                        this.batchExportEmpData.push(item.emp)
                     })
+                    this.exportEmployeeVisible=false
+                    this.messageTipVisible=true
+                    this.$store.commit('reLoad')
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,'信息')
                 }

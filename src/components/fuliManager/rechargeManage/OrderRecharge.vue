@@ -53,8 +53,8 @@
                         <el-button type="text" 
                         v-show='(scope.row.status=="已付款"||(scope.row.status=="待付款"&&scope.row.payType=="银行电汇")||(scope.row.status==null))?true:false'
                         @click="$router.push('/CreditRecharge')">再次充值</el-button>
-                        <el-button type="text" @click="handleOrder(scope.row)"
-                        v-show='((scope.row.status=="待付款"&&scope.row.payType=="微信")||(scope.row.status=="待付款"&&scope.row.payType=="支付宝"))?true:false'>继续支付</el-button>
+                        <el-button type="text" v-show='((scope.row.status=="待付款"&&scope.row.payType=="微信")||(scope.row.status=="待付款"&&scope.row.payType=="支付宝"))?true:false'
+                        @click="handleOrder(scope.row)">继续支付</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -67,7 +67,7 @@
         <!-- 微信支付弹框 -->
         <el-dialog title="扫码支付" :visible.sync="weChatVisible" :close-on-click-modal="false" style="top:15%" class="weChatDialog">
            <div class="weixinpaybox">
-                <img class="QRimg" src="rest/wechatPay/nativeOrder?payOrder=1000000617526030&amp;orderNo=61E80986-251C-449D-BB7F-0B81FCB3F1D4">
+                <img class="QRimg" :src="WechatImg">
                 <span class="QRtitle">
                     请使用微信扫一扫<br>
                     扫描二维码支付
@@ -79,6 +79,7 @@
 <script>
 import authUnils from '../../../common/authUnils'
 import fileDownload from 'js-file-download'
+import qs from 'queryString'
 export default{
     data(){
         return{
@@ -95,7 +96,8 @@ export default{
             currentPage:1,
             weChatVisible:false,
             isShowRecharge:true,
-            isShowPay:false
+            isShowPay:false,
+            WechatImg:""
         }
     },
     methods:{
@@ -150,29 +152,57 @@ export default{
         getSearchResult(){
             this.getRechargeOrderList()
         },
-        //订单操作
+        //继续支付
         handleOrder(obj){
-            console.log(obj)
-            if(obj.orderState=="待付款"&&obj.orderType=="支付宝"){
+            if(obj.payType=="支付宝"){
                 this.$axios.get("/api/api/alipays/web",{
                     params:{
-                        orderNo:obj.orderNo,
-                        payOrder:obj.payOrder,
-                        point:obj.amount_pay
+                        orderNo:"continue",
+                        payOrder:obj.orderId,
+                        point:obj.score
                     }
                 }).then(res=>{
-                    console.log(res)
+                    const div = document.createElement('div')
+                    div.innerHTML = res.data
+                    document.body.appendChild(div)
+                    document.forms['pay_form'].submit()
                 })
-            }else if(obj.orderState=="待付款"&&obj.orderType=="微信"){
-                this.weChatVisible=true
+            }else if(obj.payType=="微信"){
                 this.$axios.get("/api/api/wechatPay/nativeOrder",{
                     params:{
-                        orderNo:obj.orderNo,
-                        payOrder:obj.payOrder,
-                        point:obj.amount_pay
-                    }
+                        orderNo:"continue",
+                        payOrder:obj.orderId,
+                        point:obj.score
+                    },
+                    responseType:'blob'
                 }).then(res=>{
-                    console.log(res)
+                    let blob = new Blob([res.data], {type:'image/jpeg'})
+                    let imgSrc=URL.createObjectURL(blob)
+                    this.WechatImg=imgSrc
+                    this.weChatVisible=true
+                    var repeat = 200 // 限制执行次数为200次  
+                    var that = this
+                    // 注意：setInterval函数里面的this是指向window
+                    var timer = setInterval(function() {      
+                        if (repeat == 0 || !that.weChatVisible) {  
+                            clearInterval(timer)
+                        } else {  
+                            //后台轮询 查询订单状态  
+                            that.$axios.post("/api/api/recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
+                                if(res.data.code==1000){
+                                    let status=res.data.data.status
+                                    if(status==1){//扫码成功
+                                        clearInterval(timer) 
+                                        this.getRechargeOrderList()
+                                        this.weChatVisible=false
+                                    }else if(status==0){
+
+                                    }
+                                }
+                            })
+                            repeat-- 
+                        }  
+                    }, 3000)
                 })
             }
         }

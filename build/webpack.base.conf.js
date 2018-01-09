@@ -25,7 +25,8 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
       'scss_vars': '@/styles/vars.scss',
-      'vendor': path.resolve(__dirname, '../src/vendor')
+      'vendor': path.resolve(__dirname, '../src/vendor'),
+      'jquery': path.resolve(__dirname, '../node_modules/jquery/src/jquery')
     }
   },
   module: {

@@ -812,7 +812,14 @@ export default{
         },
         //获取福利卷
         getProduct(){
+            const loading = this.$loading({
+				lock: true,
+				text: '正在获取福利卷。。。',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.$axios.post("/api/api/voucher/product",this.productParams).then(res=>{
+                loading.close()
                 if(res.data.code==1000){
                     let welfareRolls=res.data.data.content
                     if(welfareRolls.length==0){

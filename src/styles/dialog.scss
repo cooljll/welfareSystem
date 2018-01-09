@@ -212,9 +212,32 @@
 .examineDialog{
     .el-dialog{
         width:500px;
-        height:289px;
+        min-height:289px;
         .el-dialog__body{
             padding:30px 20px 0;
+            .selectInput{
+                .el-input{
+                    width: 340px;
+                }
+            }
+            .el-textarea{
+                margin-bottom: 5px;
+                .el-textarea__inner{
+                    width: 340px;
+                    height: 70px;
+                    font-size: 12px;
+                }
+            }
+            .reasonBtn{
+                .el-button{
+                    margin:3px;
+                    font-size:12px;
+                    padding:10px 12px;
+                    color: #009DF6;
+                    border:1px solid #009DF6;
+                    border-radius: 0;
+                }
+            }
         }
     }
 }

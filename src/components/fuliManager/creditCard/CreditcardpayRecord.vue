@@ -69,15 +69,13 @@
                 </el-table-column>
                 <el-table-column prop="money" label="还款金额(元)" align="center">
                 </el-table-column>
-                <el-table-column prop="name" label="是否发送" align="center">
-                </el-table-column>
-                <el-table-column prop="poundage" label="手续费(元)" align="center">
+                <el-table-column prop="payScore" label="支付积分" align="center">
                 </el-table-column>
                 <el-table-column prop="errorMsg" label="信息" align="center">
                 </el-table-column>
-                <el-table-column prop="orderState" label="还款状态" align="center">
-                </el-table-column>
                 <el-table-column prop="createTime" label="创建时间" align="center">
+                </el-table-column>
+                <el-table-column prop="orderState" label="还款状态" align="center">
                 </el-table-column>
             </el-table>
             <div class="toolbar">

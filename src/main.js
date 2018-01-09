@@ -11,7 +11,8 @@ import router from './router'
 import store from './vuex/store'
 import echarts from 'echarts/dist/echarts.min'
 Vue.prototype.$echarts=echarts      
-import axios from 'axios'  
+import axios from 'axios' 
+axios.defaults.withCredentials=true //允许跨域携带cookie信息
 Vue.prototype.$axios=axios                    
 
 Vue.config.productionTip = false
@@ -35,18 +36,18 @@ axios.interceptors.request.use(
 // 响应拦截器
 axios.interceptors.response.use(
   response => {
-      switch(response.data.code){
-            // case 2001:
-            //     ElementUI.MessageBox.alert(response.data.message,"信息")
-            //     // authUtil.removeToken()
-            //     localStorage.removeItem("enterpriseInfo")
-            //     localStorage.removeItem("loginName")
-            //     router.replace({
-            //         path: '/'
-            //     })
-            //     break
-      }
-      return response
+    switch(response.data.code){
+        // case 2001:
+        //     ElementUI.MessageBox.alert(response.data.message,"信息")
+        //     // authUtil.removeToken()
+        //     localStorage.removeItem("enterpriseInfo")
+        //     localStorage.removeItem("loginName")
+        //     router.replace({
+        //         path: '/'
+        //     })
+        //     break
+    }
+    return response
   },
   error => {
     if (error.response) {

@@ -295,7 +295,7 @@
                     </div>
                     <el-form :inline="true">
                         <el-form-item label="状态：">
-                            <el-select placeholder="请选择状态" v-model="filtersExamine.auditStatus" clearable>
+                            <el-select placeholder="请选择状态" v-model.number="filtersExamine.auditStatus" clearable>
                                 <el-option label="已通过" value="1"></el-option>
                                 <el-option label="已拒绝" value="2"></el-option>
                                 <el-option label="待审批" value="3"></el-option>
@@ -326,7 +326,7 @@
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
                             <el-button type="text" @click="seeDetails(scope.row)">查看详情</el-button>
-                            <el-button type="text" @click="simpleExamine(scope.row.entGuid)">审批</el-button>
+                            <el-button type="text" @click="simpleExamine(scope.row.customerGuid)">审批</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -460,26 +460,6 @@
                 <div class="info">{{this.employeeInfo.auditStatus}}</div>
             </div>
         </el-dialog>
-        <!-- 审批弹窗 -->
-        <el-dialog title="审批" :visible.sync="examineVisible" :close-on-click-modal="false" style="top:10%" class="examineDialog">
-            <el-form label-position="right" label-width="100px" class="form-center">
-                <el-form-item label="进行审批：">
-                    <el-select placeholder="请选择状态" v-model="status" clearable>
-                        <el-option label="已通过" value="1"></el-option>
-                        <el-option label="已拒绝" value="2"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="移至部门：">
-                    <el-select v-model="departId" clearable>
-                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.label"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="primary" @click="exmineSubmit">确定</el-button>
-                <el-button @click.native="examineVisible = false">取消</el-button>
-            </div>
-        </el-dialog>
         <!-- 移至部门弹窗 -->
         <el-dialog title="请选择部门" :visible.sync="moveToDepVisible" :close-on-click-modal="false" style="top:15%" class="moveToDepDialog">
             <el-select v-model.number="departId">
@@ -488,6 +468,31 @@
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="moveToDepSubmit">移动</el-button>
                 <el-button @click.native="moveToDepVisible = false">取消</el-button>
+            </div>
+        </el-dialog>
+        <!-- 审批弹窗 -->
+        <el-dialog title="审批" :visible.sync="examineVisible" :close-on-click-modal="false" style="top:10%" class="examineDialog">
+            <el-form label-position="right" label-width="100px" class="form-center">
+                <el-form-item label="进行审批：">
+                    <el-select placeholder="请选择状态" v-model.number="approvalParams.status" clearable class="selectInput" @change="changeApprovalStatus">
+                        <el-option label="已通过" value="1"></el-option>
+                        <el-option label="已拒绝" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="拒绝理由：" class="reasonBtn" v-show="isShowRejectBox">
+                    <el-input type="textarea" v-model="approvalParams.reason"></el-input>
+                    <el-button v-for="(item,index) in rejectReasons" :key="index" @click="selectRejectReason(item)">{{item}}</el-button>
+                </el-form-item>
+                <el-form-item label="移至部门：" v-show="isShowMoveBox">
+                    <el-select v-model.number="approvalParams.departId" clearable class="selectInput">
+                        <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer footer-center">
+                <el-button type="primary" @click="simpleExmineSubmit" v-show="isShowSimpleBtn">确定</el-button>
+                <el-button type="primary" @click="batchExmineSubmit" v-show="isShowBatchBtn">确定</el-button>
+                <el-button @click.native="examineVisible = false">取消</el-button>
             </div>
         </el-dialog>
         <!-- 批量导入员工提示框 -->
@@ -594,7 +599,7 @@ export default{
             examineTableData:[],
             value:[],//日期
             filtersExamine:{
-                auditStatus:"3",
+                auditStatus:3,
                 startTime:"",
                 endTime:"",
                 pageNum:1,
@@ -659,8 +664,19 @@ export default{
             leaveLoading:false,
             examineLoading:false,
             batchExamineEmp:[],
+            isShowSimpleBtn:true,
+            isShowBatchBtn:false,
+            //处理审批参数
+            approvalParams:{
+                departId:"",
+                status:"",
+                reason:"",
+                empCodes:[]
+            },
+            rejectReasons:["非本公司人员",'身份证有误','手机有误','邮箱有误','入职日期有误','工号有误','性别有误'],
+            isShowRejectBox:false,
+            isShowMoveBox:true,
             departId:"",
-            status:"",
             code:"",
             handleBtn:true,
             confirmBtn:false,
@@ -979,7 +995,8 @@ export default{
                 this.$axios.post("/api/api/employee/pullBack",{empCode:code}).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,'信息').then(()=>{
-                            this.$router.go(0)
+                            this.$store.commit('reLoad')
+                            this.showDelEmployee()
                         })
                     }else if(res.data.code==1001){
                         this.$alert(res.data.message)
@@ -1024,33 +1041,65 @@ export default{
                 }
             })
         },
-        //审批
+        //处理审批
+        handleExamineEmp(){
+            this.$axios.post("/api/api/approvalCenter/dealApproval",this.approvalParams).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.$store.commit('reLoad')
+                        this.showExmineLists()
+                        this.examineVisible=false
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
+            })
+        },
+        changeApprovalStatus(val){
+            if(val=="2"){
+                this.isShowRejectBox=true
+                this.isShowMoveBox=false
+            }else{
+                this.approvalParams.reason=''
+                this.isShowRejectBox=false
+                this.isShowMoveBox=true
+            }
+        },
+        selectRejectReason(item){
+            this.approvalParams.reason+=item+"；"
+        },
+        //单个审批
         simpleExamine(code){
             this.code=code
             this.examineVisible=true
+            this.isShowSimpleBtn=true
+            this.isShowBatchBtn=false
             this.getDepartmentList()
         },
-        exmineSubmit(){
-            this.handleExamineEmp([this.code])
+        simpleExmineSubmit(){
+            this.approvalParams.empCodes=[this.code]
+            this.handleExamineEmp()
         },
         //批量审批
         batchExamine(){
             if(this.batchExamineEmp.length==0){
                 this.$alert("请选择员工后进行操作","信息")
+            }else{
+                this.examineVisible=true
+                this.isShowSimpleBtn=false
+                this.isShowBatchBtn=true
+                this.getDepartmentList()
             }
         },
         handleExamineDataChange(val){
             this.batchExamineEmp=val
-        },
-        handleExamineEmp(arr){
-            this.$axios.post("/api/api/approvalCenter/dealApproval",{
-                depId:this.departId,
-                status:Number(this.status),
-                reason:"",
-                empCodes:arr
-            }).then(res=>{
-                console.log(res)
+            this.batchExamineEmp.forEach(item=>{
+                this.empCodes.push(item.customerGuid)
             })
+        },
+        batchExmineSubmit(){
+            this.approvalParams.empCodes=this.empCodes
+            this.handleExamineEmp()
         },
         //格式化时间
         formatDate(time){
@@ -1072,11 +1121,9 @@ export default{
         showEmployee(id){
             this.filters.depId=id
             this.$axios.post("/api/api/employee/showEmployee",this.filters).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.tableData=res.data.data.content
-                        this.totalSize=res.data.data.totalSize
-                    }
+                if(res.data.code==1000){
+                    this.tableData=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
                 }
             })
         },
@@ -1099,7 +1146,6 @@ export default{
                 this.isShowFrozenBtn=false
             }
             this.getDepartmentList()
-            console.log(this.departmentList)
             this.employeeInfo=obj
             this.departId=this.employeeInfo.department
             this.isShowEmpList=false

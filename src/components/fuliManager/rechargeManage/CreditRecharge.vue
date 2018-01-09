@@ -60,7 +60,7 @@
                                 <div class="recharge-row">
                                     <div class="row-txt">选择方式</div>
                                     <div class="row-input">
-                                        <el-button type="info" v-for="(item,index) in payTypes" :key="index" @click="selectPayType(index+1)">{{item}}</el-button>
+                                        <el-button plain type="info" v-for="(item,index) in payTypes" :key="index" @click="selectPayType(index+1)">{{item}}</el-button>
                                     </div>
                                 </div>
                                 <div class="paybox-row">
@@ -129,11 +129,10 @@
                 </div>
             </div>
         </div>
-        <iframe v-show="iframeState" id="show-iframe"  frameborder=0 name="showHere" scrolling=auto src="../../../assets/aa.html"></iframe>
         <!-- 微信支付弹框 -->
         <el-dialog title="扫码支付" :visible.sync="weChatVisible" :close-on-click-modal="false" style="top:15%" class="weChatDialog">
            <div class="weixinpaybox">
-                <img class="QRimg" :src="WechatImg">
+                <img class="QRimg" :src="WechatImg" >
                 <span class="QRtitle">
                     请使用微信扫一扫<br>
                     扫描二维码支付
@@ -171,8 +170,7 @@ export default{
             isShow:true,
             isShowRechargeCenter:true,
             isShowWechatPay:false,
-            WechatImg:"",
-            iframeState:false
+            WechatImg:""
         }
     },
     methods:{
@@ -203,40 +201,70 @@ export default{
         },
         //支付订单
         buildPayOrder(){
+            const loading = this.$loading({
+				lock: true,
+				text: '正在创建订单。。。',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.invoiceInfo.amount_payable=this.invoiceInfo.point
             this.$axios.post("/api/api/recharge/pay",this.invoiceInfo).then(res=>{
+                loading.close()
                 if(res.data.code==1000){
                     if(this.yinhang){//银行支付
                         this.isShowRecharge=false
                         this.isShowSuccess=true
                     }else if(this.zhifubao){//支付宝支付
-                        this.iframeState=true
-                        // this.$axios.get("/api/api/alipays/web",{
-                        //     params:{
-                        //         orderNo:res.data.data.orderNo,
-                        //         payOrder:res.data.data.payOrder,
-                        //         point:res.data.data.point.toString()
-                        //     }
-                        // }).then(res=>{
-                        //     // this.alipayData=res.data
-                        // })
+                        this.$axios.get("/api/api/alipays/web",{
+                            params:{
+                                orderNo:res.data.data.orderNo,
+                                payOrder:res.data.data.payOrder,
+                                point:res.data.data.point.toString()
+                            }
+                        }).then(res=>{
+                            const div = document.createElement('div') // 创建div
+                            div.innerHTML = res.data // 将返回的form 放入div
+                            document.body.appendChild(div)
+                            document.forms['pay_form'].submit()
+                        })
                     }else if(this.weixin){//微信支付
-                        // this.$axios.get("/api/api/wechatPay/nativeOrder",{
-                        //     params:{
-                        //         orderNo:res.data.data.orderNo,
-                        //         payOrder:res.data.data.payOrder,
-                        //         point:res.data.data.point.toString()
-                        //     }
-                        // }).then(res=>{
-                        //     if(res){
-                        //         this.isShowRechargeCenter=false
-                        //         this.isShowWechatPay=true
-                        //         this.WechatImg=res.data
-                        //     }else{
-                        //         this.isShowRechargeCenter=true
-                        //         this.isShowWechatPay=false
-                        //     }
-                        // })
+                        this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                            params:{
+                                orderNo:res.data.data.orderNo,
+                                payOrder:res.data.data.payOrder,
+                                point:res.data.data.point.toString()
+                            },
+                            responseType:'blob'
+                        }).then(res=>{
+                            this.isShowRechargeCenter=false
+                            this.isShowWechatPay=true
+                            let blob = new Blob([res.data], {type:'image/jpeg'})
+                            let imgSrc=URL.createObjectURL(blob)
+                            this.WechatImg=imgSrc
+                            var that = this
+                            // 注意：setInterval函数里面的this是指向window
+                            var timer = setInterval(function() {      
+                                if (repeat == 0 || !that.weChatVisible) {  
+                                    clearInterval(timer)
+                                } else {  
+                                    //后台轮询 查询订单状态  
+                                    that.$axios.post("/api/api/recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
+                                        if(res.data.code==1000){
+                                            let status=res.data.data.status
+                                            if(status==1){//扫码成功
+                                                clearInterval(timer) 
+                                                this.getRechargeOrderList()
+                                                this.isShowRechargeCenter=true
+                                                this.isShowWechatPay=false
+                                            }else if(status==0){
+
+                                            }
+                                        }
+                                    })
+                                    repeat-- 
+                                }  
+                            }, 3000)
+                        })
                     }
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息").then(()=>{
@@ -279,11 +307,6 @@ export default{
         }
     },
     mounted(){
-        const oIframe = document.getElementById('show-iframe')
-        const deviceWidth = document.documentElement.clientWidth
-        const deviceHeight = document.documentElement.clientHeight
-        oIframe.style.width = deviceWidth + 'px'
-        oIframe.style.height = deviceHeight + 'px'
         const that = this
         window.onresize = () => {
             return (() => {

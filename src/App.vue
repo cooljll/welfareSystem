@@ -14,7 +14,7 @@
 			<el-col :lg="8" :md="8" :sm="18" :xs="12" class="header-links">
 				<div class="nav_router">
 					<el-menu :router="true" class="el-menu-demo" mode="horizontal" :default-active="$route.path">
-						<el-menu-item index="/WelfareOverview" @click.native="flushCom">福利管理</el-menu-item>
+						<el-menu-item index="/WelfareOverview">福利管理</el-menu-item>
 						<el-menu-item index="/EnterpriseOverview">员工管理</el-menu-item>
 						<el-menu-item index="/ConsultIndex">福利咨询</el-menu-item>
 					</el-menu>
@@ -148,9 +148,6 @@ export default {
 					this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
 				}
 			})
-		},
-		flushCom(){
-			// this.$router.go(0)
 		}
 	},
 	mounted(){

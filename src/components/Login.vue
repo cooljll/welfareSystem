@@ -1,5 +1,10 @@
 <template>
     <div class="main">
+        <div class="page-header">
+            <div class="header-inner">
+                <img class="header-img" src="http://192.168.1.197:8082/assets/img/secondindexlogo.png">
+            </div>
+		</div>
         <div class="page-center">
             <div class="inner-left"><img src="http://192.168.1.197:8082/assets/img/errorandnonotic.png"></div>
             <div class="inner-right">
@@ -210,6 +215,7 @@ export default{
                 }else{
                     localStorage.removeItem("enterpriseInfo")
                     localStorage.removeItem("loginName")
+                    authUnils.removeToken()
                     this.$router.push("/")
                 }
             })

@@ -249,13 +249,10 @@ export default {
 					this.$alert(res.data.message,"信息")
 				}
 			})
-		},
-        tipReload(){
-            this.$emit('top-reload',"刷新")
-        }
+		}
 	},
 	mounted(){
-		this.getTotalEmp()
+		this.getTotalEmp() 
 		this.getGenderNums()
 		this.getAgeNums()
 		// this.getSystemNotice()
