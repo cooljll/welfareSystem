@@ -45,13 +45,16 @@
                     <el-table :data="excelTable" border resizable highlight-current-row style="width: 100%;">
                         <el-table-column label="序号" type="index" align="center" width="80">
                         </el-table-column>
-                        <el-table-column prop="cardNo" label="卡号" align="center">
+                        <el-table-column prop="cardNo" label="卡号" align="center" min-width="165">
                         </el-table-column>
-                        <el-table-column prop="cardName" label="姓名" align="center" width="140">
+                        <el-table-column prop="cardName" label="姓名" align="center">
                         </el-table-column>
-                        <el-table-column prop="money" label="金额" align="center" width="120">
+                        <el-table-column prop="money" label="金额" align="center">
                         </el-table-column>
-                        <el-table-column prop="message" label="信息" align="center">
+                        <el-table-column label="信息" align="center" min-width="80">
+                            <template slot-scope="scope">
+                                <span style="color:red;">{{ scope.row.message }}</span>
+                            </template>
                         </el-table-column>
                     </el-table>
                     <div class="toolbar">
@@ -155,7 +158,7 @@ export default{
         },
         //重新上传
         reUpload(){
-            this.isShowUpload=false
+            // this.file=false
             this.isShowIndex=true
             this.isShowList=false
         },
@@ -163,9 +166,30 @@ export default{
         submitOfRepay(){
             this.$axios.post("/api/api/creditCard/isExcelMsg",this.excelParams).then(res=>{
                 if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息")
+                    this.$confirm("将支付"+res.data.data+"积分，确定提交该笔还款吗？","信息").then(()=>{
+                        const payloading = this.$loading({
+                            lock: true,
+                            text: '正在提交。。。',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        })
+                        let formData = new FormData()
+                        formData.append('uploadexcel', this.file)
+                        let config = {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                        this.$axios.post("/api/api/creditCard/uploadExcel",formData,config).then(res=>{
+                            payloading.close()
+                            if(res.data.code==1000){
+                                this.$alert("提交还款成功!","信息提示")
+                                this.$router.push("/CreditcardpayRecord")
+                            }
+                        })
+                    })
                 }else if(res.data.code==1001){
-                    this.$alert(res.data.message+"!,请修改正确后重新上传!","信息")
+                    this.$alert("Excel表中信息有误! 请修改正确后重新上传!","信息提示")
                 }
             })
         },
@@ -238,6 +262,5 @@ export default{
             }
         }
     }
-    
 </style>
 

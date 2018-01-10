@@ -2,7 +2,7 @@
     <div>
         <div class="page-menu">
             <el-menu :default-active="activeName" class="el-menu-vertical-demo" :router="true"
-            background-color="#3A4D62" text-color="#fff" active-text-color="#ffd04b" :unique-opened="true">
+                background-color="#3A4D62" text-color="#fff" active-text-color="#ffd04b" :unique-opened="true">
                 <el-menu-item index="WelfareOverview">
                     <i class="iconfont icon-home"></i>
                     <span>福利总览</span>

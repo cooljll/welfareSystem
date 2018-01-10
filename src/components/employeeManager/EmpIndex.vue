@@ -137,7 +137,10 @@
                     </el-table-column>
                     <el-table-column prop="jobNumber" label="工号" align="center" width="80">
                     </el-table-column>
-                    <el-table-column prop="error" label="错误信息" align="center">
+                    <el-table-column label="错误信息" align="center">
+                        <template slot-scope="scope">
+                            <span style="color:red;">{{ scope.row.error }}</span>
+                        </template>
                     </el-table-column>
                 </el-table>
            <div class="message">{{messageTips}}</div>
@@ -345,6 +348,7 @@ export default {
         addDepartment(){
             this.departmentDialog="添加部门"
             this.handleDepartmentVisible=true
+            this.isShowHandle=false
             this.getDepartmentList()
         },
         addDepartmentSubmit(){
@@ -363,6 +367,7 @@ export default {
 		//单个添加员工
         addEmployee(){
             this.addEmployeeVisible=true
+            this.isShowHandle=false
             this.getDepartmentList()
         },
         addSimpleEmpSubmit(){
@@ -409,7 +414,7 @@ export default {
                     // let fileName=res.headers['content-disposition'].split(";")[1].split("=")[1]
                     // fileDownload(res.data,fileName)
 
-                    fileDownload(res.data,"导入员工模板.xls")
+                    fileDownload(res.data,"员工导入模板.xls")
                 }
             })
         },

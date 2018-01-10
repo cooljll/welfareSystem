@@ -88,7 +88,7 @@ export default{
         return{
             months:["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             month:"",
-            years:["2017","2016","2015","2014","2013","2012"],
+            years:[],
             year:"", 
             currentYear:"",
             consumeData:[],
@@ -251,6 +251,9 @@ export default{
         let date=new Date()
         this.year=date.getFullYear().toString()
         this.currentYear=date.getFullYear().toString()
+        for(let i=date.getFullYear();i>=2012;i--){
+            this.years.push(i.toString())
+        }
         this.month=date.getMonth()+1+"月"
         this.getPointRecords(this.currentYear)
         this.drawPie(this.year,parseInt(this.month))

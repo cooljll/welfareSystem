@@ -20,13 +20,13 @@
             <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
                 <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
-                <el-table-column prop="orderNo" label="订单号" align="center">
+                <el-table-column prop="orderNo" label="订单号" align="center" min-width="165">
                 </el-table-column>
                 <el-table-column prop="num" label="总人数" align="center">
                 </el-table-column>
                 <el-table-column prop="totalMoney" label="总还款金额" align="center">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center">
+                <el-table-column prop="createTime" label="创建时间" align="center" min-width="150">
                 </el-table-column>
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
@@ -61,7 +61,7 @@
             <el-table :data="sendRecordtable" border resizable highlight-current-row style="width: 100%;">
                 <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
-                <el-table-column prop="cardNo" label="信用卡号" align="center" width="158">
+                <el-table-column prop="cardNo" label="信用卡号" align="center" min-width="165">
                 </el-table-column>
                 <el-table-column prop="cardName" label="户名" align="center">
                 </el-table-column>
@@ -73,7 +73,7 @@
                 </el-table-column>
                 <el-table-column prop="errorMsg" label="信息" align="center">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center">
+                <el-table-column prop="createTime" label="创建时间" align="center" min-width="150">
                 </el-table-column>
                 <el-table-column prop="orderState" label="还款状态" align="center">
                 </el-table-column>

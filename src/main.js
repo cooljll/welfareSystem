@@ -14,7 +14,6 @@ Vue.prototype.$echarts=echarts
 import axios from 'axios' 
 axios.defaults.withCredentials=true //允许跨域携带cookie信息
 Vue.prototype.$axios=axios                    
-
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 /* eslint-disable no-new */

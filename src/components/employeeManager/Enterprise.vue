@@ -185,7 +185,7 @@
                                             <el-input v-model="employeeInfo.job_Number" :disabled="showEdit"></el-input>
                                         </el-form-item>
                                         <el-form-item label="部门：">
-                                            <el-select v-model.number="departId" :disabled="showEdit">
+                                            <el-select v-model="departId" :disabled="showEdit">
                                                 <el-option v-for="(item,index) in departmentList" :key="index" :label="item.label" :value="item.value"></el-option>
                                             </el-select>
                                         </el-form-item>
@@ -226,11 +226,11 @@
                     <span class="indexlefttitle">
                         离职列表
                     </span>
-                    <div class="indexrighttitle">
+                    <!-- <div class="indexrighttitle">
                         <input type="file" @change="getBatchDelFile($event)" id="batchRemoveFile">
                         <el-button type="info" @click="downloadDelExcel">下载excel模板</el-button>
                         <el-button type="info" @click="excelBatchDel">excel批量删除</el-button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <el-row class="content-wrapper">
@@ -337,12 +337,12 @@
                 </el-col>
             </el-row>
         </div>
-        <!-- 添加部门弹框 -->
+        <!-- 添加/编辑部门弹框 -->
         <el-dialog :title="departmentDialog" :visible.sync="handleDepartmentVisible" :close-on-click-modal="false" style="top:10%" class="addDepartDialog">
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="所属部门">
-                    <el-select v-model.number="addDepParams.deptId_sup">
-                        <el-option value="0" label="设为一级部门"></el-option>
+                    <el-select v-model="addDepParams.deptId_sup">
+                        <el-option label="设为一级部门" value=""></el-option>
                         <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -510,7 +510,10 @@
                     </el-table-column>
                     <el-table-column prop="jobNumber" label="工号" align="center" width="80">
                     </el-table-column>
-                    <el-table-column prop="error" label="错误信息" align="center">
+                    <el-table-column label="错误信息" align="center">
+                        <template slot-scope="scope">
+                            <span style="color:red;">{{ scope.row.error }}</span>
+                        </template>
                     </el-table-column>
                 </el-table>
            <div class="message">{{messageTips}}</div>
@@ -612,7 +615,7 @@ export default{
             departmentDialog:"",
             //添加部门参数
             addDepParams:{
-                deptId_sup: 0,
+                deptId_sup: "",
                 deptName_cur: "",
                 remark: "",
                 sortId: 50
@@ -1147,7 +1150,7 @@ export default{
             }
             this.getDepartmentList()
             this.employeeInfo=obj
-            this.departId=this.employeeInfo.department
+            this.departId=this.employeeInfo.deptId
             this.isShowEmpList=false
             this.isShowEmpDetail=true
         },
@@ -1250,6 +1253,12 @@ export default{
         },
         // 员工修改提交
         modifyEmpInfoSubmit(){
+            const updateloading = this.$loading({
+				lock: true,
+				text: '保存中。。。',
+				spinner: 'el-icon-loading',
+				background: 'rgba(0, 0, 0, 0.7)'
+			})
             this.$axios.post("/api/api/employee/updateEmployee",{
                 dep_cur:this.departId,
                 dep_pre:this.employeeInfo.deptId,
@@ -1262,12 +1271,13 @@ export default{
                 phone:this.employeeInfo.phone,
                 sex:this.employeeInfo.sex
             }).then((res=>{
+                updateloading.close()
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleBtn=true
                         this.confirmBtn=false
-                        this.showEdit=false
-                        this.$router.go(0)
+                        this.showEdit=true
+                        this.$store.commit("reLoad")
                     })
                 }else if(res.data.code==1001){
                     this.$alert(res.data,message,'信息')
@@ -1311,7 +1321,9 @@ export default{
         },
         //移出企业
         moveOutEnterprise(){
-            this.handleRemoveEmployee([this.employeeInfo.empCode])
+            this.$confirm("确定将员工移出企业？","信息").then(()=>{
+                this.handleRemoveEmployee([this.employeeInfo.empCode])
+            })
         },
         //冻结
         simpleFreezeEmployee(){

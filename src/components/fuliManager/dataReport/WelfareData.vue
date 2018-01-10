@@ -7,7 +7,7 @@
                 </div>
                 <div class="selectBox">
                     <el-select v-model="shopParams.text" @change="handleEmpShopData">
-                        <el-option v-for="item in year" :value="item" :label="item" :key="item"></el-option>
+                        <el-option v-for="item in years" :value="item" :label="item" :key="item"></el-option>
                     </el-select>
                 </div>
             </el-col>
@@ -17,7 +17,7 @@
                         <span class="txt">基础数据统计</span>
                         <div class="select">
                             <el-select v-model="currentYear" @change="handlePointRecord">
-                                <el-option v-for="item in year" :value="item" :label="item" :key="item"></el-option>
+                                <el-option v-for="item in years" :value="item" :label="item" :key="item"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -33,7 +33,7 @@ import qs from 'queryString'
 export default{
     data(){
         return{
-            year:["2017","2016","2015","2014","2013","2012"],
+            years:[],
             currentYear:"",
             shoppingData:[],
             shopName:[],//商品名称
@@ -171,6 +171,9 @@ export default{
         this.drawPie()
         let date=new Date()
         this.currentYear=date.getFullYear().toString()
+        for(let i=date.getFullYear();i>=2012;i--){
+            this.years.push(i.toString())
+        }
         this.shopParams.text=date.getFullYear().toString()
         this.getEmpShoppingData()
         this.getPointRecords(this.currentYear) 
