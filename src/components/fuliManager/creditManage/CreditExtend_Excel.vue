@@ -687,6 +687,7 @@ export default{
                     }
                     .subtitle{
                         margin-bottom: 15px;
+                        font-size: 14px;
                     }
                     .checkboxdiv{
                         max-width:690px;

@@ -21,7 +21,7 @@
                             <el-input type="textarea" v-model="addNoticeParams.content"></el-input>
                         </el-form-item>
                         <el-form-item label="接收部门">
-                            <el-table style="width:660px;margin-top:20px;" :data="tableData" :header-row-style="tableHeader" @selection-change="handleSelectionChange">
+                            <el-table style="width:660px;margin-top:20px;" :data="tableData" @selection-change="handleSelectionChange">
                                 <el-table-column type="selection" align="center"></el-table-column>
                                 <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
                                 <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
@@ -118,10 +118,6 @@ import qs from 'queryString'
 export default{
     data(){
         return{
-            tableHeader:{
-                background:"#A4AABE",
-                color:"#fff"
-            },
             tableData:[],
             // 此处出现的问题是：当名字使用extendNotice和noticeList时就会不起作用斌给会报错
             isShowExtendNotice:true,

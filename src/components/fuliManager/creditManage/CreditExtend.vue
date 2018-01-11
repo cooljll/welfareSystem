@@ -816,6 +816,7 @@ export default{
             padding: 40px 60px;
             .title{
                 margin-bottom: 15px;
+                font-size: 14px;
             }
             .checkboxdiv{
                 max-width:690px;

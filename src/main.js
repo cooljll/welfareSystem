@@ -37,8 +37,7 @@ axios.interceptors.response.use(
   response => {
     switch(response.data.code){
         // case 2001:
-        //     ElementUI.MessageBox.alert(response.data.message,"信息")
-        //     // authUtil.removeToken()
+        //     ElementUI.MessageBox.alert("登陆超时，请重新登陆","信息")
         //     localStorage.removeItem("enterpriseInfo")
         //     localStorage.removeItem("loginName")
         //     router.replace({
@@ -55,6 +54,7 @@ axios.interceptors.response.use(
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
+                authUtil.delCookie("accessToken")
                 router.replace({
                     path: '/'
                 })
@@ -64,6 +64,7 @@ axios.interceptors.response.use(
                 authUtil.removeToken()
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
+                authUtil.delCookie("accessToken")
                 router.replace({
                     path: '/'
                 })

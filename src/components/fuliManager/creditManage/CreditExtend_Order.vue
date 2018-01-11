@@ -92,7 +92,7 @@
                             {{creditOrderDesc.postTypeName}}
                             <el-button type="primary" @click="gotoExtendEmpList(creditOrderDesc.orderId,creditOrderDesc.welfareType)">详细发放人员</el-button>
                         </div>
-                        <!-- 特定人员 -->
+                        <!-- 特定人员发放/特定人员不发放/excel发放  -->
                         <div class="listbox" v-show="specialEmp">
                             <div class="stafflist">
                                 <el-tag v-for="tag in extendEmpArr" :key="tag" closable class="tagStyle"
@@ -101,8 +101,6 @@
                                 </el-tag>
                             </div>
                         </div>
-                        <!-- excel发放 -->
-
                         <!-- 部门发放 -->
                         <div class="listbox" v-show="deportExtend">
                             <el-table style="width:100%" :data="creditExtendData">
@@ -114,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            <div class="center-footer no-print">
+            <div class="center-footer">
                 <el-button type="primary" @click="printPage">打印</el-button>
                 <el-button type="primary" @click="goBackPrev">返回</el-button>
             </div>
@@ -217,13 +215,11 @@ export default{
         //显示订单列表
         getPagedOrder(){
             this.$axios.post("/api/api/integral/showOrder",this.filters).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.tableData=res.data.data.content
-                        this.totalSize=res.data.data.totalSize
-                    }else{
-                        this.$alert(res.data.message,"信息")
-                    }
+                if(res.data.code==1000){
+                    this.tableData=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -265,21 +261,20 @@ export default{
                 if(res.data.code==1000){
                     this.creditOrderDesc=res.data.data
                     this.postType=res.data.data.postType
-                    if(this.postType=="1"){
+                    if(this.postType=="1"){//全体人员
                         this.specialEmp=false
                         this.deportExtend=false
-                    }else if(this.postType=="2"){
+                    }else if(this.postType=="2"||this.postType=="3"||this.postType=="7"){
                         this.specialEmp=true
                         this.deportExtend=false
                         this.extendEmpArr=JSON.parse(res.data.data.msg)
-                    }else if(this.postType=="7"){
-                        // this.specialEmp=false
-                        // this.deportExtend=true
-                    }else if(this.postType=="4"){
+                    }else if(this.postType=="4"){//部门发放
                         this.specialEmp=false
                         this.deportExtend=true
                         this.creditExtendData=JSON.parse(res.data.data.msg)
                     }
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -297,11 +292,7 @@ export default{
         },
         //打印
         printPage(){
-            let newWindow = window.open("_blank")
-            let codestr = document.querySelector(".printcontent").innerHTML
-            newWindow.document.write(codestr)
-            newWindow.document.close()
-            newWindow.print()
+            window.print()
             return true
         },
         //返回
@@ -313,15 +304,14 @@ export default{
         //订单详情发放人员列表
         getOrderDetailEmpList(){
             this.$axios.post("/api/api/integral/orderDetailEmp",this.extendEmpParams).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        res.data.data.content.forEach(item=>{
-                            item["welType"]=this.welType
-                        })
-                        this.extendEmpTable=res.data.data.content
-                        this.extendTotalSize=res.data.data.totalSize
-                    }
+                if(res.data.code==1000){
+                    res.data.data.content.forEach(item=>{
+                        item["welType"]=this.welType
+                    })
+                    this.extendEmpTable=res.data.data.content
+                    this.extendTotalSize=res.data.data.totalSize
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })  
         },
@@ -488,5 +478,6 @@ export default{
             cursor: pointer;
         }
     }
+
 </style>
 

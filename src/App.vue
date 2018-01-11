@@ -125,12 +125,9 @@ export default {
 					url:"/api/api/user/logout"
 				}).then(res=>{
 					if(res.data.code==0){
-						this.$alert(res.data.message,"信息").then(()=>{
-							authUnils.removeToken()
-							localStorage.removeItem("enterpriseInfo")
-							localStorage.removeItem("loginName")
-							this.$router.push("/")
-						})
+						localStorage.removeItem("enterpriseInfo")
+						localStorage.removeItem("loginName")
+						this.$router.push("/")
 					}
 				})
 			})

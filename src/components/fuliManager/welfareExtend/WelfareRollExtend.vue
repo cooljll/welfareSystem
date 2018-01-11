@@ -28,7 +28,11 @@
                 <el-col class="layer-tag hidden-md-and-down" :name="step4?'active':''">5 创建订单完成</el-col>
             </el-row>
             <div v-show="isShowWelfareRoll">
-                <div class="layer-center" v-show="step">
+                <div class="layer-center" v-show="step"
+                    v-loading="loading"
+                    element-loading-text="正在获取福利卷"
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.6)">
                     <div class="voucherlist">
                         <div v-for="(item,index) in welfareRollList" :key="index" @click="getWelfareRolls(item.id)">
                             <div class="imgbox">
@@ -397,7 +401,8 @@ export default{
                 pageSize:10
             },
             isShowWelfareRoll:true,
-            isShowNotData:false
+            isShowNotData:false,
+            loading:false
         }
     },
     methods:{
@@ -812,14 +817,9 @@ export default{
         },
         //获取福利卷
         getProduct(){
-            const loading = this.$loading({
-				lock: true,
-				text: '正在获取福利卷。。。',
-				spinner: 'el-icon-loading',
-				background: 'rgba(0, 0, 0, 0.7)'
-			})
+            this.loading=true
             this.$axios.post("/api/api/voucher/product",this.productParams).then(res=>{
-                loading.close()
+                this.loading=false
                 if(res.data.code==1000){
                     let welfareRolls=res.data.data.content
                     if(welfareRolls.length==0){

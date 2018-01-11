@@ -244,7 +244,7 @@
                         </el-form-item>
                     </el-form>
                 </el-col>
-                <el-table v-loading="examineLoading" :data="leaveTableData" border resizable highlight-current-row style="width: 100%;">
+                <el-table v-loading="leaveLoading" :data="leaveTableData" border resizable highlight-current-row style="width: 100%;">
                     <el-table-column type="selection" align="center">
                     </el-table-column>
                     <el-table-column prop="name" label="姓名" align="center">
@@ -1122,11 +1122,15 @@ export default{
         },
         //查询员工信息
         showEmployee(id){
+            this.loading=true
             this.filters.depId=id
             this.$axios.post("/api/api/employee/showEmployee",this.filters).then(res=>{
+                this.loading=false
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -1160,10 +1164,14 @@ export default{
         },
         //查询离职列表
         showDelEmployee(){
+            this.leaveLoading=true
             this.$axios.post("/api/api/employee/hasDelEmps",this.filtersDel).then(res=>{
-                if(res.status==200){
+                this.leaveLoading=false
+                if(res.data.code==1000){
                     this.leaveTableData=res.data.data.content
                     this.totalSizeDel=res.data.data.totalSize
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -1182,8 +1190,10 @@ export default{
         },
         //查询审批列表
         showExmineLists(){
+            this.examineLoading=true
             this.filtersExamine.auditStatus=Number(this.filtersExamine.auditStatus)
             this.$axios.post("/api/api/approvalCenter/showApprovalMessage",this.filtersExamine).then(res=>{
+                this.examineLoading=false
                 if(res.data.code==1000){
                     this.totalSizeExamine=res.data.data.totalSize
                     res.data.data.content.forEach(item=>{
@@ -1201,6 +1211,8 @@ export default{
                         }
                     })
                     this.examineTableData=res.data.data.content
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -1316,6 +1328,8 @@ export default{
                         this.isShowEmpDetail=false
                         this.showEmployee(Number(this.$route.params.depId))
                     })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },

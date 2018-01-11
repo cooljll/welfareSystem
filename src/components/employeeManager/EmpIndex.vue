@@ -54,7 +54,7 @@
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="所属部门">
                     <el-select v-model="addDepParams.deptId_sup">
-                        <el-option value="0" label="设为一级部门"></el-option>
+                        <el-option label="设为一级部门" value=""></el-option>
                         <el-option v-for="item in departmentList" :key="item.value" :label="item.label" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -223,7 +223,7 @@ export default {
             departmentDialog:"",
 			departmentList:[],
             addDepParams:{
-                deptId_sup: 0,
+                deptId_sup: "",
                 deptName_cur: "",
                 remark: "",
                 sortId: 50
@@ -322,7 +322,7 @@ export default {
         },
 		pickerOptions:{
             disabledDate(time) {
-                return time.getTime() > Date.now();
+                return time.getTime() > Date.now()
             }
         },
 		//企业通讯录显示与隐藏
