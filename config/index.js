@@ -33,7 +33,7 @@ module.exports = {
     //解决跨域问题
     proxyTable: {
       '/api': {
-          target: 'http://192.168.1.71:8085', //表示你跨域请求的接口的域名
+          target: 'http://192.168.1.197:8083', //表示你跨域请求的接口的域名
           changeOrigin: true, //如果接口跨域，需要进行这个参数配置
           pathRewrite:{
               '^/api':''

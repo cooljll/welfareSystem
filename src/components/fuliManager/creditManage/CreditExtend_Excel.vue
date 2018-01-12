@@ -584,15 +584,9 @@ export default{
         },
         //节日信息
         showFestival(){
-            this.$axios.post("/api/api/integral/showFestival",{},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.btnGroups=res.data.data
-                    }
+            this.$axios.post("/api/api/integral/showFestival",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.btnGroups=res.data.data
                 }
             })
         },
@@ -617,13 +611,11 @@ export default{
         //部门树形
         getTreeDep(){
             this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        let ret=this.transferData(res.data.data)
-                        this.enterpriseName=ret.label
-                        this.notSelectdeparts=[]
-                        this.notSelectdeparts=ret.subItems
-                    }
+                if(res.data.code==1000){
+                    let ret=this.transferData(res.data.data)
+                    this.enterpriseName=ret.label
+                    this.notSelectdeparts=[]
+                    this.notSelectdeparts=ret.subItems
                 }
             })
         },

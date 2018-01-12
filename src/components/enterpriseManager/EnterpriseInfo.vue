@@ -193,7 +193,12 @@ export default{
               }
             }
             this.$axios.post("/api/api/enterprise/editInfo",formData,config).then(res=>{
-                console.log(res)
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,"信息")
+                    this.getEnterpriseInfo()
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
             })
         },
         showUploadBtn(){

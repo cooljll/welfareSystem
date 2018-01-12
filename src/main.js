@@ -54,7 +54,6 @@ axios.interceptors.response.use(
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
-                authUtil.delCookie("accessToken")
                 router.replace({
                     path: '/'
                 })
@@ -64,7 +63,6 @@ axios.interceptors.response.use(
                 authUtil.removeToken()
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")
-                authUtil.delCookie("accessToken")
                 router.replace({
                     path: '/'
                 })
@@ -82,33 +80,17 @@ router.beforeEach((to, from, next) => {
     if(to.path=="/"){
         localStorage.removeItem("enterpriseInfo")
         localStorage.removeItem("loginName")
-        authUtil.delCookie("accessToken")
     }
     let token=authUtil.getToken()
     if (token==null && to.path !== '/') {
         authUtil.removeToken()
         localStorage.removeItem("enterpriseInfo")
         localStorage.removeItem("loginName")
-        authUtil.delCookie("accessToken")
         next({ path: '/' })
     } else {
         next()
     }
 })
-
-//监视浏览器的关闭或刷新
-// window.onbeforeunload = function (e) {
-//     e = e || window.event
-//     var y = e.clientY
-//     if (y <= 0//点击浏览器或者选项卡的关闭按钮
-//     || y >= Math.max(document.body ? document.body.clientHeight : 0, document.documentElement ? document.documentElement.clientHeight : 0)//点击任务栏的关闭按钮
-//     ) {
-//         //IE 和 Firefox 
-//         e.returnValue = "确定要刷新或关闭浏览器窗口？"
-//     }
-//     //谷歌
-//     return "确定要刷新或关闭浏览器窗口？"
-// }
 
 new Vue({
   el: '#app',

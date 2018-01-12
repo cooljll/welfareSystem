@@ -68,6 +68,8 @@ export default{
         },
         handleDate(){
             if(this.value==null){
+                this.filters.startTime=''
+                this.filters.lastTime=''
                 return 
             }
             this.filters.startTime=this.formatDate(this.value[0])
@@ -75,25 +77,15 @@ export default{
         },
         //福利报告
         getWelfareReport(){
-            this.$axios.post("/api/api/enterprise/getWelfareReport",this.filters,{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                console.log(res)
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        if(res.data.data.content.length!=0){
-                            this.reportDataList=res.data.data.content
-                            this.isShowReportData=true
-                            this.isShowNotData=false
-                        }else{
-                            this.isShowReportData=false
-                            this.isShowNotData=true
-                        }
-                        // this.$alert(res.data.message,"信息").then(()=>{
-                        //     this.handleStep4()
-                        // })
+            this.$axios.post("/api/api/enterprise/getWelfareReport",this.filters).then(res=>{
+                if(res.data.code==1000){
+                    if(res.data.data.content.length!=0){
+                        this.reportDataList=res.data.data.content
+                        this.isShowReportData=true
+                        this.isShowNotData=false
+                    }else{
+                        this.isShowReportData=false
+                        this.isShowNotData=true
                     }
                 }
             })

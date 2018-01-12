@@ -61,7 +61,8 @@
                     <div class="scorecountbox">
                         <div class="title">积分统计</div>
                         <div class="scoreallcount">{{creditOrderDesc.consume_point}}</div>
-                        <div class="scorecount">每人发放<span>{{creditOrderDesc.consume_point/creditOrderDesc.totalNums}}</span></div>
+                        <!-- 部门发放和excel发放不显示 -->
+                        <div class="scorecount" v-show="isShowAverage">每人发放<span>{{creditOrderDesc.consume_point/creditOrderDesc.totalNums}}</span></div>
                     </div>
                     <div class="staffcountbox">
                         <div class="title">人员分布</div>
@@ -196,7 +197,8 @@ export default{
                 state: ""
             },
             welType:"",
-            orderId:""
+            orderId:"",
+            isShowAverage:true
         }
     },
     methods:{
@@ -207,6 +209,8 @@ export default{
         },
         handleDate(){
             if(this.value==null){
+                this.filters.startTime=''
+                this.filters.endTime=''
                 return 
             }
             this.filters.startTime=this.formatDate(this.value[0])
@@ -272,6 +276,11 @@ export default{
                         this.specialEmp=false
                         this.deportExtend=true
                         this.creditExtendData=JSON.parse(res.data.data.msg)
+                    }
+                    if(this.postType=="4"||this.postType=="7"){
+                        this.isShowAverage=false
+                    }else{
+                        this.isShowAverage=true
                     }
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")

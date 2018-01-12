@@ -7,73 +7,73 @@
         <div class="wrapper-center">
             <ul>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist1.png" alt="">
                     <p class="hp1">注册</p>
                     <p class="hp2">注册条款</p>
                     <a href="javascript:;" class="listmore" @click="seeDetails">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist2.png" alt="">
                     <p class="hp1">有米拿礼品卡</p>
                     <p class="hp2">有米拿礼品卡</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist3.png" alt="">
                     <p class="hp1">积分充值</p>
                     <p class="hp2">积分充值条款</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist4.png" alt="">
                     <p class="hp1">积分规则</p>
                     <p class="hp2">积分使用规则</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist5.png" alt="">
                     <p class="hp1">常见问题</p>
                     <p class="hp2">常见问题</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist6.png" alt="">
                     <p class="hp1">礼品卡激活</p>
                     <p class="hp2">激活礼品卡</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist7.png" alt="">
                     <p class="hp1">购物</p>
                     <p class="hp2">购物流程</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist8.png" alt="">
                     <p class="hp1">登陆</p>
                     <p class="hp2">登陆流程</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist9.png" alt="">
                     <p class="hp1">积分介绍</p>
                     <p class="hp2">领取与使用积分</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist10.png" alt="">
                     <p class="hp1">快递配送</p>
                     <p class="hp2">运费与方式</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist11.png" alt="">
                     <p class="hp1">售后服务</p>
                     <p class="hp2">退换货</p>
                     <a href="javascript:;" class="listmore">查看详情></a>
                 </li>
                 <li>
-                    <img src="../../assets/timg.jpg" alt="">
+                    <img src="../../assets/img/hplist12.png" alt="">
                     <p class="hp1">特色服务</p>
                     <p class="hp2">便民服务 越洋拿</p>
                     <a href="javascript:;" class="listmore">查看详情></a>

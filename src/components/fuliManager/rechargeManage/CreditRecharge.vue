@@ -241,6 +241,7 @@ export default{
                             let blob = new Blob([res.data], {type:'image/jpeg'})
                             let imgSrc=URL.createObjectURL(blob)
                             this.WechatImg=imgSrc
+                            var repeat = 200 // 限制执行次数为200次  
                             var that = this
                             // 注意：setInterval函数里面的this是指向window
                             var timer = setInterval(function() {      

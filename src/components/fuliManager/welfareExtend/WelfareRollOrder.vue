@@ -71,10 +71,10 @@
                 </el-table-column>
                 <el-table-column prop="phone" label="手机号" align="center">
                 </el-table-column>
-                <el-table-column prop="welType" label="福利类型" align="center">
+                <!-- <el-table-column prop="welType" label="福利类型" align="center">
                 </el-table-column>
                 <el-table-column prop="state" label="是否兑换" align="center">
-                </el-table-column>
+                </el-table-column> -->
             </el-table>
             <el-col :span="24" class="toolbar">
                 <el-pagination @size-change="handleExtendSize" @current-change="handleExtendCurrent" :current-page="extendCurrentPage"
@@ -173,6 +173,8 @@ export default{
         },
         handleDate(){
             if(this.value==null){
+                this.filters.startTime=''
+                this.filters.endTime=''
                 return 
             }
             this.filters.startTime=this.formatDate(this.value[0])
@@ -239,7 +241,6 @@ export default{
             this.isShowOrder=false
             this.extendEmpParams.orderId=id
             this.$axios.post("/api/api/voucher/orderDetailEmp",this.extendEmpParams).then(res=>{
-                console.log(res)
                 if(res.data.code==1000){
                     this.extendEmpTable=res.data.data.content
                 }

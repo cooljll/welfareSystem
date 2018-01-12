@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="wrapper-center">
-            <el-table :data="tableData" resizable highlight-current-row style="width: 100%;" :header-row-style="tableHeader">
+            <el-table :data="tableData" resizable highlight-current-row style="width: 100%;">
                 <el-table-column prop="accountName" label="账号名称" align="center">
                 </el-table-column>
                 <el-table-column prop="accountType" label="账号类型" align="center">
@@ -115,10 +115,6 @@ export default{
         }
         return{
             authList:[],
-            tableHeader:{
-                background:"#A4AABE",
-                color:"#fff"
-            },
             tableData:[],
             addAccountVisible:false,
             updateAccountVisible:false,

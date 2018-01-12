@@ -108,6 +108,8 @@ export default{
         },
         handleDate(){
             if(this.value==null){
+                this.filters.startTime=''
+                this.filters.lastTime=''
                 return 
             }
             this.filters.startTime=this.formatDate(this.value[0])

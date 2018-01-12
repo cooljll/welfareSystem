@@ -120,16 +120,8 @@ export default {
   	methods:{
     	logout(){
 			this.$confirm("确定退出当前登陆吗？","提示",{type:'warning'}).then(()=>{
-				this.$axios({
-					methods:"get",
-					url:"/api/api/user/logout"
-				}).then(res=>{
-					if(res.data.code==0){
-						localStorage.removeItem("enterpriseInfo")
-						localStorage.removeItem("loginName")
-						this.$router.push("/")
-					}
-				})
+				authUnils.removeToken()
+				this.$router.push("/")
 			})
 		},
 		goBack(){

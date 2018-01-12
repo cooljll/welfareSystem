@@ -20,7 +20,7 @@
                         <el-form-item label="密码：">
                             <el-input type="password" v-model="userInfo.password"></el-input>
                         </el-form-item>
-                        <el-button type="info" @click="loginin"  :loading="loginLoad">登陆</el-button>
+                        <el-button type="info" @click="loginin">登陆</el-button>
                         <el-button @click="handleReset">重置</el-button>
                     </el-form>
                 </div>
@@ -44,8 +44,7 @@ export default{
             authData:{
                 client_id:"233668646673605",
                 client_secret:"33b17e066ee6a4ad383f46ec6e28ea1d"
-            },
-            loginLoad:false
+            }
         }
     },
     methods:{
@@ -187,65 +186,24 @@ export default{
             }else if(this.userInfo.password==""){
                 this.$alert("密码不能为空","信息")
             }else{
-                // if(authUnils.getToken()){
-                //     this.login()
-                // }else{
-                //     this.handleAuth()
-                // }
-                this.login()
+                this.$axios.post("/api/auth",this.userInfo).then(res=>{
+                    if(res.data.code==1000){
+                        authUnils.setToken(res.data.data.token,res.data.data.expiration)
+                        localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
+                        this.$router.push("/EnterpriseOverview")
+                    }else if(res.data.code==1001){
+                        this.$alert(res.data.message,"信息")
+                        for(var key in this.userInfo){
+                            this.userInfo[key]=''
+                        }
+                    }
+                })
             }
         },
         handleReset(){
             for(var key in this.userInfo){
                 this.userInfo[key]=""
             }
-        },
-        //身份验证
-        handleAuth(){
-            // this.$axios({
-            //     method:"post",
-            //     url:"/api/oauth/token",
-            //     data:'grant_type=client_credentials',
-            //     headers:{
-            //         "Authorization":"Basic "+this.strToBase64(this.authData.client_id+":"+this.authData.client_secret)
-            //     }
-            // }).then(res=>{
-            //     if(res.status==200){
-            //         authUnils.setToken(res.data.token_type+" "+res.data.access_token,res.data.expires_in)
-            //         this.login()
-            //     }else{
-            //         localStorage.removeItem("enterpriseInfo")
-            //         localStorage.removeItem("loginName")
-            //         authUnils.removeToken()
-            //         this.$router.push("/")
-            //     }
-            // })
-        },
-        //登陆请求
-        login(){
-            // this.loginLoad=true
-            // this.$axios({
-            //     method:"post",
-            //     url:"/api/api/user/login",
-            //     data:this.userInfo
-            // }).then(res=>{
-            //     this.loginLoad=false
-            //     if(res.data.code==1000){
-            //         localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
-            //         this.$router.push("/EnterpriseOverview")
-            //     }else if(res.data.code==1001){
-            //         this.$alert(res.data.message,"信息")
-            //         for(var key in this.userInfo){
-            //             this.userInfo[key]=''
-            //         }
-            //     }
-            // })
-            this.$axios.post("/api/auth",this.userInfo).then(res=>{
-                console.log(res)
-                if(res.data.code==1000){
-                    // authUnils.setToken
-                }
-            })
         }
     }
 }
