@@ -29,15 +29,15 @@
                                 </div>
                             </div>
                         </el-form-item>
-                        <el-form-item label="联系人">
+                        <!-- <el-form-item label="联系人">
                             <el-input placeholder="请输入联系人" v-model="feedbackUser"></el-input>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="手机号">
                             <el-input placeholder="请输入手机号" v-model="feedbackPhone"></el-input>
                         </el-form-item>
-                        <el-form-item label="邮箱">
+                        <!-- <el-form-item label="邮箱">
                             <el-input placeholder="请输入邮箱" v-model="feedbackEmail"></el-input>
-                        </el-form-item>
+                        </el-form-item> -->
                     </el-form>
                     <el-row class="submitBtn">
                         <el-button type="primary" @click="feedbackSubmit">提交申请</el-button>
@@ -85,20 +85,14 @@ export default{
                 this.$alert("请输入反馈标题","信息")                
             }else if(this.content==""){
                 this.$alert("请输入反馈内容","信息")
-            }else if(this.feedbackUser==""){
-                this.$alert("请输入联系人","信息")
             }else if(this.feedbackPhone==""){
                 this.$alert("请输入手机号","信息")
-            }else if(this.feedbackEmail==""){
-                this.$alert("请输入邮箱","信息")
             }
             let formData = new FormData()
             formData.append('feedbackImage', this.file)
             formData.append('content', this.content)
-            formData.append('feedbackEmail', this.feedbackEmail)
             formData.append('feedbackName', this.feedbackName)
             formData.append('feedbackPhone', this.feedbackPhone)
-            formData.append('feedbackUser', this.feedbackUser)
             let config = {
               headers: {
                 'Content-Type': 'multipart/form-data'
@@ -107,9 +101,11 @@ export default{
             this.$axios.post("/api/api/help/feedback",formData,config).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
-                        this.$router.go(0)
+                        this.content=''
+                        this.feedbackName=''
+                        this.feedbackPhone=''
                     })
-                }else if(res.data.code==1){
+                }else if(res.data.code==1001){
                     this.$alert(res.data.message,'信息')
                 }
             })

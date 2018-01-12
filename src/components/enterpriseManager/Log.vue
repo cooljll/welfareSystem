@@ -20,14 +20,14 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
-                <el-table-column prop="accountName" label="账号名称" align="center" width="180">
+            <el-table :data="tableData" resizable highlight-current-row style="width: 100%;" stripe :header-row-style="headerStyle">
+                <el-table-column prop="accountName" label="账号名称" align="center" width="150">
                 </el-table-column>
-                <el-table-column prop="userName" label="登录名" align="center" width="180">
+                <el-table-column prop="userName" label="登录名" align="center" width="150">
                 </el-table-column>
-                <el-table-column prop="createTime" label="操作时间" sortable align="center" width="300">
+                <el-table-column prop="createTime" label="操作时间" align="center" width="200">
                 </el-table-column>
-                <el-table-column prop="content" label="操作行为" align="center">
+                <el-table-column prop="content" label="操作行为" align="center" min-width="455">
                 </el-table-column>
             </el-table>
             <div class="toolbar">
@@ -43,6 +43,9 @@ import authUnils from '../../common/authUnils'
 export default{
     data(){
         return{
+            headerStyle:{
+                color:"#000"
+            },
             filters:{
                 name:"",
                 startTime:"",

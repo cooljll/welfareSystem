@@ -48,7 +48,7 @@
                     <div class="content">
                         <el-form label-position="right" label-width="110px" readonly="true">
                             <el-form-item label="公司登录名">
-                                <el-input :disabled="true" placeholder="huizhan"></el-input>
+                                <el-input :disabled="true" v-model="loginName"></el-input>
                             </el-form-item>
                             <el-form-item label="公司名称">
                                 <el-input :disabled="true" v-model="enterpriseInfo.companyName"></el-input>
@@ -141,7 +141,8 @@ export default{
             loginBanner:"",
             enterprisefile:"",
             companyfile:"",
-            loginfile:""
+            loginfile:"",
+            loginName:""
         }
     },
     methods:{
@@ -196,6 +197,7 @@ export default{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息")
                     this.getEnterpriseInfo()
+                    this.$store.commit("reLoad")
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }
@@ -221,6 +223,7 @@ export default{
         }
     },
     mounted(){
+        this.loginName=localStorage.getItem("loginName")
         this.getEnterpriseInfo()
     }
 }

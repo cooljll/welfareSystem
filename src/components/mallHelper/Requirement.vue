@@ -13,7 +13,7 @@
         <div class="main-center">
             <el-row>
                 <el-col :md="24" :lg="16" class="main-left">
-                    <el-form label-position="right" label-width="80px" status-icon :model="requireParams" ref="requireData" :rules="requireRule">
+                    <el-form label-position="right" label-width="80px" status-icon :model="requireParams" ref="requireData">
                         <el-form-item label="需求类型">
                             <el-select v-model="requireParams.demandType">
                                 <el-option label="采购商品" value="1"></el-option>
@@ -58,44 +58,6 @@
 import authUnils from '../../common/authUnils'
 export default{
     data(){
-        var checkPhoneNumber=(rule, value, callback)=>{
-            if (value === '') {
-                callback(new Error('请输入手机号码'))
-            }else{
-                var reg = /^[1][3,4,5,7,8][0-9]{9}$/ 
-                if(!reg.test(value)){
-                    callback(new Error('不是有效手机号码,请输入11位数字'))
-                }else{
-                    callback()
-                }
-            }
-        }
-        var checkEmailAddress=(rule, value, callback)=>{
-            if (value === '') {
-                callback(new Error('请输入邮箱地址'))
-            }else{
-                var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/  
-                if(!reg.test(value)){
-                    callback(new Error('您输入的电子邮件地址不合法'))
-                }else{
-                    callback()
-                }
-            } 
-        }
-        var checkPerson=(rule,value,callback)=>{
-            if(value==""){
-                callback(new Error("请输入联系人"))
-            }else{
-                callback()
-            }
-        }
-        var checkContent=(rule,value,callback)=>{
-            if(value==""){
-                callback(new Error("请输入需求描述"))
-            }else{
-                callback()
-            }
-        }
         return{
             type:"",
             fileList:[],
@@ -105,41 +67,20 @@ export default{
                 contactPhone: "",
                 content: "",
                 demandType: ""
-            },
-            requireRule:{
-                content:[
-                    { validator: checkContent, trigger: 'blur' }
-                ],
-                contactEmail:[
-                    { validator: checkEmailAddress, trigger: 'blur' }
-                ],
-                contactPhone:[
-                    { validator: checkPhoneNumber, trigger: 'blur' }
-                ],
-                contactPerson:[
-                    { validator: checkPerson, trigger: 'blur' }
-                ]
             }
         }
     },
     methods:{
         requireSubmit(){
-            this.$refs.requireData.validator((valid)=>{
-                if(valid){
-                    this.$axios.post("/api/api/help/welNeedApproval",this.requireParams,{
-                        headers:{
-                            "Authorization":authUnils.getToken()
-                        }
-                    }).then(res=>{
-                        console.log(res)
-                        if(res.status==200){
-                            if(res.data.code==1000){
-                                this.$refs.requireData.resetFields()
-                            }
+            this.$axios.post("/api/api/help/welNeedApproval",this.requireParams).then(res=>{
+                if(res.data.code==1000){
+                    this.$alert(res.data.message,'信息').then(()=>{
+                        for(var k in this.requireParams){
+                            this.requireParams[k]=''
                         }
                     })
-                }else{
-                    console.log("error Submit")
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,'信息')
                 }
             })
         }

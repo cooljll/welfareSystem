@@ -13,8 +13,8 @@
             <div class="searchBar">
                 <el-form :inline="true">
                     <el-form-item label="订单类型：">
-                        <el-select placeholder="请选择类型" v-model="filters.welfareType">
-                            <el-option label="全部" value="0"></el-option>
+                        <el-select placeholder="请选择类型" v-model="filters.welfareType" @change="changeOrderType">
+                            <el-option label="全部" value=""></el-option>
                             <el-option label="激励方案" value="1"></el-option>
                             <el-option label="基本节日" value="2"></el-option>
                             <el-option label="自定义福利" value="3"></el-option>
@@ -29,20 +29,20 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;" border>
+            <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderId" label="订单编号" sortable align="center">
+                <el-table-column prop="orderId" label="订单编号" align="center" min-width="106">
                 </el-table-column>
-                <el-table-column prop="welfareType" label="福利类型" align="center">
+                <el-table-column prop="welfareType" label="福利类型" align="center" min-width="168">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center" width="180">
+                <el-table-column prop="createTime" label="创建时间" align="center" min-width="192">
                 </el-table-column>
-                <el-table-column prop="consume_point" label="消费积分" align="center">
+                <el-table-column prop="consume_point" label="消费积分" align="center" min-width="91">
                 </el-table-column>
-                <el-table-column prop="state" label="订单状态" align="center">
+                <el-table-column prop="state" label="订单状态" align="center" min-width="91">
                 </el-table-column>
-                <el-table-column label="操作" align="center">
+                <el-table-column label="操作" align="center" min-width="91">
                     <template slot-scope="scope">
                         <el-button type="text" @click="seeOrderDetail(scope.row.orderId)">查看详情</el-button>
                     </template>
@@ -126,18 +126,18 @@
                 </div>
                 <div class="exportbox" @click="exportOrderDetail">导出excel</div>
             </div>
-            <el-table :data="extendEmpTable" border resizable highlight-current-row style="width: 100%;" border>
+            <el-table :data="extendEmpTable" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="name" label="姓名" align="center">
+                <el-table-column prop="name" label="姓名" align="center" min-width="162">
                 </el-table-column>
-                <el-table-column prop="phoneNumber" label="手机号" align="center">
+                <el-table-column prop="phoneNumber" label="手机号" align="center" min-width="162">
                 </el-table-column>
-                <el-table-column prop="welType" label="福利类型" align="center">
+                <el-table-column prop="welType" label="福利类型" align="center" min-width="162">
                 </el-table-column>
-                <el-table-column prop="departmentName" label="部门名称" align="center">
+                <el-table-column prop="departmentName" label="部门名称" align="center" min-width="162">
                 </el-table-column>
-                <el-table-column prop="point" label="获得积分" align="center">
+                <el-table-column prop="point" label="获得积分" align="center" min-width="162">
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">
@@ -155,6 +155,9 @@ import moment from 'moment'
 export default{
     data(){
         return{
+            headerStyle:{
+                color:"#000"
+            },
             isShowOrder:true,
             isShowOrderDetail:false,
             isShowExtendList:false,
@@ -226,6 +229,9 @@ export default{
                     this.$alert(res.data.message,"信息")
                 }
             })
+        },
+        changeOrderType(){
+            this.getPagedOrder()
         },
         getSearchResult(){
             this.getPagedOrder()

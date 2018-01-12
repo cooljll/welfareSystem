@@ -17,7 +17,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
+            <el-table :data="tableData" border stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
                 <el-table-column prop="orderNo" label="订单号" align="center" min-width="165">
@@ -58,7 +58,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="sendRecordtable" border resizable highlight-current-row style="width: 100%;">
+            <el-table :data="sendRecordtable" border stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
                 <el-table-column prop="cardNo" label="信用卡号" align="center" min-width="165">
@@ -67,7 +67,7 @@
                 </el-table-column>
                 <el-table-column prop="cardBank" label="银行" align="center">
                 </el-table-column>
-                <el-table-column prop="money" label="还款金额(元)" align="center">
+                <el-table-column prop="money" label="还款金额(元)" align="center" min-width="102">
                 </el-table-column>
                 <el-table-column prop="payScore" label="支付积分" align="center">
                 </el-table-column>
@@ -91,6 +91,9 @@ import authUnils from '../../../common/authUnils'
 export default{
     data(){
         return{
+            headerStyle:{
+                color:"#000"
+            },
             isShowList:true,
             isShowDetail:false,
             tableData:[],
@@ -160,8 +163,10 @@ export default{
             this.isShowDetail=true
             this.sendRecordParams.orderId=id
             this.$axios.post("/api/api/creditCard/queues",this.sendRecordParams).then(res=>{
-                console.log(res)
                 if(res.data.code==1000){
+                    //已提交 已受理 还款成功 还款失败
+                    //refundState 退款状态 0无 1退款成功 1退款失败
+                    //tradeType 交易类型 1企业 2个人
                     this.sendRecordtable=res.data.data.content
                     this.detailTotalSize=res.data.data.totalSize
                 }

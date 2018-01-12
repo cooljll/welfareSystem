@@ -85,7 +85,6 @@
     }
 }
 
-
 //员工管理侧边栏菜单样式提取
 .page-menu1{
     width: 250px;
@@ -225,7 +224,6 @@
         box-shadow: 0 0 2px 0 rgba(58, 77, 98, 0.20);
     }
 }
-
 
 //福利管理主体部分中头部标题公共样式提取
 .page-title{
@@ -417,7 +415,6 @@
         }
     }
 }
- 
 
 //工具条 分页
 .toolbar{
@@ -469,7 +466,6 @@
         }
     }
 }
-
 
 // 企业相关信息 公共样式提取
 .page-wrapper{
@@ -579,7 +575,6 @@
         }
     }
 }
-
 
 //福利咨询公共样式
 .consult-box{
@@ -748,6 +743,13 @@
         .fileName{
             font-size:14px;
             margin-left: 10px;
+        }
+    }
+}
+.el-table{
+    .el-table__row{
+        td{
+            // padding:10px 0;
         }
     }
 }

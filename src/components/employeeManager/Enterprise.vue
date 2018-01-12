@@ -85,34 +85,34 @@
                         </div>
                         <el-form :inline="true">
                             <el-form-item label="类型：">
-                                <el-select placeholder="请选择类型" v-model="filters.accountStatus">
+                                <el-select placeholder="请选择类型" v-model="filters.accountStatus" @change="changeEmployeeStatus">
                                     <el-option label="全部" value=""></el-option>
                                     <el-option label="正常" value="0"></el-option>
                                     <el-option label="冻结" value="1"></el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label-width="250">
-                                <el-input placeholder="姓名/手机号/工号" v-model="filters.text"></el-input>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="info" @click="getBeInJobResult">搜索</el-button>
+                                <el-input placeholder="姓名/手机号/工号" v-model="filters.text" class="input-with-select">
+                                    <el-button slot="append" icon="el-icon-search" @click="getBeInJobResult"></el-button>
+                                </el-input>
                             </el-form-item>
                         </el-form>
                     </el-col>
-                    <el-table v-loading="loading" :data="tableData" border resizable highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange">
+                    <el-table v-loading="loading" :data="tableData" stripe resizable :header-row-style="headerStyle"
+                        highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange">
                         <el-table-column type="selection" align="center">
                         </el-table-column>
-                        <el-table-column prop="name" label="姓名" align="center">
+                        <el-table-column prop="name" label="姓名" align="center" min-width="94">
                         </el-table-column>
-                        <el-table-column prop="department" label="部门" align="center">
+                        <el-table-column prop="department" label="部门" align="center" min-width="94">
                         </el-table-column>
-                        <el-table-column prop="phone" label="手机号" align="center">
+                        <el-table-column prop="phone" label="手机号" align="center" min-width="204">
                         </el-table-column>
-                        <el-table-column prop="job_Number" label="工号" align="center">
+                        <el-table-column prop="job_Number" label="工号" align="center" min-width="130">
                         </el-table-column>
-                        <el-table-column prop="isFrozen" label="账户状态" align="center">
+                        <el-table-column prop="isFrozen" label="账户状态" align="center" min-width="126">
                         </el-table-column>
-                        <el-table-column label="操作" align="center">
+                        <el-table-column label="操作" align="center" min-width="64">
                             <template slot-scope="scope">
                                 <el-button type="text" @click="seeEmpDetail(scope.row)">查看</el-button>
                             </template>
@@ -244,20 +244,21 @@
                         </el-form-item>
                     </el-form>
                 </el-col>
-                <el-table v-loading="leaveLoading" :data="leaveTableData" border resizable highlight-current-row style="width: 100%;">
+                <el-table v-loading="leaveLoading" stripe :data="leaveTableData" :header-row-style="headerStyle"
+                    resizable highlight-current-row style="width: 100%;">
                     <el-table-column type="selection" align="center">
                     </el-table-column>
-                    <el-table-column prop="name" label="姓名" align="center">
+                    <el-table-column prop="name" label="姓名" align="center" min-width="65">
                     </el-table-column>
-                    <el-table-column prop="department" label="部门" align="center">
+                    <el-table-column prop="department" label="部门" align="center" min-width="90">
                     </el-table-column>
-                    <el-table-column prop="identifyNumber" label="证件号" align="center" width="200">
+                    <el-table-column prop="identifyNumber" label="证件号" align="center" min-width="233">
                     </el-table-column>
-                    <el-table-column prop="phone" label="手机号" align="center">
+                    <el-table-column prop="phone" label="手机号" align="center" min-width="143">
                     </el-table-column>
-                    <el-table-column prop="joinedDate" label="入职时间" sortable align="center">
+                    <el-table-column prop="joinedDate" label="入职时间" sortable align="center" min-width="122">
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center" min-width="89">
                         <template slot-scope="scope">
                             <el-button type="text" @click="pullbackEnterprise(scope.row.empCode)">拉回企业</el-button>
                         </template>
@@ -287,7 +288,7 @@
             </div>
             <el-row class="content-wrapper">
                 <el-col class="searchBar">
-                    <div class="handleBar">
+                    <div class="handleBar" v-show="isShowBatchExamineBtn">
                         <div @click="batchExamine">
                             <i class="iconfont icon-bianji"></i>
                             <span>批量审批</span>
@@ -295,10 +296,8 @@
                     </div>
                     <el-form :inline="true">
                         <el-form-item label="状态：">
-                            <el-select placeholder="请选择状态" v-model.number="filtersExamine.auditStatus" clearable>
-                                <el-option label="已通过" value="1"></el-option>
-                                <el-option label="已拒绝" value="2"></el-option>
-                                <el-option label="待审批" value="3"></el-option>
+                            <el-select placeholder="请选择状态" v-model.number="filtersExamine.auditStatus" clearable @change="changeExamineStatus">
+                                <el-option v-for="item in examineStatus" :key="item.value" :label="item.label" :value="item.value"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="订单日期：">
@@ -310,23 +309,24 @@
                         </el-form-item>
                     </el-form>
                 </el-col>
-                <el-table v-loading="examineLoading" :data="examineTableData" border resizable highlight-current-row style="width: 100%;" @selection-change="handleExamineDataChange">
+                <el-table v-loading="examineLoading" :data="examineTableData" stripe :header-row-style="headerStyle"
+                     resizable highlight-current-row style="width: 100%;" @selection-change="handleExamineDataChange">
                     <el-table-column type="selection" align="center">
                     </el-table-column>
-                    <el-table-column prop="name" label="姓名" align="center">
+                    <el-table-column prop="name" label="姓名" align="center" min-width="100">
                     </el-table-column>
-                    <el-table-column prop="gender" label="性别" align="center">
+                    <el-table-column prop="gender" label="性别" align="center" min-width="70">
                     </el-table-column>
-                    <el-table-column prop="phoneNumber" label="手机号" sortable align="center">
+                    <el-table-column prop="phoneNumber" label="手机号" align="center" min-width="161">
                     </el-table-column>
-                    <el-table-column prop="creationTime" label="申请时间" sortable align="center">
+                    <el-table-column prop="creationTime" label="申请时间" sortable align="center" min-width="246">
                     </el-table-column>
-                    <el-table-column prop="auditStatus" label="状态" sortable align="center">
+                    <el-table-column prop="auditStatus" label="状态" align="center" min-width="75">
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center" min-width="120">
                         <template slot-scope="scope">
                             <el-button type="text" @click="seeDetails(scope.row)">查看详情</el-button>
-                            <el-button type="text" @click="simpleExamine(scope.row.customerGuid)">审批</el-button>
+                            <el-button type="text" class="handleStyle" @click="simpleExamine(scope.row.customerGuid)" v-show="isShowBatchExamineBtn">审批</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -577,6 +577,9 @@ export default{
             }
         }
         return {
+            headerStyle:{
+                color:"#000"
+            },
             isShowEmpList:true,
             isShowEmpDetail:false,
             tableData:[],
@@ -599,6 +602,21 @@ export default{
             },
             totalSizeDel:0,
             //审批列表
+            isShowBatchExamineBtn:true,
+            examineStatus:[
+                {
+                    label:"已通过",
+                    value:1
+                },
+                {
+                    label:"已拒绝",
+                    value:2
+                },
+                {
+                    label:"待审批",
+                    value:3
+                }
+            ],
             examineTableData:[],
             value:[],//日期
             filtersExamine:{
@@ -1038,11 +1056,20 @@ export default{
                 responseType:"arraybuffer"
             }).then(res=>{
                 if(res){
-                    let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
-                    let objectUrl=URL.createObjectURL(blob)
-                    window.location.href=objectUrl
+                    // let blob=new Blob([res.data],{type:"application/vnd.ms-excel"})
+                    // let objectUrl=URL.createObjectURL(blob)
+                    // window.location.href=objectUrl
+                    fileDownload(res.data,'员工删除模板.xls')
                 }
             })
+        },
+        changeExamineStatus(val){
+            if(val=="3"){
+                this.isShowBatchExamineBtn=true
+            }else{
+                this.isShowBatchExamineBtn=false
+            }
+            this.showExmineLists()
         },
         //处理审批
         handleExamineEmp(){
@@ -1118,6 +1145,9 @@ export default{
         },
         //获取在职人员信息列表
         getBeInJobResult(){
+            this.showEmployee(Number(this.$route.params.depId))
+        },
+        changeEmployeeStatus(){
             this.showEmployee(Number(this.$route.params.depId))
         },
         //查询员工信息
@@ -1417,8 +1447,11 @@ export default{
             }
         }
     }
+    .handleStyle{
+        margin-left: 0;
+    }
     // 删除员工
-    #fileToUpload{
+    #fileToUpload,#batchRemoveFile{
         opacity: 0;
         filter: alpha(opacity=0);
         -moz-opacity: 0;

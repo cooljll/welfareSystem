@@ -54,18 +54,18 @@
                             </el-form-item>
                         </el-form>
                     </div>
-                    <el-table :data="noticeList" border resizable highlight-current-row style="width: 100%;">
+                    <el-table :data="noticeList" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                         <el-table-column type="selection" align="center">
                         </el-table-column>
-                        <el-table-column prop="id" label="公告编号" sortable align="center">
+                        <el-table-column prop="id" label="公告编号" sortable align="center" min-width="101">
                         </el-table-column>
-                        <el-table-column prop="title" label="公告标题" align="center">
+                        <el-table-column prop="title" label="公告标题" align="center" min-width="152">
                         </el-table-column>
-                        <el-table-column prop="createTime" label="发布时间" align="center">
+                        <el-table-column prop="createTime" label="发布时间" align="center" min-width="249">
                         </el-table-column>
-                        <el-table-column prop="nums" label="接收人员数" align="center">
+                        <el-table-column prop="nums" label="接收人员数" align="center" min-width="127">
                         </el-table-column>
-                        <el-table-column label="操作" sortable align="center">
+                        <el-table-column label="操作" sortable align="center" min-width="102">
                             <template slot-scope="scope">
                                 <el-button type="text" @click="seeNoticeDetail(scope.row.id)">查看详情</el-button>
                             </template>
@@ -118,6 +118,9 @@ import qs from 'queryString'
 export default{
     data(){
         return{
+            headerStyle:{
+                color:"#000"
+            },
             tableData:[],
             // 此处出现的问题是：当名字使用extendNotice和noticeList时就会不起作用斌给会报错
             isShowExtendNotice:true,

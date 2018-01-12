@@ -117,8 +117,8 @@ export default {
 		enterpriseLogoUrl:""
     }
   },
-  	methods:{
-    	logout(){
+  methods:{
+		logout(){
 			this.$confirm("确定退出当前登陆吗？","提示",{type:'warning'}).then(()=>{
 				authUnils.removeToken()
 				this.$router.push("/")
@@ -148,6 +148,11 @@ export default {
 		}
 		this.loginName=localStorage.getItem("loginName")
 	},
+	computed: {
+			getFlag() {
+					return this.$store.state.flag
+			}
+	},
 	watch:{
 		'$route'(to, from) {
 			if(to.path!="/"&&from.path=="/"){//非登陆页
@@ -159,6 +164,12 @@ export default {
 				this.isShowLogin=true
 				this.isShowMain=false
 			}
+		},
+		getFlag(val,oldVal){
+				if(val){
+						this.getEnterpriseInfo()
+						this.$store.commit("notReLoad")
+				}
 		}
 	}
 }

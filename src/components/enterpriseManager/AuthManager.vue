@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="wrapper-center">
-            <el-table :data="tableData" resizable highlight-current-row style="width: 100%;">
+            <el-table :data="tableData" resizable highlight-current-row style="width: 100%;" stripe :header-row-style="headerStyle">
                 <el-table-column prop="accountName" label="账号名称" align="center">
                 </el-table-column>
                 <el-table-column prop="accountType" label="账号类型" align="center">
@@ -23,13 +23,13 @@
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" @click="modifyPassword(scope.row)">查看</el-button>
-                        <el-button type="text" v-show="scope.row.state=='冻结'||scope.row.accountType=='主账号'?false:true" @click="frozenAccount(scope.row.userGuid)">冻结</el-button>
+                        <el-button type="text" class="handleStyle" v-show="scope.row.state=='冻结'||scope.row.accountType=='主账号'?false:true" @click="frozenAccount(scope.row.userGuid)">冻结</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
         <!-- 添加账号弹窗(子账号修改密码) -->
-        <el-dialog title="账号信息" :visible.sync="addAccountVisible" :close-on-click-modal="false" class="addAccountDialog">
+        <el-dialog title="账号信息" :visible.sync="addAccountVisible" :close-on-click-modal="false" class="addAccountDialog" style="top:8%">
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="账号名称" prop="name">
                     <el-input v-model="addAccountParams.accountName"></el-input>
@@ -64,7 +64,7 @@
         </el-dialog>
         <!-- 账号密码修改弹窗(主账号修改密码) -->
         <el-dialog title="账号信息" :visible.sync="updateAccountVisible" :close-on-click-modal="false" class="updateAccountPwdDialog" style="top:8%">
-            <el-form label-position="right" label-width="80px" class="form-center" :model="updatePwdParams" status-icon :rules="updatePwdRule" ref="updatePwdParams">
+            <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="账号名称">
                     {{accountInfo.accountName}}
                 </el-form-item>
@@ -81,7 +81,7 @@
                     <el-input  v-model="updatePwdParams.loginPwd_new" type="password"></el-input>
                 </el-form-item>
                 <el-form-item label="重新输入" prop="loginPwd_check">
-                    <el-input v-model="updatePwdParams.loginPwd_check" type="password"></el-input>
+                    <el-input v-model="againPassword" type="password"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
@@ -96,24 +96,11 @@ import authUnils from '../../common/authUnils'
 import qs from 'queryString'
 export default{
     data(){
-        var validatePass = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请输入密码'))
-            } else {
-                callback()
-            }
-        }
-        var validatePass2 = (rule, value, callback) => {
-            if (value === '') {
-                callback(new Error('请再次输入密码'))
-            } else if (value !== this.updatePwdParams.loginPwd_new) {
-                callback(new Error('两次输入密码不一致!'))
-
-            } else {
-                callback()
-            }
-        }
         return{
+            headerStyle:{
+                color:"#000",
+                backgroundColor:"#666666"
+            },
             authList:[],
             tableData:[],
             addAccountVisible:false,
@@ -124,20 +111,9 @@ export default{
             // 密码修改(主账号)
             updatePwdParams:{
                 loginPwd_new:"",
-                loginPwd_old:"",
-                loginPwd_check:""
+                loginPwd_old:""
             },
-            updatePwdRule:{
-                loginPwd_old: [
-                    { validator: validatePass, trigger: 'blur' }
-                ],
-                loginPwd_new: [
-                    { validator: validatePass, trigger: 'blur' }
-                ],
-                loginPwd_check: [
-                    { validator: validatePass2, trigger: 'blur' }
-                ]
-            },
+            againPassword:"",
             tags:[],//标签数组
             //添加账号参数
             addAccountParams:{
@@ -180,6 +156,7 @@ export default{
             for(var key in this.addAccountParams){
                 this.addAccountParams[key]=""
             }
+            this.tags=[]
             this.isShowAdd=true
             this.isShowUpdate=false
             this.addAccountVisible=true
@@ -260,26 +237,23 @@ export default{
         },
         //修改主账号密码
         updatePwdSubmit(){
-            this.$axios.post("/api/api/account/updatePwd",{
-                loginName:this.accountInfo.loginName,
-                loginPwd_new:this.updatePwdParams.loginPwd_new,
-                loginPwd_old:this.updatePwdParams.loginPwd_old,
-                userGuid:this.accountInfo.userGuid
-            }).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        authUnils.removeToken()
-                        localStorage.removeItem("enterpriseInfo")
-                        localStorage.removeItem("loginName")
-                    }).catch(()=>{
-                        this.updateAccountVisible=false
-                        this.getAccountList()
-                    })
-                }
-                if(res.data.code==1001){
-                    this.$alert(res.data.message,"信息")
-                }
-            })
+            if(this.updatePwdParams.loginPwd_new!=this.againPassword){
+                this.$alert("新密码不一致","信息")
+            }else{
+                this.$axios.post("/api/api/account/updatePwd",this.updatePwdParams).then(res=>{
+                    if(res.data.code==1000){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.$router.push("/")
+                        }).catch(()=>{
+                            this.updateAccountVisible=false
+                            this.getAccountList()
+                        })
+                    }
+                    if(res.data.code==1001){
+                        this.$alert(res.data.message,"信息")
+                    }
+                })
+            }
         },
          //冻结账号
         frozenAccount(guid){
@@ -349,6 +323,9 @@ export default{
                 margin-bottom:5px;
             }
         }
+    }
+    .handleStyle{
+        margin-left: 0;
     }
 </style>
 

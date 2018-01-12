@@ -13,7 +13,7 @@
             <el-col class="searchBar">
                 <el-form :inline="true">
                     <el-form-item label="订单状态：">
-                        <el-select placeholder="请选择状态" v-model="filters.state">
+                        <el-select placeholder="请选择状态" v-model="filters.state" @change="changeOrderStatus">
                             <el-option label="全部" value=""></el-option>
                             <el-option label="待付款" value="0"></el-option>
                             <el-option label="待审核" value="1"></el-option>
@@ -29,14 +29,14 @@
                     </el-form-item>
                 </el-form>
             </el-col>
-            <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;">
+            <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderNo" label="订单编号" sortable align="center" width="225">
+                <el-table-column prop="orderNo" label="订单编号" align="center" min-width="185">
                 </el-table-column>
                 <el-table-column prop="payType" label="付款方式" align="center">
                 </el-table-column>
-                <el-table-column prop="creationTime" label="创建时间" align="center" width="200">
+                <el-table-column prop="creationTime" label="创建时间" align="center" min-width="160">
                 </el-table-column>
                 <el-table-column prop="score" label="充值积分" align="center">
                 </el-table-column>
@@ -83,6 +83,9 @@ import qs from 'queryString'
 export default{
     data(){
         return{
+            headerStyle:{
+                color:"#000"
+            },
             tableData:[],
             value:[],
             filters:{
@@ -150,6 +153,9 @@ export default{
                     this.totalSize=res.data.data.totalSize
                 }
             })
+        },
+        changeOrderStatus(){
+            this.getRechargeOrderList()
         },
         getSearchResult(){
             this.getRechargeOrderList()

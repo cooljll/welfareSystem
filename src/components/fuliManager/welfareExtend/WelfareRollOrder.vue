@@ -14,7 +14,8 @@
             <div class="searchBar">
                 <el-form :inline="true">
                     <el-form-item label="订单类型：">
-                        <el-select placeholder="请选择类型" v-model="filters.welfareType">
+                        <el-select placeholder="请选择类型" v-model="filters.welfareType" @change="changeOrderType">
+                            <el-option label="全部" value=""></el-option>
                             <el-option label="激励方案" value="1"></el-option>
                             <el-option label="基本节日" value="2"></el-option>
                             <el-option label="自定义福利" value="3"></el-option>
@@ -29,30 +30,30 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" border resizable highlight-current-row style="width: 100%;" border>
+            <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderId" label="订单编号" sortable align="center">
+                <el-table-column prop="orderId" label="订单编号" align="center" min-width="84">
                 </el-table-column>
-                <el-table-column prop="productName" label="福利卷名称" align="center">
+                <el-table-column prop="productName" label="福利卷名称" align="center" min-width="191">
                 </el-table-column>
-                <el-table-column prop="welType" label="福利类型" align="center">
+                <el-table-column prop="welType" label="福利类型" align="center" min-width="88">
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" align="center" width="180">
+                <el-table-column prop="createTime" label="创建时间" align="center" min-width="176">
                 </el-table-column>
-                <el-table-column prop="consume_point" label="消费积分" align="center">
+                <el-table-column prop="consume_point" label="消费积分" align="center" min-width="79">
                 </el-table-column>
-                <el-table-column prop="state" label="订单状态" align="center">
+                <el-table-column prop="state" label="订单状态" align="center" min-width="79">
                 </el-table-column>
-                <el-table-column label="操作" align="center">
+                <el-table-column label="操作" align="center" min-width="72">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="seeOrderDetail(scope.row.orderId)">查看详情</el-button>
+                        <el-button type="text" @click="seeOrderDetail(scope.row.orderId,scope.row.welType)">查看详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="extendtTotalSize">
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                 </el-pagination>
             </el-col>
         </div>
@@ -64,21 +65,19 @@
                 </div>
                 <div class="exportbox" @click="exportToExcel">导出excel</div>
             </div>
-            <el-table :data="extendEmpTable" border resizable highlight-current-row style="width: 100%;" border>
+            <el-table :data="extendEmpTable" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
                 <el-table-column prop="name" label="姓名" align="center">
                 </el-table-column>
                 <el-table-column prop="phone" label="手机号" align="center">
                 </el-table-column>
-                <!-- <el-table-column prop="welType" label="福利类型" align="center">
+                <el-table-column prop="welType" label="福利类型" align="center">
                 </el-table-column>
-                <el-table-column prop="state" label="是否兑换" align="center">
-                </el-table-column> -->
             </el-table>
             <el-col :span="24" class="toolbar">
                 <el-pagination @size-change="handleExtendSize" @current-change="handleExtendCurrent" :current-page="extendCurrentPage"
-                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
+                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="extendTotalSize">
                 </el-pagination>
             </el-col>
         </div>
@@ -122,7 +121,7 @@
                         <span class="center">{{orderInfo.createTime}}</span>
                     </div>
                     <div>
-                        <el-button type="primary" @click="extendEmpList(orderInfo.orderId)">详细发放人员</el-button>
+                        <el-button type="primary" @click="extendEmpList">详细发放人员</el-button>
                     </div>
                 </div>
                 <div class="messbox">{{orderInfo.blessMsg}}</div>
@@ -138,6 +137,9 @@ import fileDownload from 'js-file-download'
 export default{
     data(){
         return{
+            headerStyle:{
+                color:"#000"
+            },
             isShowOrder:true,
             isShowExtendList:false,
             tableData:[],
@@ -155,14 +157,16 @@ export default{
             orderInfo:{},
             extendEmpTable:[],
             extendCurrentPage:1,
-            extendtTotalSize:0,
+            extendTotalSize:0,
             //发放人员参数
             extendEmpParams:{
                 orderId:"",
                 pageNum:1,
                 pageSize:10,
                 state:""
-            }
+            },
+            orderId:"",
+            welType:""
         }
     },
     methods:{
@@ -182,9 +186,11 @@ export default{
         },
         handleSizeChange(val){
             this.filters.pageSize=val
+            this.getPagedOrder()
         },
         handleCurrentChange(val){
             this.filters.pageNum=val
+            this.getPagedOrder()
         },
         //导出福利卷订单
         exportWelRollOrder(){
@@ -204,13 +210,11 @@ export default{
         //显示订单列表
         getPagedOrder(){
             this.$axios.post("/api/api/voucher/showOrder",this.filters).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.tableData=res.data.data.content
-                        this.totalSize=res.data.data.totalSize
-                    }else{
-                        this.$alert(res.data.message,"信息")
-                    }
+                if(res.data.code==1000){
+                    this.tableData=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
+                }else{
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -218,8 +222,13 @@ export default{
         getSearchResult(){
             this.getPagedOrder()
         },
+        changeOrderType(){
+            this.getPagedOrder() 
+        },
         //查看详情
-        seeOrderDetail(id){
+        seeOrderDetail(id,type){
+            this.orderId=id
+            this.welType=type
             this.$axios.post("/api/api/voucher/orderDetail",{
                 orderId:id,
                 pageNum:1,
@@ -235,14 +244,20 @@ export default{
             })
         },
         //详细发放人员
-        extendEmpList(id){
+        extendEmpList(){
             this.orderDetailVisible=false
             this.isShowExtendList=true
             this.isShowOrder=false
-            this.extendEmpParams.orderId=id
+            this.extendEmpParams.orderId=this.orderId
             this.$axios.post("/api/api/voucher/orderDetailEmp",this.extendEmpParams).then(res=>{
                 if(res.data.code==1000){
+                    res.data.data.content.forEach(item=>{
+                        item.welType=this.welType
+                    })
                     this.extendEmpTable=res.data.data.content
+                    this.extendTotalSize=res.data.data.totalSize
+                }else{
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },
@@ -253,9 +268,11 @@ export default{
         },
         handleExtendSize(val){
             this.extendEmpParams.pageSize=val
+            this.extendEmpList()
         },
         handleExtendCurrent(val){
-            this.extendEmpParams.pageSize=val
+            this.extendEmpParams.pageNum=val
+            this.extendEmpList()
         },
         //导出福利卷订单详情
         exportToExcel(){
