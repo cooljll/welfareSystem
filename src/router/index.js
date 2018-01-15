@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
+import Empty from '@/components/Empty'
 //员工管理
 import EmpIndex from '@/components/employeeManager/EmpIndex'
 import EnterpriseOverview from '@/components/employeeManager/EnterpriseOverview'
@@ -50,6 +51,11 @@ export default new Router({
       path: '/',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/Empty',
+      name: 'Empty',
+      component: Empty
     },
     {
       path: '/EmpIndex',

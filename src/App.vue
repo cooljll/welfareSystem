@@ -14,9 +14,9 @@
 			<el-col :lg="8" :md="8" :sm="18" :xs="12" class="header-links">
 				<div class="nav_router">
 					<el-menu :router="true" class="el-menu-demo" mode="horizontal" :default-active="$route.path">
-						<el-menu-item index="/WelfareOverview">福利管理</el-menu-item>
-						<el-menu-item index="/EnterpriseOverview">员工管理</el-menu-item>
-						<el-menu-item index="/ConsultIndex">福利咨询</el-menu-item>
+						<el-menu-item index="/WelfareOverview" @click="refresh">福利管理</el-menu-item>
+						<el-menu-item index="/EnterpriseOverview" @click="refresh">员工管理</el-menu-item>
+						<el-menu-item index="/ConsultIndex" @click="refresh">福利咨询</el-menu-item>
 					</el-menu>
 				</div>
 			</el-col>
@@ -105,16 +105,16 @@ export default {
   name: 'app',
   data(){
     return{
-		isShowLogin:false,
-		isShowMain:true,
-		activeIndex:"",
-		//企业基础信息
-		enterpriseBaseInfo:{
-			enterpriseName:"",
-			enterpriseCode:""
-		},
-		loginName:"",
-		enterpriseLogoUrl:""
+			isShowLogin:false,
+			isShowMain:true,
+			activeIndex:"",
+			//企业基础信息
+			enterpriseBaseInfo:{
+				enterpriseName:"",
+				enterpriseCode:""
+			},
+			loginName:"",
+			enterpriseLogoUrl:""
     }
   },
   methods:{
@@ -135,8 +135,14 @@ export default {
 					this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
 					localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
 					this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
+				}else if(res.data.code==1001){
+					
 				}
 			})
+		},
+		refresh(){
+			this.$router.push("/Empty")
+			this.$router.go(-1)
 		}
 	},
 	mounted(){

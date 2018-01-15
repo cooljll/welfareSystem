@@ -257,14 +257,16 @@ export default{
         },
          //冻结账号
         frozenAccount(guid){
-            this.$axios.post("/api/api/account/frozenAccount",qs.stringify({userGuid:guid})).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        this.getAccountList()
-                    })
-                }else if(res.data.code==1001){
-                    this.$alert(res.data.message,"信息")
-                }
+            this.$alert("确定冻结该账号吗？","信息").then(()=>{
+                this.$axios.post("/api/api/account/frozenAccount",qs.stringify({userGuid:guid})).then(res=>{
+                    if(res.data.code==1000){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.getAccountList()
+                        })
+                    }else if(res.data.code==1001){
+                        this.$alert(res.data.message,"信息")
+                    }
+                })
             })
         }
     },

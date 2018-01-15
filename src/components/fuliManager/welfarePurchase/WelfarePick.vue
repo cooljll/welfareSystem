@@ -10,10 +10,14 @@
     </div>
 </template>
 <script>
+import authUnils from '../../../common/authUnils'
 export default{
     methods:{
         gotoShop(){
-            window.open("http://www.youmina.com/")
+            // window.open("http://www.youmina.com/")
+            this.$axios.get("/api/api/purchase/welLogin").then(res=>{
+                console.log(res.data)
+            })
         }
     }
 } 

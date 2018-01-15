@@ -76,6 +76,9 @@
                 <el-table-column prop="createTime" label="创建时间" align="center" min-width="150">
                 </el-table-column>
                 <el-table-column prop="orderState" label="还款状态" align="center">
+                    <!-- <template slot-scope="scope">
+                        <span></span>
+                    </template> -->
                 </el-table-column>
             </el-table>
             <div class="toolbar">

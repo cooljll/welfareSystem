@@ -3,7 +3,7 @@
         <div class="page-menu">
             <el-menu :default-active="activeName" class="el-menu-vertical-demo" :router="true"
                 background-color="#3A4D62" text-color="#fff" active-text-color="#ffd04b" :unique-opened="true">
-                <el-menu-item index="WelfareOverview">
+                <el-menu-item index="WelfareOverview" @click="refresh">
                     <i class="iconfont icon-home"></i>
                     <span>福利总览</span>
                 </el-menu-item>
@@ -13,8 +13,8 @@
                         <span>充值管理</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="CreditRecharge">积分充值</el-menu-item>
-                        <el-menu-item index="OrderRecharge">充值订单</el-menu-item>
+                        <el-menu-item index="CreditRecharge" @click="refresh">积分充值</el-menu-item>
+                        <el-menu-item index="OrderRecharge" @click="refresh">充值订单</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="3">
@@ -23,9 +23,9 @@
                         <span>积分管理</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="CreditExtend">积分发放</el-menu-item>
-                        <el-menu-item index="CreditExtend_Excel">Excel积分发放</el-menu-item>
-                        <el-menu-item index="CreditExtend_Order">积分发放订单</el-menu-item>
+                        <el-menu-item index="CreditExtend" @click="refresh">积分发放</el-menu-item>
+                        <el-menu-item index="CreditExtend_Excel" @click="refresh">Excel积分发放</el-menu-item>
+                        <el-menu-item index="CreditExtend_Order" @click="refresh">积分发放订单</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="4">
@@ -34,8 +34,8 @@
                         <span>福利发放</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="WelfareRollExtend">福利卷发放</el-menu-item>
-                        <el-menu-item index="WelfareRollOrder">福利卷订单</el-menu-item>
+                        <el-menu-item index="WelfareRollExtend" @click="refresh">福利卷发放</el-menu-item>
+                        <el-menu-item index="WelfareRollOrder" @click="refresh">福利卷订单</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="5">
@@ -44,8 +44,8 @@
                         <span>福利采购</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="WelfarePick">福利挑选</el-menu-item>
-                        <el-menu-item index="PurchaseOrder">福利订单</el-menu-item>
+                        <el-menu-item index="WelfarePick" @click="refresh">福利挑选</el-menu-item>
+                        <el-menu-item index="PurchaseOrder" @click="refresh">福利订单</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="6">
@@ -54,8 +54,8 @@
                         <span>数据报告</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="WelfareData">福利数据</el-menu-item>
-                        <el-menu-item index="WelfareReport">福利报告</el-menu-item>
+                        <el-menu-item index="WelfareData" @click="refresh">福利数据</el-menu-item>
+                        <el-menu-item index="WelfareReport" @click="refresh">福利报告</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-submenu index="7">
@@ -64,9 +64,8 @@
                         <span>信用卡还款</span>
                     </template>
                     <el-menu-item-group> 
-                        <el-menu-item index="CreditcardpayIndex">信用卡还款首页</el-menu-item>
-                        <el-menu-item index="CreditcardpayRecord">信用卡还款记录</el-menu-item>
-                        <!-- <el-menu-item index="CreditcardpayQueue">信用卡还款队列</el-menu-item> -->
+                        <el-menu-item index="CreditcardpayIndex" @click="refresh">信用卡还款首页</el-menu-item>
+                        <el-menu-item index="CreditcardpayRecord" @click="refresh">信用卡还款记录</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </el-menu>
@@ -84,6 +83,12 @@ export default{
         return{
             activeName:""
         }
+    },
+    methods:{
+        refresh(){
+			this.$router.push("/WelfareIndex")
+			this.$router.go(-1)
+		}
     },
     mounted(){
         this.activeName=this.$route.path.substr(1)

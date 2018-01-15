@@ -51,6 +51,7 @@ axios.interceptors.response.use(
     if (error.response) {
         switch (error.response.status) {
             case 401: 
+                ElementUI.MessageBox.alert("登陆超时，请重新登陆","信息")
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")

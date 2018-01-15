@@ -28,11 +28,7 @@
                 <el-col class="layer-tag hidden-md-and-down" :name="step4?'active':''">5 创建订单完成</el-col>
             </el-row>
             <div v-show="isShowWelfareRoll">
-                <div class="layer-center" v-show="step"
-                    v-loading="loading"
-                    element-loading-text="正在获取福利卷"
-                    element-loading-spinner="el-icon-loading"
-                    element-loading-background="rgba(0, 0, 0, 0.6)">
+                <div class="layer-center" v-show="step" v-loading="loading">
                     <div class="voucherlist">
                         <div v-for="(item,index) in welfareRollList" :key="index" @click="getWelfareRolls(item.id)">
                             <div class="imgbox">

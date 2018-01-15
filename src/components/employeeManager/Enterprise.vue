@@ -347,7 +347,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="部门名称">
-                    <el-input v-model="addDepParams.deptName_cur"></el-input>
+                    <el-input v-model="addDepParams.deptName_cur" placeholder="必填"></el-input>
                 </el-form-item>
                 <el-form-item label="排序">
                     <el-input-number v-model.number="addDepParams.sortId" :min="1" :max="100" label="描述文字"></el-input-number>
@@ -729,6 +729,11 @@ export default{
         },
         //添加部门
         addDepartment(){
+            //清空
+            this.addDepParams.deptId_sup=''
+            this.addDepParams.deptName_cur=''
+            this.addDepParams.remark=''
+            this.addDepParams.sortId=50
             this.departmentDialog="添加部门"
             this.handleDepartmentVisible=true
             this.isShowAddDept=true
