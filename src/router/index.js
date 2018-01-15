@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
-import Empty from '@/components/Empty'
+import Empty from '@/components/Empty'//空白模板
 //员工管理
 import EmpIndex from '@/components/employeeManager/EmpIndex'
 import EnterpriseOverview from '@/components/employeeManager/EnterpriseOverview'

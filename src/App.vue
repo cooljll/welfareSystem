@@ -135,8 +135,6 @@ export default {
 					this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode
 					localStorage.setItem("enterpriseInfo",JSON.stringify(this.enterpriseBaseInfo))
 					this.enterpriseLogoUrl=res.data.data.enterpriseLogoUrl
-				}else if(res.data.code==1001){
-					
 				}
 			})
 		},

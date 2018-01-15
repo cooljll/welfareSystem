@@ -45,7 +45,7 @@
                 </div>
                 <div class="layer-center1" v-show="step1">
                     <div class="title">福利卷
-                        <span>{{welfareRollDialogTitle}}</span>
+                        <span class="welfareTitle">{{welfareRollDialogTitle}}</span>
                     </div>
                     <div class="title">基本节日</div>
                     <div class="checkboxdiv">
@@ -934,6 +934,10 @@ export default{
             //积分excel
             .title{
                 margin-bottom: 15px;
+                font-size: 14px;
+                .welfareTitle{
+                    margin-left: 20px;
+                }
             }
             .checkboxdiv{
                 max-width:690px;
@@ -1011,7 +1015,9 @@ export default{
                         line-height: 40px;
                     }
                     .center{
+                        font-size: 14px;
                         float: left;
+                        line-height: 40px;
                         .btnmessage{
                             display: block;
                             width: 400px;

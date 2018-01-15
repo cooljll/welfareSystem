@@ -35,23 +35,12 @@ axios.interceptors.request.use(
 // 响应拦截器
 axios.interceptors.response.use(
   response => {
-    switch(response.data.code){
-        // case 2001:
-        //     ElementUI.MessageBox.alert("登陆超时，请重新登陆","信息")
-        //     localStorage.removeItem("enterpriseInfo")
-        //     localStorage.removeItem("loginName")
-        //     router.replace({
-        //         path: '/'
-        //     })
-        //     break
-    }
     return response
   },
   error => {
     if (error.response) {
         switch (error.response.status) {
             case 401: 
-                ElementUI.MessageBox.alert("登陆超时，请重新登陆","信息")
                 authUtil.removeToken()// 返回 401 清除token信息并跳转到登录页面
                 localStorage.removeItem("enterpriseInfo")
                 localStorage.removeItem("loginName")

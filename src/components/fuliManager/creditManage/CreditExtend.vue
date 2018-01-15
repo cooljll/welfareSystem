@@ -472,10 +472,10 @@ export default{
                 this.$alert("请先选择福利类型","信息")
             }else{
                 this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId}).then(res=>{
-                    if(res.status==200){
-                        if(res.data.code==1000){
-                            this.messageTemplate=res.data.data
-                        }
+                    if(res.data.code==1000){
+                        this.messageTemplate=res.data.data
+                    }else if(res.data.code==1001){
+                        this.$alert(res.data.message,'信息')
                     }
                 })
             }
@@ -904,7 +904,7 @@ export default{
                                 width: 14px;
                                 cursor: pointer;
                             }
-                            span{
+                            .fulitype{
                                 display: inline-block;
                                 font-size: 14px;
                                 color: #3A4D62;
