@@ -46,6 +46,7 @@ import Requirement from '@/components/mallHelper/Requirement'
 import SpecialTeam from '@/components/mallHelper/SpecialTeam'
 Vue.use(Router)
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',

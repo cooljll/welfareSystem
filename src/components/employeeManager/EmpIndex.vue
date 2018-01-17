@@ -152,6 +152,7 @@
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
 import fileDownload from 'js-file-download'
+var root = process.env.API_ROOT
 export default {
   	data () {
         //   var tel = /^\d{3,4}-?\d{7,9}$/  电话号码格式：021-12345678
@@ -300,7 +301,7 @@ export default {
         },
         getTreeDep(){
             this.data=[]
-            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:true})).then(res=>{
+            this.$axios.post(root+"organize/showTreeDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.data.push(this.transferData(res.data.data))
                 }
@@ -308,7 +309,7 @@ export default {
         },
         //部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
+            this.$axios.post(root+"organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.departmentList=[]
                     res.data.data.forEach(item=>{
@@ -352,7 +353,7 @@ export default {
             this.getDepartmentList()
         },
         addDepartmentSubmit(){
-            this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
+            this.$axios.post(root+"organize/addDep",this.addDepParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
@@ -371,7 +372,7 @@ export default {
             this.getDepartmentList()
         },
         addSimpleEmpSubmit(){
-            this.$axios.post("/api/api/employee/addEmp",this.addEmployeeParams).then(res=>{
+            this.$axios.post(root+"employee/addEmp",this.addEmployeeParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
@@ -402,7 +403,7 @@ export default {
         //下载excel模板
         downloadTemplate(){
             this.$axios({
-                url:"/api/api/employee/downloadExcel",
+                url:root+"employee/downloadExcel",
                 method:"get",
                 responseType:"arraybuffer"
             }).then(res=>{
@@ -436,7 +437,7 @@ export default {
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-            this.$axios.post("/api/api/employee/uploadCheckEmps",formData,config).then(res=>{
+            this.$axios.post(root+"employee/uploadCheckEmps",formData,config).then(res=>{
                 loading.close()
                 if(res.data.code==1000){
                     this.messageTips=res.data.message

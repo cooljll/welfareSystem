@@ -332,6 +332,7 @@
 <script>
 import authUnils from '../../../common/authUnils'
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -539,21 +540,17 @@ export default{
         },
         //模板寄语
         getRandomMessage(){
-            this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId},{
-                headers:{
-                    "Authorization":authUnils.getToken()
-                }
-            }).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.messageTemplate=res.data.data
-                    }
+            this.$axios.post(root+"integral/showBless",{typeId:this.festivalId}).then(res=>{
+                if(res.data.code==1000){
+                    this.messageTemplate=res.data.data
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,'信息')
                 }
             })
         },
         //总人数（不包含冻结）
         getNormalEmps(){
-            this.$axios.post("/api/api/employee/selEmpCount",true,{
+            this.$axios.post(root+"employee/selEmpCount",true,{
                 headers:{
                     "Content-Type":"application/json"
                 }
@@ -586,7 +583,7 @@ export default{
         },
         //冻结人数
         getFrozenEmps(){
-            this.$axios.post("/api/api/employee/frozenEmpCount",{}).then(res=>{
+            this.$axios.post(root+"employee/frozenEmpCount",{}).then(res=>{
                 if(res.data.code==1000){
                     this.frozenEmpCount=res.data.data
                 }else if(res.data.code==1001){
@@ -596,17 +593,15 @@ export default{
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.enterpriseBalance=res.data.data
-                    }
+            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.enterpriseBalance=res.data.data
                 }
             })
         },
         //部门树形
         getTreeDep(){
-            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
+            this.$axios.post(root+"organize/showTreeDep",qs.stringify({include:false})).then(res=>{
                 if(res.data.code==1000){
                     let ret=this.transferData(res.data.data)
                     this.enterpriseName=ret.label
@@ -617,7 +612,7 @@ export default{
         },
         //全体员工发放福利卷
         allEmpExtendRolls(){
-            this.$axios.post("/api/api/voucher/postVoucherByAll",{
+            this.$axios.post(root+"voucher/postVoucherByAll",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 nums:this.totalEmployee.toString(),
@@ -641,7 +636,7 @@ export default{
             this.extendEmpArr.forEach(item=>{
                 this.specialEmpCodes.push(item.empCode)
             })
-            this.$axios.post("/api/api/voucher/postVoucherBySpecial",{
+            this.$axios.post(root+"voucher/postVoucherBySpecial",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 nums:this.totalEmployee.toString(),
@@ -666,7 +661,7 @@ export default{
             this.extendEmpArr.forEach(item=>{
                 this.specialEmpCodes.push(item.empCode)
             })
-            this.$axios.post("/api/api/voucher/postVoucherBySpecialNot",{
+            this.$axios.post(root+"voucher/postVoucherBySpecialNot",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 nums:this.totalEmployee.toString(),
@@ -687,7 +682,7 @@ export default{
         },
         //部门发放福利卷
         deportEmpExtendRolls(arr){
-            this.$axios.post("/api/api/voucher/postVoucherByDep",{
+            this.$axios.post(root+"voucher/postVoucherByDep",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 nums:this.totalEmployee.toString(),
@@ -714,7 +709,7 @@ export default{
         },
         //显示部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
+            this.$axios.post(root+"organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.creditExtendData=[]
                     res.data.data.forEach(item=>{
@@ -729,7 +724,7 @@ export default{
             this.selectEmpParams.text=""
             this.notSelectArr=[]
             this.checkedDepart.forEach(item=>{
-                this.$axios.post("/api/api/employee/selectEmployee",{
+                this.$axios.post(root+"employee/selectEmployee",{
                     depId:item.organizationUnitId,
                     text:this.selectEmpParams.text
                 }).then(res=>{
@@ -752,7 +747,7 @@ export default{
                 return 
             }else{
                 this.checkedDepart=[]
-                this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
+                this.$axios.post(root+"employee/selectEmployee",this.selectEmpParams).then(res=>{
                     if(res.data.code==1000){
                         this.notSelectArr=[]
                         res.data.data.content.forEach(item=>{
@@ -814,7 +809,7 @@ export default{
         //获取福利卷
         getProduct(){
             this.loading=true
-            this.$axios.post("/api/api/voucher/product",this.productParams).then(res=>{
+            this.$axios.post(root+"voucher/product",this.productParams).then(res=>{
                 this.loading=false
                 if(res.data.code==1000){
                     let welfareRolls=res.data.data.content
@@ -840,7 +835,7 @@ export default{
                 spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             })
-            this.$axios.post("/api/api/voucher/product/sku",qs.stringify({voucherId:id})).then(res=>{
+            this.$axios.post(root+"voucher/product/sku",qs.stringify({voucherId:id})).then(res=>{
                 if(res.data.code==1000){
                     loading.close()
                     this.welfareRollDialogTitle=res.data.data.name
@@ -861,7 +856,7 @@ export default{
         },
         //节日信息
         showFestival(){
-            this.$axios.post("/api/api/integral/showFestival",{}).then(res=>{
+            this.$axios.post(root+"integral/showFestival",{}).then(res=>{
                 if(res.data.code==1000){
                     this.btnGroups=res.data.data
                 }

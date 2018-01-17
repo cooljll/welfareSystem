@@ -41,6 +41,7 @@
 </template>
 <script>
 import authUnils from '../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -53,8 +54,7 @@ export default{
     },
     methods:{
         getNoticeList(){
-            this.$axios.post("/api/api/service/systemNoticeList",this.noticeParams).then(res=>{
-                console.log(res)
+            this.$axios.post(root+"service/systemNoticeList",this.noticeParams).then(res=>{
                 if(res.data.code==1000){
                     this.noticeList=res.data.data.content
                 }

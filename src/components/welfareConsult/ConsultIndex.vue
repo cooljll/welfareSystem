@@ -70,6 +70,7 @@
 <script>
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -88,7 +89,7 @@ export default{
     methods:{
         //获取福利咨询banner
         getBannerNews(){
-            this.$axios.get("/api/api/welfareNews/banner").then(res=>{
+            this.$axios.get(root+"welfareNews/banner").then(res=>{
                 if(res.data.code==0){
                     res.data.data.forEach(item=>{
                         if(item.bannerPosition==1){
@@ -103,7 +104,7 @@ export default{
         },
         //获取福利咨询标题
         getTitle(){
-            this.$axios.get("/api/api/welfareNews/title").then(res=>{
+            this.$axios.get(root+"welfareNews/title").then(res=>{
                 if(res.data.code==1000){
                     this.categoryTitle=res.data.data[0].categoryname
                 }
@@ -111,7 +112,7 @@ export default{
         },
         //分页咨询
         getNewsPageInfo(){
-            this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
+            this.$axios.post(root+"welfareNews/newsPageInfo",this.consultParams).then(res=>{
                 if(res.data.code==1000){
                     if(res.data.data.length==0){
                         this.isShowMore=false

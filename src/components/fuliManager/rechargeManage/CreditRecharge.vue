@@ -143,6 +143,7 @@
 </template>
 <script>
 import authUnils from '../../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -208,14 +209,14 @@ export default{
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
             this.invoiceInfo.amount_payable=this.invoiceInfo.point
-            this.$axios.post("/api/api/recharge/pay",this.invoiceInfo).then(res=>{
+            this.$axios.post(root+"recharge/pay",this.invoiceInfo).then(res=>{
                 loading.close()
                 if(res.data.code==1000){
                     if(this.yinhang){//银行支付
                         this.isShowRecharge=false
                         this.isShowSuccess=true
                     }else if(this.zhifubao){//支付宝支付
-                        this.$axios.get("/api/api/alipays/web",{
+                        this.$axios.get(root+"alipays/web",{
                             params:{
                                 orderNo:res.data.data.orderNo,
                                 payOrder:res.data.data.payOrder,
@@ -228,7 +229,7 @@ export default{
                             document.forms['pay_form'].submit()
                         })
                     }else if(this.weixin){//微信支付
-                        this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                        this.$axios.get(root+"wechatPay/nativeOrder",{
                             params:{
                                 orderNo:res.data.data.orderNo,
                                 payOrder:res.data.data.payOrder,
@@ -249,7 +250,7 @@ export default{
                                     clearInterval(timer)
                                 } else {  
                                     //后台轮询 查询订单状态  
-                                    that.$axios.post("/api/api/recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
+                                    that.$axios.post(root+"recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
                                         if(res.data.code==1000){
                                             let status=res.data.data.status
                                             if(status==1){//扫码成功

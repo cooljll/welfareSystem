@@ -134,6 +134,7 @@
 import authUnils from "../../../common/authUnils"
 import qs from 'queryString'
 import fileDownload from 'js-file-download'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -195,7 +196,7 @@ export default{
         //导出福利卷订单
         exportWelRollOrder(){
             this.$axios({
-                url:"/api/api/voucher/exportExcelVoucherOrder",
+                url:root+"voucher/exportExcelVoucherOrder",
                 method:"get",
                 responseType:"arraybuffer"
             }).then(res=>{
@@ -209,7 +210,7 @@ export default{
         },
         //显示订单列表
         getPagedOrder(){
-            this.$axios.post("/api/api/voucher/showOrder",this.filters).then(res=>{
+            this.$axios.post(root+"voucher/showOrder",this.filters).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -229,7 +230,7 @@ export default{
         seeOrderDetail(id,type){
             this.orderId=id
             this.welType=type
-            this.$axios.post("/api/api/voucher/orderDetail",{
+            this.$axios.post(root+"voucher/orderDetail",{
                 orderId:id,
                 pageNum:1,
                 pageSize:10,
@@ -249,7 +250,7 @@ export default{
             this.isShowExtendList=true
             this.isShowOrder=false
             this.extendEmpParams.orderId=this.orderId
-            this.$axios.post("/api/api/voucher/orderDetailEmp",this.extendEmpParams).then(res=>{
+            this.$axios.post(root+"voucher/orderDetailEmp",this.extendEmpParams).then(res=>{
                 if(res.data.code==1000){
                     res.data.data.content.forEach(item=>{
                         item.welType=this.welType
@@ -276,7 +277,7 @@ export default{
         },
         //导出福利卷订单详情
         exportToExcel(){
-            this.$axios.get("/api/api/voucher/exportExcelVoucherOrderDes").then(res=>{
+            this.$axios.get(root+"voucher/exportExcelVoucherOrderDes").then(res=>{
                 if(res){
                     fileDownload(res.data,"福利卷订单详情.xls")
                 }

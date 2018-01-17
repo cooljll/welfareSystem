@@ -47,6 +47,7 @@
 <script>
 import authUnils from '../../common/authUnils'
 import fileDownload from 'js-file-download'
+var root = process.env.API_ROOT
 export default {
   	data () {
     	return {
@@ -171,7 +172,7 @@ export default {
 		},
 		//获取总人数
 		getTotalEmp(){
-			this.$axios.post("/api/api/employee/selEmpCount",false,{
+			this.$axios.post(root+"employee/selEmpCount",false,{
                 headers:{
                     "Content-Type":"application/json"
                 }
@@ -184,7 +185,7 @@ export default {
 		},
 		//获取男女比例
 		getGenderNums(){
-			this.$axios.post("/api/api/service/genderScope",{}).then(res=>{
+			this.$axios.post(root+"service/genderScope",{}).then(res=>{
 				if(res.data.code==1000){
 					this.genderScope=res.data.data
 					this.drawGender()
@@ -193,7 +194,7 @@ export default {
 		},
 		//获取年龄比例
 		getAgeNums(){
-			this.$axios.post("/api/api/service/ageScope",{}).then(res=>{
+			this.$axios.post(root+"service/ageScope",{}).then(res=>{
 				if(res.data.code==1000){
 					this.ageScope=res.data.data
 					this.drawTime()
@@ -209,7 +210,7 @@ export default {
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
             this.$axios({
-				url:"/api/api/employee/exportEmployees",
+				url:root+"employee/exportEmployees",
 				method:"get",
 				responseType:"arraybuffer"
 			}).then(res=>{
@@ -230,7 +231,7 @@ export default {
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-			this.$axios.post("/api/api/service/qrcode",{}).then(res=>{
+			this.$axios.post(root+"service/qrcode",{}).then(res=>{
 				loading.close()
 				if(res.data.data==1000){
 
@@ -242,7 +243,7 @@ export default {
 		},
 		//系统公告
 		getSystemNotice(){
-			this.$axios.post("/api/api/service/systemNotice",{}).then(res=>{
+			this.$axios.post(root+"service/systemNotice",{}).then(res=>{
 				if(res.data.code==1000){
 					
 				}else if(res.data.code==1001){

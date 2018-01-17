@@ -275,6 +275,7 @@
 import authUnils from '../../../common/authUnils'
 import qs from 'queryString'
 import fileDownload from 'js-file-download'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -432,7 +433,7 @@ export default{
                 this.selectedEmpTags.forEach(item=>{
                     str+="&depIds="+item.organizationUnitId
                 })
-                this.$axios.get("/api/api/integral/downloadExcel?"+str.substr(1),{
+                this.$axios.get(root+"integral/downloadExcel?"+str.substr(1),{
                     responseType:"arraybuffer"
                 }).then(res=>{
                     if(res){
@@ -470,7 +471,7 @@ export default{
                 'Content-Type': 'multipart/form-data'
               }
             }
-            this.$axios.post("/api/api/integral/uploadIntegralByExcel",formData,config).then(res=>{
+            this.$axios.post(root+"integral/uploadIntegralByExcel",formData,config).then(res=>{
                 loading.close()
                 if(res.data.code==1000){
                     this.step1=false
@@ -491,7 +492,7 @@ export default{
             if(this.selectedType==""){
                 this.$alert("请先选择福利类型","信息")
             }else{
-                this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId}).then(res=>{
+                this.$axios.post(root+"integral/showBless",{typeId:this.festivalId}).then(res=>{
                     if(res.data.code==1000){
                         this.messageTemplate=res.data.data
                     }else if(res.data.code==1001){
@@ -502,7 +503,7 @@ export default{
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
                 if(res.data.code==1000){
                     this.enterpriseBalance=res.data.data
                 }
@@ -559,7 +560,7 @@ export default{
         //支付订单
         payOrder(){
             this.$alert("确定要支付订单？","信息").then(()=>{
-                this.$axios.post("/api/api/integral/postIntegralByExcel",{
+                this.$axios.post(root+"integral/postIntegralByExcel",{
                     blessMsg:this.messageTemplate,
                     festivalId:this.festivalId.toString(),
                     list:this.tableData
@@ -584,7 +585,7 @@ export default{
         },
         //节日信息
         showFestival(){
-            this.$axios.post("/api/api/integral/showFestival",{}).then(res=>{
+            this.$axios.post(root+"integral/showFestival",{}).then(res=>{
                 if(res.data.code==1000){
                     this.btnGroups=res.data.data
                 }
@@ -610,7 +611,7 @@ export default{
         },
         //部门树形
         getTreeDep(){
-            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
+            this.$axios.post(root+"organize/showTreeDep",qs.stringify({include:false})).then(res=>{
                 if(res.data.code==1000){
                     let ret=this.transferData(res.data.data)
                     this.enterpriseName=ret.label

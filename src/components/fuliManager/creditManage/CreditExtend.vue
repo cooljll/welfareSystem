@@ -292,6 +292,7 @@
 <script>
 import authUnils from '../../../common/authUnils'
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -471,7 +472,7 @@ export default{
             if(this.selectedType==""){
                 this.$alert("请先选择福利类型","信息")
             }else{
-                this.$axios.post("/api/api/integral/showBless",{typeId:this.festivalId}).then(res=>{
+                this.$axios.post(root+"integral/showBless",{typeId:this.festivalId}).then(res=>{
                     if(res.data.code==1000){
                         this.messageTemplate=res.data.data
                     }else if(res.data.code==1001){
@@ -482,7 +483,7 @@ export default{
         },
         //总人数（不包含冻结）
         getNormalEmps(){
-            this.$axios.post("/api/api/employee/selEmpCount",true,{
+            this.$axios.post(root+"employee/selEmpCount",true,{
                 headers:{
                     "Content-Type":"application/json"
                 }
@@ -519,7 +520,7 @@ export default{
         },
         //冻结人数
         getFrozenEmps(){
-            this.$axios.post("/api/api/employee/frozenEmpCount",{}).then(res=>{
+            this.$axios.post(root+"employee/frozenEmpCount",{}).then(res=>{
                 if(res.data.code==1000){
                     this.frozenEmpCount=res.data.data
                 }
@@ -527,7 +528,7 @@ export default{
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
                 if(res.data.code==1000){
                     this.enterpriseBalance=res.data.data
                 }
@@ -535,7 +536,7 @@ export default{
         },
         //部门树形
         getTreeDep(){
-            this.$axios.post("/api/api/organize/showTreeDep",qs.stringify({include:false})).then(res=>{
+            this.$axios.post(root+"organize/showTreeDep",qs.stringify({include:false})).then(res=>{
                 if(res.data.code==1000){
                     let ret=this.transferData(res.data.data)
                     this.enterpriseName=ret.label
@@ -546,7 +547,7 @@ export default{
         },
         //全体员工发放积分
         allEmpExtendScores(){
-            this.$axios.post("/api/api/integral/postIntegralByAll",{
+            this.$axios.post(root+"integral/postIntegralByAll",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 point:this.allScores.toString(),
@@ -567,7 +568,7 @@ export default{
             this.extendEmpArr.forEach(item=>{
                 this.specialEmpCodes.push(item.empCode)
             })
-            this.$axios.post("/api/api/integral/postIntegralBySpecial",{
+            this.$axios.post(root+"integral/postIntegralBySpecial",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 point:this.specialScores.toString(),
@@ -589,7 +590,7 @@ export default{
             this.extendEmpArr.forEach(item=>{
                 this.specialEmpCodes.push(item.empCode)
             })
-            this.$axios.post("/api/api/integral/postIntegralBySpecialNot",{
+            this.$axios.post(root+"integral/postIntegralBySpecialNot",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 point:this.specialScores,
@@ -607,7 +608,7 @@ export default{
         },
         //部门发放积分
         deportEmpExtendScores(arr){
-            this.$axios.post("/api/api/integral/postIntegralByDep",{
+            this.$axios.post(root+"integral/postIntegralByDep",{
                 blessMsg:this.messageTemplate,
                 festivalId:this.festivalId.toString(),
                 tolPoint:this.totalScores.toString(),
@@ -630,7 +631,7 @@ export default{
         },
         //显示部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
+            this.$axios.post(root+"organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.creditExtendData=[]
                     res.data.data.forEach(item=>{
@@ -645,7 +646,7 @@ export default{
             this.selectEmpParams.text=""
             this.notSelectArr=[]
             this.checkedDepart.forEach(item=>{
-                this.$axios.post("/api/api/employee/selectEmployee",{
+                this.$axios.post(root+"employee/selectEmployee",{
                     depId:item.organizationUnitId,
                     text:this.selectEmpParams.text
                 }).then(res=>{
@@ -668,7 +669,7 @@ export default{
                 return 
             }else{
                 this.checkedDepart=[]
-                this.$axios.post("/api/api/employee/selectEmployee",this.selectEmpParams).then(res=>{
+                this.$axios.post(root+"employee/selectEmployee",this.selectEmpParams).then(res=>{
                     if(res.data.code==1000){
                         this.notSelectArr=[]
                         res.data.data.content.forEach(item=>{
@@ -726,7 +727,7 @@ export default{
         },
         //节日信息
         showFestival(){
-            this.$axios.post("/api/api/integral/showFestival",{}).then(res=>{
+            this.$axios.post(root+"integral/showFestival",{}).then(res=>{
                 if(res.data.code==1000){
                     this.btnGroups=res.data.data
                 }

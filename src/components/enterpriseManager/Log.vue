@@ -40,6 +40,7 @@
 </template>
 <script>
 import authUnils from '../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -84,7 +85,7 @@ export default{
         },
         //获取日志列表
         showPageLog(){
-            this.$axios.post("/api/api/oprateLog/show",this.filters).then(res=>{
+            this.$axios.post(root+"oprateLog/show",this.filters).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize

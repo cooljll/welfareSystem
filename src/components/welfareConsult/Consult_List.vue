@@ -56,6 +56,7 @@
 <script>
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -72,7 +73,7 @@ export default{
     methods:{
         //分页咨询
         getNewsPageInfo(){
-            this.$axios.post("/api/api/welfareNews/newsPageInfo",this.consultParams).then(res=>{
+            this.$axios.post(root+"welfareNews/newsPageInfo",this.consultParams).then(res=>{
                 if(res.data.code==1000){
                     this.newsPageList=res.data.data.content
                 }
@@ -83,8 +84,7 @@ export default{
         },
         //查询结果
         searchResult(){
-            this.$axios.post("/api/api/welfareNews/search",qs.stringify({filter:this.$route.params.ret})).then(res=>{
-                console.log(res)
+            this.$axios.post(root+"welfareNews/search",qs.stringify({filter:this.$route.params.ret})).then(res=>{
                 if(res.data.code==1000){
                     this.newsPageList=res.data.data.content
                 }
@@ -101,7 +101,7 @@ export default{
             this.isShowConsultResult=false
             this.getNewsPageInfo()
         }
-        this.$axios.post("/api/api/welfareNews/newsPageInfo",{
+        this.$axios.post(root+"welfareNews/newsPageInfo",{
             pageNum:1,
             pageSize:3
         }).then(res=>{

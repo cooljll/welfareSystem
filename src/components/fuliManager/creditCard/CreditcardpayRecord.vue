@@ -91,6 +91,7 @@
 </template>
 <script>
 import authUnils from '../../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -142,7 +143,7 @@ export default{
         },
         //信用卡还款记录
         getcreditCardList(){
-            this.$axios.post("/api/api/creditCard/queueOrders",this.filters).then(res=>{
+            this.$axios.post(root+"creditCard/queueOrders",this.filters).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -165,7 +166,7 @@ export default{
             this.isShowList=false
             this.isShowDetail=true
             this.sendRecordParams.orderId=id
-            this.$axios.post("/api/api/creditCard/queues",this.sendRecordParams).then(res=>{
+            this.$axios.post(root+"creditCard/queues",this.sendRecordParams).then(res=>{
                 if(res.data.code==1000){
                     //已提交 已受理 还款成功 还款失败
                     //refundState 退款状态 0无 1退款成功 1退款失败

@@ -94,6 +94,7 @@
 <script>
 import authUnils from '../../common/authUnils'
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -127,7 +128,7 @@ export default{
     methods:{
         //企业账号列表信息
         getAccountList(){
-            this.$axios.post("/api/api/account/info",{}).then(res=>{
+            this.$axios.post(root+"account/info",{}).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data
                 }
@@ -135,7 +136,7 @@ export default{
         },
         //获取子账号名称
         getSubAccountName(){
-            this.$axios.post("/api/api/account/accountName",{}).then(res=>{
+            this.$axios.post(root+"account/accountName",{}).then(res=>{
                 if(res.data.code==1000){
                     this.addAccountParams.loginName=res.data.data
                 }else if(res.data.code==1001){
@@ -145,7 +146,7 @@ export default{
         },
         //获取权限列表
         getAuthList(){
-            this.$axios.post("/api/api/account/authorityList",{}).then(res=>{
+            this.$axios.post(root+"account/authorityList",{}).then(res=>{
                 if(res.data.code==1000){
                     this.authList=res.data.data
                 }
@@ -178,7 +179,7 @@ export default{
         //添加子账号
         addSubAccountSubmit(){
             this.addAccountParams.authority=this.tags.join(",")
-            this.$axios.post("/api/api/account/addAccount",this.addAccountParams).then(res=>{
+            this.$axios.post(root+"account/addAccount",this.addAccountParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addAccountVisible=false
@@ -193,7 +194,7 @@ export default{
         },
         //查看权限
         seeAuth(guid){
-            this.$axios.post("/api/api/account/authority",qs.stringify({userGuid:guid})).then(res=>{
+            this.$axios.post(root+"account/authority",qs.stringify({userGuid:guid})).then(res=>{
                 if(res.data.code==1000){
                     this.tags=res.data.data
                 }
@@ -219,7 +220,7 @@ export default{
         },
         //修改子账号密码
         saveSubAccountPwd(){
-            this.$axios.post("/api/api/account/updateSubPwd",{
+            this.$axios.post(root+"account/updateSubPwd",{
                 guid:this.accountInfo.userGuid,
                 loginName:this.accountInfo.loginName,
                 pwd:this.addAccountParams.loginPwd
@@ -240,7 +241,7 @@ export default{
             if(this.updatePwdParams.loginPwd_new!=this.againPassword){
                 this.$alert("新密码不一致","信息")
             }else{
-                this.$axios.post("/api/api/account/updatePwd",this.updatePwdParams).then(res=>{
+                this.$axios.post(root+"account/updatePwd",this.updatePwdParams).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.$router.push("/")
@@ -258,7 +259,7 @@ export default{
          //冻结账号
         frozenAccount(guid){
             this.$alert("确定冻结该账号吗？","信息").then(()=>{
-                this.$axios.post("/api/api/account/frozenAccount",qs.stringify({userGuid:guid})).then(res=>{
+                this.$axios.post(root+"account/frozenAccount",qs.stringify({userGuid:guid})).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.getAccountList()

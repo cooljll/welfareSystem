@@ -57,6 +57,7 @@
 <script>
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -71,7 +72,7 @@ export default{
     },
     methods:{
         getNewsDetail(id){ 
-            this.$axios.get("/api/api/welfareNews/newsInfo",{params:{id:id}}).then(res=>{
+            this.$axios.get(root+"welfareNews/newsInfo",{params:{id:id}}).then(res=>{
                 if(res.data.code==1000){
                     this.newsDetailContent=res.data.data
                     let prevTitle=this.newsDetailContent.previousArticleDetailsFoot
@@ -106,7 +107,7 @@ export default{
     },
     mounted(){
         this.getNewsDetail(Number(this.$route.params.id))
-        this.$axios.post("/api/api/welfareNews/newsPageInfo",{
+        this.$axios.post(root+"welfareNews/newsPageInfo",{
             pageNum:1,
             pageSize:3
         }).then(res=>{
@@ -177,6 +178,5 @@ export default{
             }
         }
     }
-    
 </style>
 

@@ -101,6 +101,7 @@
 
 <script>
 import authUnils from './common/authUnils'
+var root = process.env.API_ROOT
 export default {
   name: 'app',
   data(){
@@ -129,7 +130,7 @@ export default {
 		},
 		//企业信息
 		getEnterpriseInfo(){
-			this.$axios.post("/api/api/enterprise/entInfo",{}).then(res=>{
+			this.$axios.post(root+"enterprise/entInfo",{}).then(res=>{
 				if(res.data.code==1000){
 					this.enterpriseBaseInfo.enterpriseName=res.data.data.companyName
 					this.enterpriseBaseInfo.enterpriseCode=res.data.data.entCode

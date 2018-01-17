@@ -524,6 +524,7 @@
 import qs from "queryString"
 import authUnils from "../../common/authUnils"
 import fileDownload from 'js-file-download'
+var root = process.env.API_ROOT
 export default{
     data(){
         var checkName=(rule,value,callback)=>{
@@ -715,7 +716,7 @@ export default{
     methods:{
         //部门序列表
         getDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
+            this.$axios.post(root+"organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.departmentList=[]
                     res.data.data.forEach(item=>{
@@ -741,7 +742,7 @@ export default{
             this.getDepartmentList()
         },
         addDepartmentSubmit(){
-            this.$axios.post("/api/api/organize/addDep",this.addDepParams).then(res=>{
+            this.$axios.post(root+"organize/addDep",this.addDepParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
@@ -759,7 +760,7 @@ export default{
             this.handleDepartmentVisible=true
             this.isShowAddDept=false
             this.isShowUpdateDept=true
-            this.$axios.post("/api/api/organize/depInfo",qs.stringify({depId:id})).then(res=>{
+            this.$axios.post(root+"organize/depInfo",qs.stringify({depId:id})).then(res=>{
                 if(res.data.code==1000){
                     this.deptId_pre=res.data.data.organizationUnitId
                     if(res.data.data.parentOrganizationUnitId){
@@ -776,7 +777,7 @@ export default{
             })
         },
         updateDepartmentSubmit(){
-            this.$axios.post("/api/api/organize/updateDep",{
+            this.$axios.post(root+"organize/updateDep",{
                 deptId_pre:this.deptId_pre,
                 deptName_cur:this.addDepParams.deptName_cur,
                 parentId:this.addDepParams.deptId_sup,
@@ -796,7 +797,7 @@ export default{
         //部门删除
         deleteDepartment(id){
             this.$confirm("确定要删除该部门吗？","提示",{type:"warning"}).then(()=>{
-                this.$axios.post("/api/api/organize/deleteDep",qs.stringify({depId:id})).then(res=>{
+                this.$axios.post(root+"organize/deleteDep",qs.stringify({depId:id})).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.$store.commit('reLoad')
@@ -814,7 +815,7 @@ export default{
             this.addEmployeeVisible=true
         },
         addSimpleEmpSubmit(){
-            this.$axios.post("/api/api/employee/addEmp",this.addEmployeeParams).then(res=>{
+            this.$axios.post(root+"employee/addEmp",this.addEmployeeParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.addEmployeeVisible=false
@@ -836,7 +837,7 @@ export default{
         //下载excel模板
         downloadTemplate(){
             this.$axios({
-                url:"/api/api/employee/downloadExcel",
+                url:root+"employee/downloadExcel",
                 method:"get",
                 responseType:"arraybuffer"
             }).then(res=>{
@@ -867,7 +868,7 @@ export default{
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-            this.$axios.post("/api/api/employee/uploadCheckEmps",formData,config).then(res=>{
+            this.$axios.post(root+"employee/uploadCheckEmps",formData,config).then(res=>{
                 loading.close()
                 if(res.data.code==1000){
                     this.messageTips=res.data.message
@@ -891,7 +892,7 @@ export default{
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-            this.$axios.post("/api/api/service/qrcode",{}).then(res=>{
+            this.$axios.post(root+"service/qrcode",{}).then(res=>{
                 if(res.data.data==1000){
                     this.qrcodeVisible=true
                 }else if(res.data.code==1001){
@@ -933,7 +934,7 @@ export default{
         },
         //移至部门操作
         handleMoveToDept(arr){
-            this.$axios.post("/api/api/employee/removeToDept",{
+            this.$axios.post(root+"employee/removeToDept",{
                 depId_next:this.departId,
                 list:arr
             }).then(res=>{
@@ -963,7 +964,7 @@ export default{
         },
         //移出企业操作
         handleRemoveEmployee(arr){
-            this.$axios.post("/api/api/employee/removeEmployee",{empCodes:arr}).then(res=>{
+            this.$axios.post(root+"employee/removeEmployee",{empCodes:arr}).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,'信息').then(()=>{
                         this.$store.commit('reLoad')
@@ -1004,7 +1005,7 @@ export default{
         },
         //冻结,解冻员工
         handleFrozenEmployee(codeArr,i){
-            this.$axios.post("/api/api/employee/frozenEmployee",{
+            this.$axios.post(root+"employee/frozenEmployee",{
                 empCodes:codeArr,
                 isFrozen:i//0解冻 1冻结
             }).then(res=>{
@@ -1018,7 +1019,7 @@ export default{
         // 拉回企业
         pullbackEnterprise(code){
             this.$confirm("确定要拉回企业？","信息").then(()=>{
-                this.$axios.post("/api/api/employee/pullBack",{empCode:code}).then(res=>{
+                this.$axios.post(root+"employee/pullBack",{empCode:code}).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,'信息').then(()=>{
                             this.$store.commit('reLoad')
@@ -1043,7 +1044,7 @@ export default{
                 'Content-Type': 'multipart/form-data'
               }
             }
-            this.$axios.post("/api/api/employee/batchRemoveEmp",formData,config).then(res=>{
+            this.$axios.post(root+"employee/batchRemoveEmp",formData,config).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.showDelEmployee()
@@ -1056,7 +1057,7 @@ export default{
         //移出员工模板
         downloadDelExcel(){
             this.$axios({
-                url:"/api/api/employee/downloadExcel2",
+                url:root+"employee/downloadExcel2",
                 method:'get',
                 responseType:"arraybuffer"
             }).then(res=>{
@@ -1078,7 +1079,7 @@ export default{
         },
         //处理审批
         handleExamineEmp(){
-            this.$axios.post("/api/api/approvalCenter/dealApproval",this.approvalParams).then(res=>{
+            this.$axios.post(root+"approvalCenter/dealApproval",this.approvalParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.$store.commit('reLoad')
@@ -1159,7 +1160,7 @@ export default{
         showEmployee(id){
             this.loading=true
             this.filters.depId=id
-            this.$axios.post("/api/api/employee/showEmployee",this.filters).then(res=>{
+            this.$axios.post(root+"employee/showEmployee",this.filters).then(res=>{
                 this.loading=false
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
@@ -1200,7 +1201,7 @@ export default{
         //查询离职列表
         showDelEmployee(){
             this.leaveLoading=true
-            this.$axios.post("/api/api/employee/hasDelEmps",this.filtersDel).then(res=>{
+            this.$axios.post(root+"employee/hasDelEmps",this.filtersDel).then(res=>{
                 this.leaveLoading=false
                 if(res.data.code==1000){
                     this.leaveTableData=res.data.data.content
@@ -1227,7 +1228,7 @@ export default{
         showExmineLists(){
             this.examineLoading=true
             this.filtersExamine.auditStatus=Number(this.filtersExamine.auditStatus)
-            this.$axios.post("/api/api/approvalCenter/showApprovalMessage",this.filtersExamine).then(res=>{
+            this.$axios.post(root+"approvalCenter/showApprovalMessage",this.filtersExamine).then(res=>{
                 this.examineLoading=false
                 if(res.data.code==1000){
                     this.totalSizeExamine=res.data.data.totalSize
@@ -1306,7 +1307,7 @@ export default{
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-            this.$axios.post("/api/api/employee/updateEmployee",{
+            this.$axios.post(root+"employee/updateEmployee",{
                 dep_cur:this.departId,
                 dep_pre:this.employeeInfo.deptId,
                 email:this.employeeInfo.email,
@@ -1349,7 +1350,7 @@ export default{
         },
         //移至部门确定
         confirmMoveDep(){
-            this.$axios.post("/api/api/employee/removeToDept",{
+            this.$axios.post(root+"employee/removeToDept",{
                 depId_next:this.departId,
                 list:[{
                     depId:this.employeeInfo.deptId,

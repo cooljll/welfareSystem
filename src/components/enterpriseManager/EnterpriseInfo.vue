@@ -127,6 +127,7 @@
 </template>
 <script>
 import authUnils from '../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -148,7 +149,7 @@ export default{
     methods:{
         //获取企业信息
         getEnterpriseInfo(){
-            this.$axios.post("/api/api/enterprise/entInfo",{},).then(res=>{
+            this.$axios.post(root+"enterprise/entInfo",{},).then(res=>{
                 if(res.data.code==1000){
                     this.enterpriseInfo=res.data.data
                     // this.entCoord=this.enterpriseInfo.lon+","+this.enterpriseInfo.lat
@@ -193,7 +194,7 @@ export default{
                 'Content-Type': 'multipart/form-data'
               }
             }
-            this.$axios.post("/api/api/enterprise/editInfo",formData,config).then(res=>{
+            this.$axios.post(root+"enterprise/editInfo",formData,config).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息")
                     this.getEnterpriseInfo()

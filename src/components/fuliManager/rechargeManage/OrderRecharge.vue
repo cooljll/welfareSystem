@@ -80,6 +80,7 @@
 import authUnils from '../../../common/authUnils'
 import fileDownload from 'js-file-download'
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -129,7 +130,7 @@ export default{
         //导出excel
         exportExcel() {
             this.$axios({
-                url:"/api/api/recharge/dowloadExcel",
+                url:root+"recharge/dowloadExcel",
                 method:"get",
                 params:{
                     startTime:this.filters.startTime,
@@ -147,7 +148,7 @@ export default{
         },
         //充值订单
         getRechargeOrderList(){
-            this.$axios.post("/api/api/recharge/order",this.filters).then(res=>{
+            this.$axios.post(root+"recharge/order",this.filters).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -163,7 +164,7 @@ export default{
         //继续支付
         handleOrder(obj){
             if(obj.payType=="支付宝"){
-                this.$axios.get("/api/api/alipays/web",{
+                this.$axios.get(root+"alipays/web",{
                     params:{
                         orderNo:"continue",
                         payOrder:obj.orderId,
@@ -176,7 +177,7 @@ export default{
                     document.forms['pay_form'].submit()
                 })
             }else if(obj.payType=="微信"){
-                this.$axios.get("/api/api/wechatPay/nativeOrder",{
+                this.$axios.get(root+"wechatPay/nativeOrder",{
                     params:{
                         orderNo:"continue",
                         payOrder:obj.orderId,
@@ -196,7 +197,7 @@ export default{
                             clearInterval(timer)
                         } else {  
                             //后台轮询 查询订单状态  
-                            that.$axios.post("/api/api/recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
+                            that.$axios.post(root+"recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
                                 if(res.data.code==1000){
                                     let status=res.data.data.status
                                     if(status==1){//扫码成功

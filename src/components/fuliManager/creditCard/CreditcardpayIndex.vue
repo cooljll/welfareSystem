@@ -78,6 +78,7 @@
 import authUnils from '../../../common/authUnils'
 import fileDownload from 'js-file-download'
 import moment from 'moment'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -124,7 +125,7 @@ export default{
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
-            this.$axios.post("/api/api/creditCard/checkExcel",formData,config).then(res=>{
+            this.$axios.post(root+"creditCard/checkExcel",formData,config).then(res=>{
                 loading.close()
                 if(res.data.code==1000){
                     this.excelParams.excelId=res.data.data
@@ -139,7 +140,7 @@ export default{
         },
         //查看上传的excel信息
         getExcelInfo(){
-            this.$axios.post("/api/api/creditCard/excelInfo",this.excelParams).then(res=>{
+            this.$axios.post(root+"creditCard/excelInfo",this.excelParams).then(res=>{
                 if(res.data.code==1000){
                     this.excelTable=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -164,7 +165,7 @@ export default{
         },
         //提交还款
         submitOfRepay(){
-            this.$axios.post("/api/api/creditCard/isExcelMsg",this.excelParams).then(res=>{
+            this.$axios.post(root+"creditCard/isExcelMsg",this.excelParams).then(res=>{
                 if(res.data.code==1000){
                     this.$confirm("将支付"+res.data.data+"积分，确定提交该笔还款吗？","信息").then(()=>{
                         const payloading = this.$loading({
@@ -180,7 +181,7 @@ export default{
                                 'Content-Type': 'multipart/form-data'
                             }
                         }
-                        this.$axios.post("/api/api/creditCard/uploadExcel",formData,config).then(res=>{
+                        this.$axios.post(root+"creditCard/uploadExcel",formData,config).then(res=>{
                             payloading.close()
                             if(res.data.code==1000){
                                 this.$alert("提交还款成功!","信息提示")
@@ -196,7 +197,7 @@ export default{
         //下载excel模板
         downloadTemplate(){
             this.$axios({
-                url:"/api/api/creditCard/excel",
+                url:root+"creditCard/excel",
                 method:"get",
                 responseType:'arraybuffer'
             }).then(res=>{

@@ -2,11 +2,11 @@
     <div class="main">
         <div class="page-header">
             <div class="header-inner">
-                <img class="header-img" src="http://192.168.1.197:8082/assets/img/secondindexlogo.png">
+                <img class="header-img" src="../assets/img/secondindexlogo.png">
             </div>
 		</div>
         <div class="page-center">
-            <div class="inner-left"><img src="http://192.168.1.197:8082/assets/img/errorandnonotic.png"></div>
+            <div class="inner-left"><img src="../assets/img/errorandnonotic.png"></div>
             <div class="inner-right">
                 <div class="r-title">
                     <span class="r-bigtitle">用户登录</span>
@@ -34,6 +34,7 @@
 <script>
 import qs from "queryString"
 import authUnils from "../common/authUnils"
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -50,7 +51,7 @@ export default{
             }else if(this.userInfo.password==""){
                 this.$alert("密码不能为空","信息")
             }else{
-                this.$axios.post("/api/auth",this.userInfo).then(res=>{
+                this.$axios.post(root+"auth",this.userInfo).then(res=>{
                     if(res.data.code==1000){
                         authUnils.setToken(res.data.data.token,res.data.data.expiration)
                         localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
@@ -75,7 +76,7 @@ export default{
         padding-top:100px;
         text-align: center;
         box-sizing: border-box;
-        background: url(http://192.168.1.197:8082/assets/img/geometry2.png);
+        background: url(../assets/img/geometry2.png);
         .page-center{
             width: 1200px;
             height:360px;

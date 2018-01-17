@@ -152,6 +152,7 @@
 import authUnils from '../../../common/authUnils'
 import fileDownload from 'js-file-download'
 import moment from 'moment'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -221,7 +222,7 @@ export default{
         },
         //显示订单列表
         getPagedOrder(){
-            this.$axios.post("/api/api/integral/showOrder",this.filters).then(res=>{
+            this.$axios.post(root+"integral/showOrder",this.filters).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -247,7 +248,7 @@ export default{
         //导出excel
         exportCreditOrder(){
             this.$axios({
-                url:"/api/api/integral/exportExcelIntegarlOrder",
+                url:root+"integral/exportExcelIntegarlOrder",
                 method:"get",
                 params:this.filters,
                 responseType:"arraybuffer"
@@ -267,7 +268,7 @@ export default{
             this.isShowOrderDetail=true
             this.isShowExtendList=false
             this.creditDescParams.orderId=id
-            this.$axios.post("/api/api/integral/orderDetail",this.creditDescParams).then(res=>{
+            this.$axios.post(root+"integral/orderDetail",this.creditDescParams).then(res=>{
                 if(res.data.code==1000){
                     this.creditOrderDesc=res.data.data
                     this.postType=res.data.data.postType
@@ -318,7 +319,7 @@ export default{
         },
         //订单详情发放人员列表
         getOrderDetailEmpList(){
-            this.$axios.post("/api/api/integral/orderDetailEmp",this.extendEmpParams).then(res=>{
+            this.$axios.post(root+"integral/orderDetailEmp",this.extendEmpParams).then(res=>{
                 if(res.data.code==1000){
                     res.data.data.content.forEach(item=>{
                         item["welType"]=this.welType
@@ -346,7 +347,7 @@ export default{
         },
         //导出excel
         exportOrderDetail(){
-            this.$axios.get("/api/api/integral/exportExcelIntegarlOrderDes",{
+            this.$axios.get(root+"integral/exportExcelIntegarlOrderDes",{
                 params:{
                     orderId:this.orderId
                 },

@@ -11,7 +11,7 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../dist'),//编译输出的静态资源路径
     assetsSubDirectory: 'static',//编译输出的二级目录
     assetsPublicPath: '/',//编译发布的根目录，可配置为资源服务器域名
-    productionSourceMap: true,
+    productionSourceMap: true,//修改为false,将环境设置为生产环境
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
     // Before setting to `true`, make sure to:
@@ -33,7 +33,7 @@ module.exports = {
     //解决跨域问题
     proxyTable: {
       '/api': {
-          target: 'http://192.168.1.197:8083', //表示你跨域请求的接口的域名
+          target: 'http://192.168.1.197:8083/api', //表示你跨域请求的接口的域名
           changeOrigin: true, //如果接口跨域，需要进行这个参数配置
           pathRewrite:{
               '^/api':''

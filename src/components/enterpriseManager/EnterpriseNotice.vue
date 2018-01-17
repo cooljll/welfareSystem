@@ -115,6 +115,7 @@
 <script>
 import authUnils from '../../common/authUnils'
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -177,7 +178,7 @@ export default{
         },
         //公告列表
         getNoticeList(){
-            this.$axios.post("/api/api/announcement/info",this.filters).then(res=>{
+            this.$axios.post(root+"announcement/info",this.filters).then(res=>{
                 if(res.status==200){
                     if(res.data.code==1000){
                         this.noticeList=res.data.data.content
@@ -213,7 +214,7 @@ export default{
                 })
                 this.addNoticeParams.configId=this.tempStr.substr(1)
                 this.addNoticeParams.nums=this.totalNums.toString()
-                this.$axios.post("/api/api/announcement/do",this.addNoticeParams).then(res=>{
+                this.$axios.post(root+"announcement/do",this.addNoticeParams).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,"信息")
                         this.isShow_success=true
@@ -241,7 +242,7 @@ export default{
         seeNoticeDetail(id){
             this.isShow_List=false
             this.isShow_Detail=true
-            this.$axios.get("/api/api/announcement/desc?id="+id).then(res=>{
+            this.$axios.get(root+"announcement/desc?id="+id).then(res=>{
                 if(res.data.code==1000){
                     this.announceDetail=res.data.data
                 }
@@ -252,7 +253,7 @@ export default{
             this.isShow_Detail=false
         },
         showDepartmentList(){
-            this.$axios.post("/api/api/organize/showDep",qs.stringify({include:true})).then(res=>{
+            this.$axios.post(root+"organize/showDep",qs.stringify({include:true})).then(res=>{
                 if(res.data.code==1000){
                     this.tableData=res.data.data.filter(item=>{
                         if(item.memberCount!=0){

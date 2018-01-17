@@ -11,11 +11,12 @@
 </template>
 <script>
 import authUnils from '../../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     methods:{
         gotoShop(){
             // window.open("http://www.youmina.com/")
-            this.$axios.get("/api/api/purchase/welLogin").then(res=>{
+            this.$axios.get(root+"purchase/welLogin").then(res=>{
                 console.log(res.data)
             })
         }

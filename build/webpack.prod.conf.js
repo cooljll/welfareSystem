@@ -45,7 +45,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // duplicated CSS from different components can be deduped.
     new OptimizeCSSPlugin({
       cssProcessorOptions: {
-        safe: true
+        safe: true//解决不同模板下的components下的文件CSS可以使用的问题*********************************************
       }
     }),
     // generate dist index.html with correct asset hash for caching.
@@ -62,6 +62,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         // more options:
         // https://github.com/kangax/html-minifier#options-quick-reference
       },
+      chunks:['manifest','vendor','app'],
       // necessary to consistently work with multiple chunks via CommonsChunkPlugin
       chunksSortMode: 'dependency'
     }),

@@ -56,6 +56,7 @@
 </template>
 <script>
 import authUnils from '../../common/authUnils'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -72,7 +73,7 @@ export default{
     },
     methods:{
         requireSubmit(){
-            this.$axios.post("/api/api/help/welNeedApproval",this.requireParams).then(res=>{
+            this.$axios.post(root+"help/welNeedApproval",this.requireParams).then(res=>{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,'信息').then(()=>{
                         for(var k in this.requireParams){

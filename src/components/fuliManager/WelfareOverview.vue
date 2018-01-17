@@ -83,6 +83,7 @@
 <script>
 import authUnils from "../../common/authUnils"
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -116,7 +117,7 @@ export default{
         },
         //饼图
         drawPie(year,month){
-            this.$axios.post("/api/api/enterprise/getBaseData",qs.stringify({
+            this.$axios.post(root+"enterprise/getBaseData",qs.stringify({
                 year:year,
                 month:month
             })).then(res=>{
@@ -204,7 +205,7 @@ export default{
         },
         //积分消费充值记录
         getPointRecords(yearParams){
-            this.$axios.get("/api/api/enterprise/getLineChartData",{
+            this.$axios.get(root+"enterprise/getLineChartData",{
                 params:{"year":yearParams}
             }).then(res=>{
                 if(res.data.code==1000){
@@ -223,7 +224,7 @@ export default{
         },
         //显示最新公告信息
         showNewNotice(){
-            this.$axios.post("/api/api/announcement/newNotice",{}).then(res=>{
+            this.$axios.post(root+"announcement/newNotice",{}).then(res=>{
                 if(res.data.code==1000){
                     this.newNoticeContent=res.data.data.content
                 }
@@ -231,7 +232,7 @@ export default{
         },
         //企业余额
         getEnterpriseBalance(){
-            this.$axios.post("/api/api/enterprise/getPoint",{}).then(res=>{
+            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
                 if(res.data.code==1000){
                     this.scoreBalance=Math.floor(res.data.data)
                 }
@@ -239,7 +240,7 @@ export default{
         },
         //临近节日
         getHoliday(){
-            this.$axios.post("/api/api/service/holiday",{}).then(res=>{
+            this.$axios.post(root+"service/holiday",{}).then(res=>{
                 if(res.data.code==1000){
                     this.holiday=res.data.data
                 }

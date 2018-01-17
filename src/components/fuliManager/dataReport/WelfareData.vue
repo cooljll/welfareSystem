@@ -30,6 +30,7 @@
 <script>
 import authUnils from '../../../common/authUnils'
 import qs from 'queryString'
+var root = process.env.API_ROOT
 export default{
     data(){
         return{
@@ -132,7 +133,7 @@ export default{
         },
         //员工购买商品数据
         getEmpShoppingData(){
-            this.$axios.post("/api/api/enterprise/getEmpShoppingData",this.shopParams).then(res=>{
+            this.$axios.post(root+"enterprise/getEmpShoppingData",this.shopParams).then(res=>{
                 if(res.data.code==1000){
                     if(res.data.data.length==0){
                         this.shoppingData=[{name: "暂无数据", value: 0}]
@@ -152,7 +153,7 @@ export default{
         },
         //积分消费充值记录
         getPointRecords(yearParams){
-            this.$axios.get("/api/api/enterprise/getLineChartData",{
+            this.$axios.get(root+"enterprise/getLineChartData",{
                 params:{"year":yearParams}
             }).then(res=>{
                 if(res.data.code==1000){
