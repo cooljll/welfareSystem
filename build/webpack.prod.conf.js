@@ -94,6 +94,11 @@ const webpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, '../static'),
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
+      },
+      // favicon.ico不会自动打包到dist目录下
+      {
+        from:"./favicon.ico",
+        to: config.build.assetsRoot
       }
     ])
   ]

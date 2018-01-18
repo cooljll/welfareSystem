@@ -50,7 +50,7 @@
                                 </el-date-picker>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="info">搜索</el-button>
+                                <el-button type="info" @click="getSearchResult">搜索</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -123,7 +123,6 @@ export default{
                 color:"#000"
             },
             tableData:[],
-            // 此处出现的问题是：当名字使用extendNotice和noticeList时就会不起作用斌给会报错
             isShowExtendNotice:true,
             isShowNoticeList:false,
             isShow_List:true,
@@ -165,25 +164,37 @@ export default{
             }else if(tab.name=="second"){
                 this.isShowExtendNotice=false
                 this.isShowNoticeList=true
+                this.isShow_List=true
+                this.isShow_Detail=false
                 this.getNoticeList()
             }
         },
-        //处理时间改变
+        //格式化时间
+        formatDate(time){
+            var d=new Date(time)
+            return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+        },
         handleDate(){
             if(this.value==null){
+                this.filters.startTime=''
+                this.filters.endTime=''
                 return 
             }
             this.filters.startTime=this.formatDate(this.value[0])
             this.filters.endTime=this.formatDate(this.value[1])
         },
+        //搜索
+        getSearchResult(){
+            this.getNoticeList()
+        },
         //公告列表
         getNoticeList(){
             this.$axios.post(root+"announcement/info",this.filters).then(res=>{
-                if(res.status==200){
-                    if(res.data.code==1000){
-                        this.noticeList=res.data.data.content
-                        this.totalSize=res.data.data.totalSize
-                    }
+                if(res.data.code==1000){
+                    this.noticeList=res.data.data.content
+                    this.totalSize=res.data.data.totalSize
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
                 }
             })
         },

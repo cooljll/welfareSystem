@@ -1408,7 +1408,13 @@ export default{
             if(to.params.depId==undefined&&to.params.id==3){
                 this.showExmineLists()
             }
-            this.showEmployee(Number(to.params.depId))
+            if(to.params.timeStamp!=from.params.timeStamp){
+                //解决局部刷新的问题
+                this.isShowEmpList=true
+                this.isShowEmpDetail=false
+                this.filters.accountStatus=''
+                this.showEmployee(Number(to.params.depId))
+            }
         },
         getFlag(val,oldVal){
             if(val){

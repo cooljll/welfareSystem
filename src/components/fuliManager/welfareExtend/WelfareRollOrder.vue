@@ -33,7 +33,7 @@
             <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderId" label="订单编号" align="center" min-width="84">
+                <el-table-column prop="orderId" label="订单编号" align="center" min-width="86">
                 </el-table-column>
                 <el-table-column prop="productName" label="福利卷名称" align="center" min-width="191">
                 </el-table-column>
@@ -277,7 +277,11 @@ export default{
         },
         //导出福利卷订单详情
         exportToExcel(){
-            this.$axios.get(root+"voucher/exportExcelVoucherOrderDes").then(res=>{
+            this.$axios.get(root+"voucher/exportExcelVoucherOrderDes",{
+                params:{
+                    orderId:this.orderId
+                }
+            }).then(res=>{
                 if(res){
                     fileDownload(res.data,"福利卷订单详情.xls")
                 }

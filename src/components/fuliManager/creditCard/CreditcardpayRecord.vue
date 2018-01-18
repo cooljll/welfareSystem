@@ -51,7 +51,7 @@
                         <el-input v-model="sendRecordParams.cardName"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="info" @click="getSearchResult">搜索</el-button>
+                        <el-button type="info" @click="getSearchResult1">搜索</el-button>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="info" @click="goBack">返回</el-button>
@@ -123,7 +123,8 @@ export default{
                 startTime: ""
             },
             detailPage:1,
-            detailTotalSize:0
+            detailTotalSize:0,
+            orderId:0
         }
     },
     methods:{
@@ -158,23 +159,9 @@ export default{
             this.filters.pageNum=val
             this.getcreditCardList()
         },
+        //搜索
         getSearchResult(){
             this.getcreditCardList()
-        },
-        //查看详情
-        seeDetail(id){
-            this.isShowList=false
-            this.isShowDetail=true
-            this.sendRecordParams.orderId=id
-            this.$axios.post(root+"creditCard/queues",this.sendRecordParams).then(res=>{
-                if(res.data.code==1000){
-                    //已提交 已受理 还款成功 还款失败
-                    //refundState 退款状态 0无 1退款成功 1退款失败
-                    //tradeType 交易类型 1企业 2个人
-                    this.sendRecordtable=res.data.data.content
-                    this.detailTotalSize=res.data.data.totalSize
-                }
-            })
         },
         detailSizeChange(val){
             this.sendRecordParams.pageSize=val
@@ -185,6 +172,29 @@ export default{
         goBack(){
             this.isShowList=true
             this.isShowDetail=false
+        },
+        //查看详情
+        seeDetail(id){
+            this.orderId=id
+            this.isShowList=false
+            this.isShowDetail=true
+            this.getcreditMsg()
+        },
+        getcreditMsg(){
+            this.sendRecordParams.orderId=this.orderId
+            this.$axios.post(root+"creditCard/queues",this.sendRecordParams).then(res=>{
+                if(res.data.code==1000){
+                    //已提交 已受理 还款成功 还款失败
+                    //refundState 退款状态 0无 1退款成功 1退款失败
+                    //tradeType 交易类型 1企业 2个人
+                    this.sendRecordtable=res.data.data.content
+                    this.detailTotalSize=res.data.data.totalSize
+                }
+            }) 
+        },
+        //搜索
+        getSearchResult1(){
+            this.getcreditMsg()
         }
     },
     mounted(){

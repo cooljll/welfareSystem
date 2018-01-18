@@ -335,7 +335,7 @@ export default {
 			}
 		},
 		handleCurrentChange(val){
-            this.$router.push({path:"/Enterprise/"+val.displayName+"/"+val.level+"/"+val.organizationUnitId})
+            this.$router.push({path:"/Enterprise/"+val.displayName+"/"+val.level+"/"+val.organizationUnitId+"/"+new Date().getTime()})
 		},
 		//获取离职列表
         getTurnoverList(){

@@ -110,7 +110,7 @@ export default{
             this.$router.push("/CreditExtend")
         },
         enterpriseNotice(){
-            this.$router.push("/EnterpriseNotice/2")
+            this.$router.push("/EnterpriseNotice/2/"+new Date().getTime())
         },
         modifyEnterprise(){
             this.$router.push("/EnterpriseInfo")

@@ -32,17 +32,17 @@
             <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
-                <el-table-column prop="orderNo" label="订单编号" align="center" min-width="185">
+                <el-table-column prop="orderId" label="订单编号" align="center" min-width="185">
                 </el-table-column>
-                <el-table-column prop="payType" label="付款方式" align="center">
+                <el-table-column prop="orderType" label="付款方式" align="center">
                 </el-table-column>
-                <el-table-column prop="creationTime" label="创建时间" align="center" min-width="160">
+                <el-table-column prop="createTime" label="创建时间" align="center" min-width="160">
                 </el-table-column>
-                <el-table-column prop="score" label="充值积分" align="center">
+                <el-table-column prop="recharge_point" label="充值积分" align="center">
                 </el-table-column>
-                <el-table-column prop="accountPayable" label="支付金额" align="center">
+                <el-table-column prop="amount_pay" label="支付金额" align="center">
                 </el-table-column>
-                <el-table-column prop="status" label="订单状态" align="center">
+                <el-table-column prop="orderState" label="订单状态" align="center">
                 </el-table-column>
                 <el-table-column prop="taxType" label="发票类型" align="center">
                 </el-table-column>
@@ -51,9 +51,9 @@
                 <el-table-column label="操作" align="center" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" 
-                        v-show='(scope.row.status=="已付款"||(scope.row.status=="待付款"&&scope.row.payType=="银行电汇")||(scope.row.status==null))?true:false'
+                        v-show='(scope.row.orderState=="已付款"||(scope.row.orderState=="待付款"&&scope.row.orderType=="银行电汇")||(scope.row.orderState==null))?true:false'
                         @click="$router.push('/CreditRecharge')">再次充值</el-button>
-                        <el-button type="text" v-show='((scope.row.status=="待付款"&&scope.row.payType=="微信")||(scope.row.status=="待付款"&&scope.row.payType=="支付宝"))?true:false'
+                        <el-button type="text" v-show='((scope.row.orderState=="待付款"&&scope.row.orderType=="微信")||(scope.row.orderState=="待付款"&&scope.row.orderType=="支付宝"))?true:false'
                         @click="handleOrder(scope.row)">继续支付</el-button>
                     </template>
                 </el-table-column>
@@ -163,12 +163,12 @@ export default{
         },
         //继续支付
         handleOrder(obj){
-            if(obj.payType=="支付宝"){
+            if(obj.orderType=="支付宝"){
                 this.$axios.get(root+"alipays/web",{
                     params:{
                         orderNo:"continue",
-                        payOrder:obj.orderId,
-                        point:obj.score
+                        payOrder:obj.orderNo,
+                        point:obj.recharge_point
                     }
                 }).then(res=>{
                     const div = document.createElement('div')
@@ -176,12 +176,12 @@ export default{
                     document.body.appendChild(div)
                     document.forms['pay_form'].submit()
                 })
-            }else if(obj.payType=="微信"){
+            }else if(obj.orderType=="微信"){
                 this.$axios.get(root+"wechatPay/nativeOrder",{
                     params:{
                         orderNo:"continue",
-                        payOrder:obj.orderId,
-                        point:obj.score
+                        payOrder:obj.orderNo,
+                        point:obj.recharge_point
                     },
                     responseType:'blob'
                 }).then(res=>{
@@ -199,7 +199,7 @@ export default{
                             //后台轮询 查询订单状态  
                             that.$axios.post(root+"recharge/orderStatus",qs.stringify({orderNo:obj.orderId})).then(res=>{
                                 if(res.data.code==1000){
-                                    let status=res.data.data.status
+                                    let status=res.data.data.orderState
                                     if(status==1){//扫码成功
                                         clearInterval(timer) 
                                         this.getRechargeOrderList()

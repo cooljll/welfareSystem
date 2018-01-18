@@ -250,7 +250,7 @@ export default{
             this.$axios({
                 url:root+"integral/exportExcelIntegarlOrder",
                 method:"get",
-                params:this.filters,
+                // params:this.filters,
                 responseType:"arraybuffer"
             }).then(res=>{
                 if(res){

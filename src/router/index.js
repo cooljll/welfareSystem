@@ -56,107 +56,108 @@ export default new Router({
     {
       path: '/Empty',
       name: 'Empty',
-      component: Empty
-    },
-    {
-      path: '/EmpIndex',
-      name: '',
-      component: EmpIndex,
-      leaf: true,//只有一个节点       
+      component: Empty,
       children: [
-          { path: '/EnterpriseOverview', component: EnterpriseOverview, name: '' },
-          { path: '/Enterprise/:currentVal?/:level?/:depId?', component: Enterprise, name: '' }
+        { 
+          path: '/EmpIndex', 
+          component: EmpIndex, 
+          name: '',
+          leaf: true,//只有一个节点       
+          children: [
+              { path: '/EnterpriseOverview', component: EnterpriseOverview, name: '' },
+              { path: '/Enterprise/:currentVal?/:level?/:depId?/:timeStamp?', component: Enterprise, name: '' }
+          ]
+        },
+        { 
+          path: '/WelfareIndex',
+          component: WelfareIndex, 
+          name: '',
+          leaf: true,//只有一个节点        
+          children: [
+              { path: '/WelfareOverview', component: WelfareOverview, name: '福利总览' },
+              { path: '/CreditRecharge/:count?', component: CreditRecharge, name: '积分充值' },
+              { path: '/OrderRecharge', component: OrderRecharge, name: '订单充值' },
+              { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },
+              { path: '/CreditExtend_Excel', component: CreditExtend_Excel, name: 'Excel积分发放' },
+              { path: '/CreditExtend_Order', component: CreditExtend_Order, name: '积分发放订单' },
+              { path: '/WelfareRollExtend', component: WelfareRollExtend, name: '福利卷发放' },
+              { path: '/WelfareRollOrder', component: WelfareRollOrder, name: '福利卷订单' },
+              { path: '/WelfarePick', component: WelfarePick, name: '福利挑选' },
+              { path: '/PurchaseOrder', component: PurchaseOrder, name: '采购订单' },
+              { path: '/WelfareData', component: WelfareData, name: '福利数据' },
+              { path: '/WelfareReport', component: WelfareReport, name: '福利报告' },
+              { path: '/CreditcardpayIndex', component: CreditcardpayIndex, name: '信用卡还款首页' },
+              { path: '/CreditcardpayRecord', component: CreditcardpayRecord, name: '信用卡还款记录' }
+          ]
+        },
+        {
+          path: '/ConsultIndex',
+          component: ConsultIndex,
+          name: ''
+        },
+        {
+          path: '/Consult_Detail/:id?',
+          component: Consult_Detail,
+          name: ''
+        },
+        {
+          path: '/Consult_List/:ret?',
+          component: Consult_List,
+          name: ''
+        },
+        //企业信息
+        {
+          path: '/EnterpriseInfo/:timeStamp?',
+          component: EnterpriseInfo,
+          name: ''
+        },
+        {
+          path: '/EnterpriseNotice',
+          component: EnterpriseNotice,
+          name: '',
+          leaf: true,//只有一个节点        
+          children: [
+              { path: '/EnterpriseNotice/:flag?/:timeStamp?', component: EnterpriseNotice, name: '' }
+          ]
+        },
+        {
+          path: '/SystemInform',
+          component: SystemInform,
+          name: ''
+        },
+        {
+          path: '/AuthManager/:timeStamp?',
+          component: AuthManager,
+          name: ''
+        },
+        {
+          path: '/Log/:timeStamp?',
+          component: Log,
+          name: ''
+        },
+        //商城帮助中心
+        {
+          path: '/HelpCenter',
+          component: HelpCenter,
+          name: ''
+        },
+        {
+          path: '/FeedBack',
+          component: FeedBack,
+          name: ''
+        },
+        {
+          path: '/Requirement',
+          component: Requirement,
+          name: ''
+        },
+        //专属客服
+        {
+          path: '/SpecialTeam',
+          component: SpecialTeam,
+          name: ''
+        },
       ]
-    },
-    {
-      path: '/WelfareIndex',
-      component: WelfareIndex,
-      name: '',
-      leaf: true,//只有一个节点        
-      children: [
-          { path: '/WelfareOverview', component: WelfareOverview, name: '福利总览' },
-          { path: '/CreditRecharge/:count?', component: CreditRecharge, name: '积分充值' },
-          { path: '/OrderRecharge', component: OrderRecharge, name: '订单充值' },
-          { path: '/CreditExtend', component: CreditExtend, name: '积分发放' },
-          { path: '/CreditExtend_Excel', component: CreditExtend_Excel, name: 'Excel积分发放' },
-          { path: '/CreditExtend_Order', component: CreditExtend_Order, name: '积分发放订单' },
-          { path: '/WelfareRollExtend', component: WelfareRollExtend, name: '福利卷发放' },
-          { path: '/WelfareRollOrder', component: WelfareRollOrder, name: '福利卷订单' },
-          { path: '/WelfarePick', component: WelfarePick, name: '福利挑选' },
-          { path: '/PurchaseOrder', component: PurchaseOrder, name: '采购订单' },
-          { path: '/WelfareData', component: WelfareData, name: '福利数据' },
-          { path: '/WelfareReport', component: WelfareReport, name: '福利报告' },
-          { path: '/CreditcardpayIndex', component: CreditcardpayIndex, name: '信用卡还款首页' },
-          { path: '/CreditcardpayRecord', component: CreditcardpayRecord, name: '信用卡还款记录' }
-      ]
-    },
-    //福利资讯
-    {
-      path: '/ConsultIndex',
-      component: ConsultIndex,
-      name: ''
-    },
-    {
-      path: '/Consult_Detail/:id?',
-      component: Consult_Detail,
-      name: ''
-    },
-    {
-      path: '/Consult_List/:ret?',
-      component: Consult_List,
-      name: ''
-    },
-    //企业信息
-    {
-      path: '/EnterpriseInfo',
-      component: EnterpriseInfo,
-      name: ''
-    },
-    {
-      path: '/EnterpriseNotice',
-      component: EnterpriseNotice,
-      name: '',
-      leaf: true,//只有一个节点        
-      children: [
-          { path: '/EnterpriseNotice/:flag?', component: EnterpriseNotice, name: '' }
-      ]
-    },
-    {
-      path: '/SystemInform',
-      component: SystemInform,
-      name: ''
-    },
-    {
-      path: '/AuthManager',
-      component: AuthManager,
-      name: ''
-    },
-    {
-      path: '/Log',
-      component: Log,
-      name: ''
-    },
-    //商城帮助中心
-    {
-      path: '/HelpCenter',
-      component: HelpCenter,
-      name: ''
-    },
-    {
-      path: '/FeedBack',
-      component: FeedBack,
-      name: ''
-    },
-    {
-      path: '/Requirement',
-      component: Requirement,
-      name: ''
-    },
-    //专属客服
-    {
-      path: '/SpecialTeam',
-      component: SpecialTeam,
-      name: ''
-    },
+    }
   ]
 })

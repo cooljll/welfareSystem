@@ -8,11 +8,11 @@
         </div>
         <div class="servicelist">
             <div class="service">
-                <img src="http://192.168.1.197:8082/assets/img/zskf.png">
+                <img src="../../assets/img/zskf.png">
                 <div>专属服务</div>
             </div>
             <div class="service unactive">
-                <img src="http://192.168.1.197:8082/assets/img/jqqd.png">
+                <img src="../../assets/img/jqqd.png">
                 <div>尽请期待</div>
             </div>
         </div>
@@ -21,7 +21,7 @@
             <span class="iner"></span>
             <div class="serviceinnerbox">
                 <div class="topbox">
-                    <img src="http://192.168.1.197:8082/assets/img/touxiang.png">
+                    <img src="../../assets/img/touxiang.png">
                     <div class="introducename">HI，我是 吴磊</div>
                     <div class="introducetitle">你的专属管家</div>
                     <div class="introducecontent">善解人意的贴心小棉袄，账户安全护航者</div>
@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="callcenter kefuline">
-            <img src="http://192.168.1.197:8082/assets/img/zxkf.png">
+            <img src="../../assets/img/zxkf.png">
             <div>在线客服</div>
         </div>
     </div>

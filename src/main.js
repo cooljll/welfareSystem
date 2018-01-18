@@ -13,6 +13,8 @@ import echarts from 'echarts/dist/echarts.min'
 Vue.prototype.$echarts=echarts      
 import axios from 'axios' 
 axios.defaults.withCredentials=true //允许跨域携带cookie信息
+// axios.defaults.headers.common['Authorization'] = authUtil.getToken()//设置请求头
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 Vue.prototype.$axios=axios                    
 Vue.config.productionTip = false
 Vue.use(ElementUI)
