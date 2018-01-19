@@ -4,7 +4,8 @@ import Vuex from 'vuex'
 import authUnils from "../common/authUnils"
 Vue.use(Vuex)
 const state={
-  flag:false
+  flag:false,
+  refreshSign:null
 }
 const getters={
   getFlag:state=>{
@@ -17,6 +18,10 @@ const mutations={
   },
   notReLoad(state){
     state.flag=false
+  },
+  // 提交载荷 解决搜索刷新问题
+  searchReload(state,payload){
+    state.refreshSign=payload
   }
 }
 const actions={

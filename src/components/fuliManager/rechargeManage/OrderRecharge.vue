@@ -29,7 +29,7 @@
                     </el-form-item>
                 </el-form>
             </el-col>
-            <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
+            <el-table :data="tableData" v-loading="loading" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
                 <el-table-column prop="orderId" label="订单编号" align="center" min-width="185">
@@ -87,6 +87,7 @@ export default{
             headerStyle:{
                 color:"#000"
             },
+            loading:false,
             tableData:[],
             value:[],
             filters:{
@@ -148,7 +149,20 @@ export default{
         },
         //充值订单
         getRechargeOrderList(){
+            // if(this.$store.state.refreshSign){
+            //     this.filters=this.$store.state.refreshSign
+            //     this.value=[]
+            //     this.value.push(this.$store.state.refreshSign.startTime)
+            //     this.value.push(this.$store.state.refreshSign.lastTime)
+            // }else{
+            //     this.filters=this.filters
+            // }
+            this.loading=true
             this.$axios.post(root+"recharge/order",this.filters).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.loading=false
+                }, 50)
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -158,7 +172,11 @@ export default{
         changeOrderStatus(){
             this.getRechargeOrderList()
         },
+        //搜索
         getSearchResult(){
+            // this.$router.push("WelfareIndex")
+            // this.$router.go(-1)
+            // this.$store.commit('searchReload',this.filters)
             this.getRechargeOrderList()
         },
         //继续支付

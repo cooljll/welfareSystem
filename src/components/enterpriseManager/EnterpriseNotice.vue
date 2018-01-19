@@ -12,7 +12,7 @@
                 </el-tabs>
             </div>
             <div class="right extendNotice" v-show="isShowExtendNotice">
-                <div v-show="isShow_extend">
+                <div v-show="isShow_extend" v-loading="depLoading">
                     <el-form label-position="right" label-width="100px">
                         <el-form-item label="公告标题">
                             <el-input v-model="addNoticeParams.title"></el-input>
@@ -54,7 +54,7 @@
                             </el-form-item>
                         </el-form>
                     </div>
-                    <el-table :data="noticeList" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
+                    <el-table :data="noticeList" v-loading="loading" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                         <el-table-column type="selection" align="center">
                         </el-table-column>
                         <el-table-column prop="id" label="公告编号" sortable align="center" min-width="101">
@@ -122,6 +122,7 @@ export default{
             headerStyle:{
                 color:"#000"
             },
+            depLoading:false,
             tableData:[],
             isShowExtendNotice:true,
             isShowNoticeList:false,
@@ -139,6 +140,7 @@ export default{
             },
             currentPage:1,
             totalSize:0,
+            loading:false,
             noticeList:[],
             //发布公告参数
             addNoticeParams:{
@@ -189,7 +191,12 @@ export default{
         },
         //公告列表
         getNoticeList(){
+            this.loading=true
             this.$axios.post(root+"announcement/info",this.filters).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.loading=false
+                }, 100)
                 if(res.data.code==1000){
                     this.noticeList=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -264,7 +271,12 @@ export default{
             this.isShow_Detail=false
         },
         showDepartmentList(){
+            this.depLoading=true
             this.$axios.post(root+"organize/showDep",qs.stringify({include:true})).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.depLoading=false
+                }, 100)
                 if(res.data.code==1000){
                     this.tableData=res.data.data.filter(item=>{
                         if(item.memberCount!=0){
@@ -290,7 +302,15 @@ export default{
             this.isShowExtendNotice=false
             this.getNoticeList()
         }
-    }
+    },
+    watch:{
+		'$route'(to, from) {
+			if(to.params.timeStamp!=from.params.timeStamp){
+                this.$router.push('/Empty')
+                this.$router.go(-1)
+            }
+		}
+	}
 }
 </script>
 <style lang="scss" scoped>

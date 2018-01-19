@@ -72,7 +72,7 @@ export default{
 </script>
 <style lang="scss" scoped>
     .main{
-        height: 924px;
+        height: 100%;
         padding-top:100px;
         text-align: center;
         box-sizing: border-box;

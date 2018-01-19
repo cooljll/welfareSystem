@@ -121,7 +121,7 @@ export default new Router({
           ]
         },
         {
-          path: '/SystemInform',
+          path: '/SystemInform/:timeStamp?',
           component: SystemInform,
           name: ''
         },
@@ -137,17 +137,17 @@ export default new Router({
         },
         //商城帮助中心
         {
-          path: '/HelpCenter',
+          path: '/HelpCenter/:timeStamp?',
           component: HelpCenter,
           name: ''
         },
         {
-          path: '/FeedBack',
+          path: '/FeedBack/:timeStamp?',
           component: FeedBack,
           name: ''
         },
         {
-          path: '/Requirement',
+          path: '/Requirement/:timeStamp?',
           component: Requirement,
           name: ''
         },

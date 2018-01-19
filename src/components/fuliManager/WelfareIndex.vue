@@ -103,9 +103,10 @@ export default{
         top: 50px;
         left: 0px;
         z-index: 1000;
+        height: 100%;
         .el-menu{
             width: 220px;
-            height: 922px;
+            height: 100%;
         }
         .iconfont{
             width:14px;

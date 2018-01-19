@@ -17,7 +17,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" border stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
+            <el-table :data="tableData" v-loading="loading" border stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
                 <el-table-column prop="orderNo" label="订单号" align="center" min-width="165">
@@ -58,7 +58,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="sendRecordtable" border stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
+            <el-table :data="sendRecordtable" v-loading="recordLoading" border stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column label="序号" type="index" align="center" width="80">
                 </el-table-column>
                 <el-table-column prop="cardNo" label="信用卡号" align="center" min-width="165">
@@ -75,10 +75,10 @@
                 </el-table-column>
                 <el-table-column prop="createTime" label="创建时间" align="center" min-width="150">
                 </el-table-column>
-                <el-table-column prop="orderState" label="还款状态" align="center">
-                    <!-- <template slot-scope="scope">
-                        <span></span>
-                    </template> -->
+                <el-table-column label="还款状态" align="center" min-width="135">
+                    <template slot-scope="scope">
+                        <span :class="scope.row.orderState=='已受理'?'accepted':'failed'">{{ scope.row.orderState }}</span>
+                    </template>
                 </el-table-column>
             </el-table>
             <div class="toolbar">
@@ -100,6 +100,7 @@ export default{
             },
             isShowList:true,
             isShowDetail:false,
+            loading:false,
             tableData:[],
             value:"",
             filters:{
@@ -112,6 +113,7 @@ export default{
             currentPage:1,
             totalSize:0,
             //详情
+            recordLoading:false,
             sendRecordtable:[],
             sendRecordParams:{
                 cardName: "",
@@ -144,7 +146,12 @@ export default{
         },
         //信用卡还款记录
         getcreditCardList(){
+            this.loading=true
             this.$axios.post(root+"creditCard/queueOrders",this.filters).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.loading=false
+                }, 50)
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize
@@ -169,9 +176,10 @@ export default{
         detailCurrentChange(val){
             this.sendRecordParams.pageNum=val
         },
+        //返回
         goBack(){
-            this.isShowList=true
-            this.isShowDetail=false
+            this.$router.push("/WelfareIndex")
+            this.$router.go(-1)
         },
         //查看详情
         seeDetail(id){
@@ -181,12 +189,26 @@ export default{
             this.getcreditMsg()
         },
         getcreditMsg(){
+            this.recordLoading=true
             this.sendRecordParams.orderId=this.orderId
             this.$axios.post(root+"creditCard/queues",this.sendRecordParams).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.recordLoading=false
+                }, 50)
                 if(res.data.code==1000){
                     //已提交 已受理 还款成功 还款失败
-                    //refundState 退款状态 0无 1退款成功 1退款失败
+                    //refundState 退款状态 0无 1退款成功 2退款失败
                     //tradeType 交易类型 1企业 2个人
+                    res.data.data.content.forEach(item=>{
+                        if(item.refundState==1){
+                            item.orderState=item.orderState+",已退款"
+                        }else if(item.refundState==2){
+                            item.orderState=item.orderState+",未退款"
+                        }else{
+                            item.orderState=item.orderState
+                        }
+                    })
                     this.sendRecordtable=res.data.data.content
                     this.detailTotalSize=res.data.data.totalSize
                 }
@@ -195,6 +217,13 @@ export default{
         //搜索
         getSearchResult1(){
             this.getcreditMsg()
+        },
+        setStyle(state){
+            if(state=="已受理"){
+                return 'accepted'
+            }else if(state=="还款失败"){
+                return 'failed'
+            }
         }
     },
     mounted(){
@@ -203,5 +232,34 @@ export default{
 }
 </script>
 <style lang="scss" scoped>
-
+    //已提交
+    .submitted{
+        background: #90EE90;
+        color:#fff;
+        padding: 1px 4px 1px 4px;
+    }
+    //已受理
+    .accepted{
+        background:#1E90FF;
+        color:#fff;
+        padding: 1px 4px 1px 4px;
+    }
+    //还款成功
+    .success{
+        background: #3cc051;
+        color:#fff;
+        padding: 1px 4px 1px 4px;
+    }
+    //还款失败
+    .failed{
+        background:#40E0D0;
+        color:#fff;
+        padding: 1px 4px 1px 4px;
+    }
+    //还款失败，已退款
+    .refunded{
+        background: #40E0D0;
+        color:#fff;
+        padding: 1px 4px 1px 4px;
+    }
 </style>

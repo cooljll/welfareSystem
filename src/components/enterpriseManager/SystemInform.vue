@@ -63,7 +63,15 @@ export default{
     },
     mounted(){
         this.getNoticeList()
-    }
+    },
+    watch:{
+		'$route'(to, from) {
+			if(to.params.timeStamp!=from.params.timeStamp){
+                this.$router.push('/Empty')
+                this.$router.go(-1)
+            }
+		}
+	}
 }
 </script>
 <style lang="scss" scoped>

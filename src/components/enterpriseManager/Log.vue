@@ -20,7 +20,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" resizable highlight-current-row style="width: 100%;" stripe :header-row-style="headerStyle">
+            <el-table :data="tableData" v-loading="loading" resizable highlight-current-row style="width: 100%;" stripe :header-row-style="headerStyle">
                 <el-table-column prop="accountName" label="账号名称" align="center" width="150">
                 </el-table-column>
                 <el-table-column prop="userName" label="登录名" align="center" width="150">
@@ -57,6 +57,7 @@ export default{
             value:[],//发布时间
             currentPage:1,
             totalSize:0,
+            loading:false,
             tableData:[]
         }
     },
@@ -85,7 +86,12 @@ export default{
         },
         //获取日志列表
         showPageLog(){
+            this.loading=true
             this.$axios.post(root+"oprateLog/show",this.filters).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.loading=false
+                }, 100)
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize

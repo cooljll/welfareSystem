@@ -5,6 +5,7 @@
             <div class="welfare-wrapper">
                 <img src="../../../assets/img/youmina.png" style="width: 100%;height: auto">
                 <a href="javascript:;" @click="gotoShop">前往商城</a>
+                <!-- <a href="../../assets/index.html">前往商城</a> -->
             </div>
         </div>
     </div>

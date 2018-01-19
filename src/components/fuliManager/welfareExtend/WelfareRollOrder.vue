@@ -30,7 +30,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
+            <el-table :data="tableData" v-loading="loading" stripe resizable highlight-current-row style="width: 100%;" :header-row-style="headerStyle">
                 <el-table-column type="selection" align="center">
                 </el-table-column>
                 <el-table-column prop="orderId" label="订单编号" align="center" min-width="86">
@@ -143,6 +143,7 @@ export default{
             },
             isShowOrder:true,
             isShowExtendList:false,
+            loading:false,
             tableData:[],
             value:"",
             filters:{
@@ -210,7 +211,12 @@ export default{
         },
         //显示订单列表
         getPagedOrder(){
+            this.loading=true
             this.$axios.post(root+"voucher/showOrder",this.filters).then(res=>{
+                var that=this
+                setTimeout(function() {
+                    that.loading=false
+                }, 50);
                 if(res.data.code==1000){
                     this.tableData=res.data.data.content
                     this.totalSize=res.data.data.totalSize

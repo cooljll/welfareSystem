@@ -35,7 +35,7 @@
 						<img src="../assets/img/Customer.png" />
 					</span>
 					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>在线客服</el-dropdown-item>
+						<el-dropdown-item @click.native="inlineKefu">在线客服</el-dropdown-item>
 						<router-link to="/SpecialTeam">
 							<el-dropdown-item>专属客服</el-dropdown-item>
 						</router-link>
@@ -47,13 +47,13 @@
 						<img src="../assets/img/help.png" />
 					</span>
 					<el-dropdown-menu slot="dropdown">
-						<router-link to="/HelpCenter">
+						<router-link :to='{path:"/HelpCenter/"+new Date().getTime()}'>
 							<el-dropdown-item>商城帮助</el-dropdown-item>
 						</router-link>
-						<router-link to="/FeedBack">
+						<router-link :to='{path:"/FeedBack/"+new Date().getTime()}'>
 							<el-dropdown-item>意见反馈</el-dropdown-item>
 						</router-link>
-						<router-link to="/Requirement">
+						<router-link :to='{path:"/Requirement/"+new Date().getTime()}'>
 							<el-dropdown-item>需求申请</el-dropdown-item>
 						</router-link>
 					</el-dropdown-menu>
@@ -67,7 +67,7 @@
 						<router-link :to="{path:'/EnterpriseNotice/1/'+new Date().getTime()}">
 							<el-dropdown-item>发布公告</el-dropdown-item>
 						</router-link>
-						<router-link to="/SystemInform">
+						<router-link :to="{path:'/SystemInform/'+new Date().getTime()}">
 							<el-dropdown-item>系统通知</el-dropdown-item>
 						</router-link>
 					</el-dropdown-menu>
@@ -92,6 +92,14 @@
 				</el-dropdown>
 			</el-col>
 		</el-row>
+		<div id="zhichiIframeBox" style="width: 320px; height: 480px; position: fixed; bottom: -500px;
+			border-radius: 5px 5px 0px 0px; overflow: hidden; z-index: 2147483583; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 2px; 
+			right: 30px; transition: all 0.3s ease-in-out 0.1s;">
+			<iframe id="zhichiIframe" 
+				src="http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345" 
+				name="zhichiIframe" frameborder="no" scrolling="no" style="width: 100%; height: 100%; border: 0;">
+			</iframe>
+		</div>
         <router-view></router-view>
     </div>
 </template>
@@ -137,13 +145,25 @@ export default {
 		refresh(){
 			this.$router.push("/Empty")
 			this.$router.go(-1)
+		},
+		//在线客服
+		inlineKefu(){
+			document.getElementById("zhichiIframeBox").style.bottom="0px"
+			setTimeout(function() {
+				document.getElementById("zhichiIframeBox").style.bottom="-500px"
+			}, 5000)
+		},
+		endOver(){
+			document.querySelector(".surEndBtn").addEventListener('click',function(){
+				document.getElementById("zhichiIframeBox").style.bottom="-500px"
+			})
 		}
 	},
 	created(){
 		this.loginName=localStorage.getItem("loginName")
 	},
 	mounted(){
-        this.getEnterpriseInfo()
+		this.getEnterpriseInfo()
 	},
 	computed: {
 		getFlag() {
