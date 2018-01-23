@@ -34,12 +34,12 @@
 		<!-- 生成二维码弹窗 -->
 		<el-dialog title="入职二维码" :visible.sync="qrcodeVisible" :close-on-click-modal="false" style="top:10%" ref="qrcode" class="erweima">
             <div class="qrcode">
-				<img :src="imgUrl" alt="">
+				<img :src="qrcodeImg" alt="">
 			</div>
 			<div class="txt">请扫描二维码办理入职</div>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="danger">下载</el-button>
-                <el-button type="primary">打印</el-button>
+                <el-button type="danger" @click="QRdownload">下载</el-button>
+                <el-button type="primary" @click="QRprint">打印</el-button>
             </div>
         </el-dialog>
     </div>
@@ -55,7 +55,7 @@ export default {
 			totalEmployee:0,
 			genderScope:{},
 			ageScope:{},
-			imgUrl:""
+			qrcodeImg:""
 		}
 	},
 	methods:{
@@ -233,13 +233,24 @@ export default {
 			})
 			this.$axios.post(root+"service/qrcode",{}).then(res=>{
 				loading.close()
-				if(res.data.data==1000){
-
+				if(res.data.code==1000){
+					this.qrcodeImg=res.data.data
+					this.qrcodeVisible=true
 				}else if(res.data.code==1001){
 					this.$alert(res.data.message,"信息")
+					this.qrcodeVisible=false
 				}
-				this.qrcodeVisible=true
 			})
+		},
+		//下载
+		QRdownload(){
+			var a=$('<a></a>').attr('href',this.qrcodeImg).attr('target','_blank').attr("download",'img.png').appendTo('body')
+			a[0].click()
+			a.remove()
+		},
+		//打印
+		QRprint(){
+
 		},
 		//系统公告
 		getSystemNotice(){

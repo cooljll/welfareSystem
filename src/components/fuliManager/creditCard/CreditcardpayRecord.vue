@@ -75,9 +75,10 @@
                 </el-table-column>
                 <el-table-column prop="createTime" label="创建时间" align="center" min-width="150">
                 </el-table-column>
-                <el-table-column label="还款状态" align="center" min-width="135">
+                <el-table-column label="还款状态" align="center" min-width="135" 
+                    :filters="refundStatus" :filter-method="filterStatus">
                     <template slot-scope="scope">
-                        <span :class="scope.row.orderState=='已受理'?'accepted':'failed'">{{ scope.row.orderState }}</span>
+                        <span :class="scope.row.orderState=='已受理'?'accepted':'failed'" close-transition>{{ scope.row.orderState }}</span>
                     </template>
                 </el-table-column>
             </el-table>
@@ -124,6 +125,25 @@ export default{
                 pageSize:10,
                 startTime: ""
             },
+            //还款状态
+            refundStatus:[
+                {
+                    text:'已提交',
+                    value:'已提交'
+                },
+                {
+                    text:'已受理',
+                    value:'已受理'
+                },
+                {
+                    text:'还款成功',
+                    value:'还款成功'
+                },
+                {
+                    text:'还款失败',
+                    value:'还款失败'
+                }
+            ],
             detailPage:1,
             detailTotalSize:0,
             orderId:0
@@ -224,6 +244,9 @@ export default{
             }else if(state=="还款失败"){
                 return 'failed'
             }
+        },
+        filterStatus(value, row){
+            return row.tag === value
         }
     },
     mounted(){

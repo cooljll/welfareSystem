@@ -3,7 +3,7 @@
         <div class="wrapper-title">
             <span class="line"></span>
             <span class="title">权限管理</span>
-            <div class="btn">
+            <div class="btn" v-show="isShowAddAccountBtn">
                 <el-button type="info" @click="addAccount">
                     <i class="iconfont icon-icon02"></i>
                     添加账号
@@ -122,7 +122,8 @@ export default{
                 authority:"",
                 loginName:"",
                 loginPwd:""
-            }
+            },
+            isShowAddAccountBtn:true
         }
     },
     methods:{
@@ -221,7 +222,7 @@ export default{
         //修改子账号密码
         saveSubAccountPwd(){
             this.$axios.post(root+"account/updateSubPwd",{
-                guid:this.accountInfo.userGuid,
+                userGuid:this.accountInfo.userGuid,
                 loginName:this.accountInfo.loginName,
                 pwd:this.addAccountParams.loginPwd
             }).then(res=>{
@@ -273,6 +274,12 @@ export default{
     },
     mounted(){
         this.getAccountList()
+        const loginName=localStorage.getItem('loginName')
+        if(loginName.indexOf('-')>0){
+            this.isShowAddAccountBtn=false
+        }else{
+            this.isShowAddAccountBtn=true
+        }
     },
     watch:{
 		'$route'(to, from) {

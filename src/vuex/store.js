@@ -5,7 +5,7 @@ import authUnils from "../common/authUnils"
 Vue.use(Vuex)
 const state={
   flag:false,
-  refreshSign:null
+  refreshSign:null//store.commit传入额外的参数
 }
 const getters={
   getFlag:state=>{

@@ -33,11 +33,13 @@
                     <div class="center">
                         <div class="subtitle">基本节日</div>
                         <div class="checkboxdiv">
-                            <el-button v-for="item in btnGroups" :label="item" :key="item.id"  @click="handleCurrentBtn(item.name,item.id)">{{item.name}}</el-button>   
+                            <el-button v-for="(item,index) in btnGroups" :label="item" :key="item.id" 
+                            :class="{'btnStyle':proIndex==index}" class="overbtnStyle"
+                            @click="handleCurrentBtn(item.name,item.id,index)">{{item.name}}</el-button>   
                         </div>
                         <div class="subtitle">激励方案</div>
                         <div class="checkboxdiv">
-                            <el-button @click="handleIncentiveScheme">员工激励</el-button>
+                            <el-button @click="handleIncentiveScheme" class="overbtnStyle">员工激励</el-button>
                         </div>
                         <div class="subtitle">自定义福利</div>
                         <div class="checkboxdiv">
@@ -279,6 +281,7 @@ var root = process.env.API_ROOT
 export default{
     data(){
         return{
+            proIndex:-1,
             isShowTag1:true,
             isShowTag2:true,
             isShowTag3:true,
@@ -387,7 +390,8 @@ export default{
             this.step4=false
         },
         //基本节日选中处理
-        handleCurrentBtn(val,id){
+        handleCurrentBtn(val,id,index){
+            this.proIndex=index
             this.selectedType=val
             this.festivalId=id
             this.isShow=true
@@ -652,6 +656,11 @@ export default{
 }
 </script>
 <style lang="scss" scoped>
+    .btnStyle{
+        background:#9ACC6A;
+        border: 1px solid #9ACC6A;
+        color:#fff;
+    }
     .page-center{
         padding:0;
         .layer-center1{
@@ -686,6 +695,13 @@ export default{
                         max-width:690px;
                         .el-button{
                             margin:0 10px 15px 0;
+                        }
+                        .overbtnStyle{
+                            &:hover{
+                                background:#9ACC6A;
+                                border: 1px solid #9ACC6A;
+                                color:#fff;
+                            }
                         }
                     }
                     .checkedbox{

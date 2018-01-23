@@ -51,7 +51,7 @@
                 <el-table-column label="操作" align="center" fixed="right">
                     <template slot-scope="scope">
                         <el-button type="text" 
-                        v-show='(scope.row.orderState=="已付款"||(scope.row.orderState=="待付款"&&scope.row.orderType=="银行电汇")||(scope.row.orderState==null))?true:false'
+                        v-show='(scope.row.orderState=="已付款"||(scope.row.orderState=="待付款"&&scope.row.orderType=="银行电汇")||(scope.row.orderState==null)||(scope.row.orderType=="未知"))?true:false'
                         @click="$router.push('/CreditRecharge')">再次充值</el-button>
                         <el-button type="text" v-show='((scope.row.orderState=="待付款"&&scope.row.orderType=="微信")||(scope.row.orderState=="待付款"&&scope.row.orderType=="支付宝"))?true:false'
                         @click="handleOrder(scope.row)">继续支付</el-button>
@@ -149,14 +149,6 @@ export default{
         },
         //充值订单
         getRechargeOrderList(){
-            // if(this.$store.state.refreshSign){
-            //     this.filters=this.$store.state.refreshSign
-            //     this.value=[]
-            //     this.value.push(this.$store.state.refreshSign.startTime)
-            //     this.value.push(this.$store.state.refreshSign.lastTime)
-            // }else{
-            //     this.filters=this.filters
-            // }
             this.loading=true
             this.$axios.post(root+"recharge/order",this.filters).then(res=>{
                 var that=this
@@ -174,9 +166,6 @@ export default{
         },
         //搜索
         getSearchResult(){
-            // this.$router.push("WelfareIndex")
-            // this.$router.go(-1)
-            // this.$store.commit('searchReload',this.filters)
             this.getRechargeOrderList()
         },
         //继续支付

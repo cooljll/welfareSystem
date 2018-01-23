@@ -82,7 +82,7 @@
 							<el-dropdown-item>企业资料</el-dropdown-item>
 						</router-link>
 						<router-link :to='{path:"/AuthManager/"+new Date().getTime()}'>
-							<el-dropdown-item>权限管理</el-dropdown-item>
+							<el-dropdown-item>账户管理</el-dropdown-item>
 						</router-link>
 						<router-link :to='{path:"/Log/"+new Date().getTime()}'>
 							<el-dropdown-item>操作日志</el-dropdown-item>
@@ -96,7 +96,6 @@
 			border-radius: 5px 5px 0px 0px; overflow: hidden; z-index: 2147483583; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 2px; 
 			right: 30px; transition: all 0.3s ease-in-out 0.1s;">
 			<iframe id="zhichiIframe" 
-				src="http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345" 
 				name="zhichiIframe" frameborder="no" scrolling="no" style="width: 100%; height: 100%; border: 0;">
 			</iframe>
 		</div>
@@ -104,6 +103,7 @@
     </div>
 </template>
 <script>
+// import 'http://www.sobot.com/chat/pc/pc.min.js?sysNum=467fbd68a94142e2a6c147a012b74aea'
 import authUnils from '../common/authUnils'
 var root = process.env.API_ROOT
 export default {
@@ -118,7 +118,8 @@ export default {
 			enterpriseCode:""
 		},
 		loginName:"",
-		enterpriseLogoUrl:""
+		enterpriseLogoUrl:"",
+		inlineService:''
     }
   },
   methods:{
@@ -148,6 +149,7 @@ export default {
 		},
 		//在线客服
 		inlineKefu(){
+			$('#zhichiIframe').attr('src','http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345')
 			document.getElementById("zhichiIframeBox").style.bottom="0px"
 			setTimeout(function() {
 				document.getElementById("zhichiIframeBox").style.bottom="-500px"

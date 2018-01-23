@@ -10,6 +10,8 @@ import authUtil from './common/authUnils'
 import router from './router'
 import store from './vuex/store'
 import echarts from 'echarts/dist/echarts.min'
+import $ from 'jquery'
+
 Vue.prototype.$echarts=echarts      
 import axios from 'axios' 
 axios.defaults.withCredentials=true //允许跨域携带cookie信息
@@ -64,7 +66,7 @@ axios.interceptors.response.use(
                 break
         }
     }
-      return Promise.reject(error.response)   // 返回接口返回的错误信息
+    return Promise.reject(error.response)   // 返回接口返回的错误信息
   }
 )
 //路由拦截

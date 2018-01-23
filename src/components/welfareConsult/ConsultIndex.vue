@@ -17,7 +17,7 @@
                     <!-- banner轮播 -->
                     <el-carousel trigger="click">
                         <el-carousel-item v-for="(item,index) in bannerList1" :key="index">
-                            <img :src="item.bannerLogoUrl" alt="" @click="bannerDetail(item.id)">
+                            <img :src="item.bannerLogoUrl" alt="">
                             <div class="info">
                                 <div class="info-label">
                                     <span class="z">资讯</span>
@@ -30,7 +30,8 @@
                 <!-- 右banner -->
                 <div class="information-right">
                     <ul>
-                        <li v-for="(item,index) in bannerList2" :key="index" @click="bannerDetail(item.id)">
+                        <li v-for="(item,index) in bannerList2" :key="index">
+                            <!--  @click="bannerDetail(item.id)" -->
                             <img :src="item.bannerLogoUrl" alt="">
                             <div class="info">
                                 <div class="info-label">

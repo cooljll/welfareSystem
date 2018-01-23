@@ -414,11 +414,12 @@
         <!-- 生成二维码弹窗 -->
 		<el-dialog title="入职二维码" :visible.sync="qrcodeVisible" :close-on-click-modal="false" style="top:10%" ref="qrcode" class="erweima">
             <div class="qrcode">
+                <img :src="qrcodeImg" alt="">
 			</div>
 			<div class="txt">请扫描二维码办理入职</div>
             <div slot="footer" class="dialog-footer footer-center">
-                <el-button type="danger">下载</el-button>
-                <el-button type="primary">打印</el-button>
+                <el-button type="danger" @click="QRdownload">下载</el-button>
+                <el-button type="primary" @click="QRprint">打印</el-button>
             </div>
         </el-dialog>
         <!--查看详情弹框 -->
@@ -581,6 +582,7 @@ export default{
             headerStyle:{
                 color:"#000"
             },
+            qrcodeImg:'',
             isShowEmpList:true,
             isShowEmpDetail:false,
             tableData:[],
@@ -884,7 +886,7 @@ export default{
                 }
             })
         },
-        //生成二维码(后台获取)
+        //生成二维码
         buildQRcode(){
             const loading = this.$loading({
 				lock: true,
@@ -893,15 +895,26 @@ export default{
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
             this.$axios.post(root+"service/qrcode",{}).then(res=>{
-                if(res.data.data==1000){
+                loading.close()
+                if(res.data.code==1000){
+                    this.qrcodeImg=res.data.data
                     this.qrcodeVisible=true
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                     this.qrcodeVisible=false
                 }
-                loading.close()
             })
         },
+        //下载
+		QRdownload(){
+            var a=$('<a></a>').attr('href',this.qrcodeImg).attr('target','_blank').attr("download",'img.png').appendTo('body')
+			a[0].click()
+			a.remove()
+		},
+		//打印
+		QRprint(){
+
+		},
         //移至部门
         batchmMoveToDepartment(){
             if(this.selectedEmployee.length==0){

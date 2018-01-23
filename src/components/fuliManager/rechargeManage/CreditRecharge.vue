@@ -60,7 +60,8 @@
                                 <div class="recharge-row">
                                     <div class="row-txt">选择方式</div>
                                     <div class="row-input">
-                                        <el-button plain type="info" v-for="(item,index) in payTypes" :key="index" @click="selectPayType(index+1)">{{item}}</el-button>
+                                        <el-button :class="{'btnStyle':proIndex==(index+1)}" v-for="(item,index) in payTypes" 
+                                        :key="index" @click="selectPayType(index+1)">{{item}}</el-button>
                                     </div>
                                 </div>
                                 <div class="paybox-row">
@@ -148,6 +149,7 @@ export default{
     data(){
         return{
             payTypes:["银行电汇","支付宝","微信支付"],
+            proIndex:1,//点击索引
             yinhang:true,
             zhifubao:false,
             weixin:false,
@@ -163,7 +165,7 @@ export default{
                 invoice_phone: "13918116502",
                 invoice_title: "",
                 invoice_type: "普通发票",
-                payType: 0,
+                payType: 1,
                 point: 0
             },
             weChatVisible:false,
@@ -176,6 +178,7 @@ export default{
     },
     methods:{
         selectPayType(i){
+            this.proIndex=i
             if(i==1){
                 this.yinhang=true
                 this.zhifubao=false
@@ -327,6 +330,11 @@ export default{
 }
 </script>
 <style lang="scss" scoped>
+    .btnStyle{
+        background: #909399;
+        border: 1px solid #909399;
+        color:#fff;
+    }
     //充值中心
     .recharge_center{
         .information{
@@ -485,6 +493,11 @@ export default{
                             .row-input{
                                 height: 28px;
                                 float: left;
+                                .el-button:hover{
+                                    background: #909399;
+                                    border: 1px solid #909399;
+                                    color:#fff;
+                                }
                             }
                         }
                         .paybox-row{

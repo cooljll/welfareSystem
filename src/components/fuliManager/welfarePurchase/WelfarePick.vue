@@ -5,7 +5,6 @@
             <div class="welfare-wrapper">
                 <img src="../../../assets/img/youmina.png" style="width: 100%;height: auto">
                 <a href="javascript:;" @click="gotoShop">前往商城</a>
-                <!-- <a href="../../assets/index.html">前往商城</a> -->
             </div>
         </div>
     </div>
@@ -18,7 +17,12 @@ export default{
         gotoShop(){
             // window.open("http://www.youmina.com/")
             this.$axios.get(root+"purchase/welLogin").then(res=>{
-                console.log(res.data)
+                if(res){
+                    const div = document.createElement('div') // 创建div
+                    div.innerHTML = res.data // 将返回的form 放入div
+                    document.body.appendChild(div)
+                    document.forms['shopLogin'].submit()
+                }
             })
         }
     }
