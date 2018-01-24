@@ -9,7 +9,7 @@
             <div class="noticeblock">
                 <div class="notice" v-for="(item,index) in noticeList" :key="index">
                     <div class="notifileft">
-                        <span class="year yearcolor1">2017</span>
+                        <span class="year yearcolor1">{{item.startDate.split("-")[0]}}</span>
                     </div>
                     <div class="ballbox">
                         <span class="ball yearcolor1"></span>

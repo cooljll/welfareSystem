@@ -7,8 +7,8 @@
                         <div class="bread">
                             <el-breadcrumb separator-class="el-icon-arrow-right">
                                 <el-breadcrumb-item :to="{ path: '/ConsultIndex' }">福利资讯</el-breadcrumb-item>
-                                <el-breadcrumb-item :to="{ path: '/Consult_List' }">福利资讯</el-breadcrumb-item>
-                                <el-breadcrumb-item :to="{ path: '/Consult_Detail' }">资讯内容</el-breadcrumb-item>
+                                <el-breadcrumb-item :to="{ path: '/ConsultIndex/1' }">福利资讯</el-breadcrumb-item>
+                                <el-breadcrumb-item>资讯内容</el-breadcrumb-item>
                             </el-breadcrumb>
                         </div>
                         <div class="info-text">
@@ -45,7 +45,10 @@
                             </div>
                             <div class="item_info">
                                 <p class="thide">{{item.title}}</p>
-                                <div class="time"><span>{{item.startDate.split(" ")[0]}}</span></div>
+                                <div class="time">
+                                    <span>{{item.startDate.split(" ")[0]}}</span>
+                                    <!-- <a><img src="../../assets/img/love_hui.png">10</a> -->
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -31,7 +31,6 @@ import CreditcardpayRecord from '@/components/fuliManager/creditCard/Creditcardp
 // 福利咨询
 import ConsultIndex from '@/components/welfareConsult/ConsultIndex'
 import Consult_Detail from '@/components/welfareConsult/Consult_Detail'
-import Consult_List from '@/components/welfareConsult/Consult_List'
 // 企业信息管理
 import EnterpriseInfo from '@/components/enterpriseManager/EnterpriseInfo'
 import EnterpriseNotice from '@/components/enterpriseManager/EnterpriseNotice'
@@ -91,18 +90,13 @@ export default new Router({
           ]
         },
         {
-          path: '/ConsultIndex',
+          path: '/ConsultIndex/:flag?',//1代表列表  2或空代表首页
           component: ConsultIndex,
           name: ''
         },
         {
           path: '/Consult_Detail/:id?',
           component: Consult_Detail,
-          name: ''
-        },
-        {
-          path: '/Consult_List/:ret?',
-          component: Consult_List,
           name: ''
         },
         //企业信息

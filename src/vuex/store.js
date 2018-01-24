@@ -5,11 +5,15 @@ import authUnils from "../common/authUnils"
 Vue.use(Vuex)
 const state={
   flag:false,
-  refreshSign:null//store.commit传入额外的参数
+  token:null
 }
 const getters={
   getFlag:state=>{
     return state.flag
+  },
+  //获取token
+  getToken:state=>{
+    return state.token
   }
 }
 const mutations={
@@ -19,9 +23,9 @@ const mutations={
   notReLoad(state){
     state.flag=false
   },
-  // 提交载荷 解决搜索刷新问题
-  searchReload(state,payload){
-    state.refreshSign=payload
+  //设置token
+  setToken(state,payload){
+    state.token=payload
   }
 }
 const actions={

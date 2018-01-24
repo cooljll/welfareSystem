@@ -621,7 +621,7 @@
                     }
                 }
                 .item_info{
-                    p{
+                    .thide{
                         font-size: 16px;
                         color: #2D2E2E;
                         margin-bottom: 10px;
@@ -630,6 +630,19 @@
                     .time{
                         color: #999EA1;
                         font-size:12px;
+                        overflow: hidden;
+                        span{
+                            float: left;
+                        }
+                        a{
+                            float: right;
+                            color: #000;
+                            img{
+                                width: 13px;
+                                height: 12px;
+                                margin-right: 5px;
+                            }
+                        }
                     }
                 }
             }
@@ -745,10 +758,10 @@
         }
     }
 }
+
+//更改表格默认间距
 .el-table{
-    .el-table__row{
-        td{
-            // padding:10px 0;
-        }
+    td{
+        padding:10px 0;
     }
 }

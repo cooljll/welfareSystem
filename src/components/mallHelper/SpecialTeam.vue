@@ -1,7 +1,7 @@
 <template>
     <div class="page-main">
         <div class="big-title">
-            尊敬的<span class="entername">上海汇展人力资源有限公司</span>，您好！
+            尊敬的<span class="entername">{{enterpriseName}}</span>，您好！
         </div>
         <div class="small-title">
             您的企业是我们公司的优质客户，享受以下服务权益
@@ -42,7 +42,16 @@
     </div>
 </template>
 <script>
-    
+export default{
+    data(){
+        return{
+            enterpriseName:''
+        }
+    },
+    mounted(){
+        this.enterpriseName=JSON.parse(localStorage.enterpriseInfo).enterpriseName
+    }
+}
 </script>
 <style lang="scss" scoped>
     .big-title{
@@ -153,8 +162,8 @@
     }
     .callcenter{
         position: absolute;
-        right: 0px;
-        top: 40px;
+        right: 15%;
+        top: 80px;
         cursor: pointer;
         img{
             cursor: pointer;

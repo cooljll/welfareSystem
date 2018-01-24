@@ -30,12 +30,12 @@
                 <div class="title">基本节日</div>
                 <div class="checkboxdiv">
                     <el-button v-for="(item,index) in btnGroups" :label="item.name" 
-                    :class="{'btnStyle':proIndex==index}" class="overbtnStyle"
+                    :class="{'btnStyle':proIndex==index}"
                     :key="item.id"  @click="handleCurrentBtn(item.name,item.id,index)">{{item.name}}</el-button>   
                 </div>
                 <div class="title">激励方案</div>
                 <div class="checkboxdiv">
-                    <el-button @click="handleIncentiveScheme" class="overbtnStyle">员工激励</el-button>
+                    <el-button @click="handleIncentiveScheme">员工激励</el-button>
                 </div>
                 <div class="title">自定义福利</div>
                 <div class="checkboxdiv">
@@ -455,6 +455,9 @@ export default{
         },
         //自定义福利确定
         customSubmit(){
+            if(this.customWelfareType==''){
+                this.$alert('自定义福利不能为空',"信息")
+            }
             this.selectedType="自定义福利："+this.customWelfareType
             this.festivalId=this.customWelfareType
             this.isShow=true
@@ -826,8 +829,6 @@ export default{
                 max-width:690px;
                 .el-button{
                     margin:0 10px 15px 0;
-                }
-                .overbtnStyle{
                     &:hover{
                         background:#9ACC6A;
                         border: 1px solid #9ACC6A;

@@ -464,10 +464,10 @@ export default {
     },
     //watch监视vuex内部数据变化
     watch:{
-        getFlag(val,oldVal){
+        getFlag(val){
             if(val){
                 this.getTreeDep()
-                this.$store.commit("notReLoad")
+                // this.$store.commit("notReLoad")
             }
         }
     }

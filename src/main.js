@@ -26,6 +26,7 @@ axios.interceptors.request.use(
   config => {
     if(authUtil.getToken()){ // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
        config.headers.Authorization = authUtil.getToken()
+        // config.headers.Authorization = this.$store.state.token
     }else{
         router.replace({
             path: '/'

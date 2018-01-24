@@ -2,7 +2,7 @@
     <div class="page-wrapper">
         <div class="wrapper-title">
             <span class="line"></span>
-            <span class="title">权限管理</span>
+            <span class="title">账户管理</span>
             <div class="btn" v-show="isShowAddAccountBtn">
                 <el-button type="info" @click="addAccount">
                     <i class="iconfont icon-icon02"></i>
@@ -23,12 +23,12 @@
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" @click="modifyPassword(scope.row)">查看</el-button>
-                        <el-button type="text" class="handleStyle" v-show="scope.row.state=='冻结'||scope.row.accountType=='主账号'?false:true" @click="frozenAccount(scope.row.userGuid)">冻结</el-button>
+                        <el-button type="text" class="handleStyle" v-show="(scope.row.state=='冻结'||scope.row.accountType=='主账号')||flag?false:true" @click="frozenAccount(scope.row.userGuid)">冻结</el-button>
                     </template>
                 </el-table-column>
             </el-table>
         </div>
-        <!-- 添加账号弹窗(子账号修改密码) -->
+        <!-- 添加账号弹窗(修改子账号密码) -->
         <el-dialog title="账号信息" :visible.sync="addAccountVisible" :close-on-click-modal="false" class="addAccountDialog" style="top:8%">
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="账号名称" prop="name">
@@ -62,7 +62,7 @@
                 <el-button @click.native="addAccountVisible = false">取消</el-button>
             </div>
         </el-dialog>
-        <!-- 账号密码修改弹窗(主账号修改密码) -->
+        <!-- 账号密码修改弹窗(修改自己密码) -->
         <el-dialog title="账号信息" :visible.sync="updateAccountVisible" :close-on-click-modal="false" class="updateAccountPwdDialog" style="top:8%">
             <el-form label-position="right" label-width="80px" class="form-center">
                 <el-form-item label="账号名称">
@@ -86,7 +86,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer footer-center">
                 <el-button type="primary" @click="updatePwdSubmit">保存</el-button>
-                <el-button @click.native="addAccountVisible = false">取消</el-button>
+                <el-button @click.native="updateAccountVisible = false">取消</el-button>
             </div>
         </el-dialog>
     </div>
@@ -119,11 +119,12 @@ export default{
             //添加账号参数
             addAccountParams:{
                 accountName:"",
-                authority:"",
+                authority:[],
                 loginName:"",
                 loginPwd:""
             },
-            isShowAddAccountBtn:true
+            isShowAddAccountBtn:true,
+            flag:false
         }
     },
     methods:{
@@ -155,9 +156,10 @@ export default{
         },
         addAccount(){
             //清空
-            for(var key in this.addAccountParams){
-                this.addAccountParams[key]=""
-            }
+            this.addAccountParams.accountName=''
+            this.addAccountParams.authority=[]
+            this.addAccountParams.loginName=''
+            this.addAccountParams.loginPwd=''
             this.tags=[]
             this.isShowAdd=true
             this.isShowUpdate=false
@@ -179,19 +181,27 @@ export default{
         },
         //添加子账号
         addSubAccountSubmit(){
-            this.addAccountParams.authority=this.tags.join(",")
-            this.$axios.post(root+"account/addAccount",this.addAccountParams).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        this.addAccountVisible=false
-                        this.getAccountList()
-                    })
-                }else if(res.data.code==1001){
-                    this.$alert(res.message,"信息").then(()=>{
-                        this.addAccountVisible=true
-                    })
-                }
-            })
+            if(this.addAccountParams.accountName==''){
+                this.$alert('账号名称不能为空',"信息")
+            }else if(this.addAccountParams.loginPwd==''){
+                this.$alert('账号密码不能为空',"信息")
+            }else if(this.tags.length==0){
+                this.$alert('至少选择一项权限',"信息")
+            }else{
+                this.addAccountParams.authority=this.tags
+                this.$axios.post(root+"account/addAccount",this.addAccountParams).then(res=>{
+                    if(res.data.code==1000){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.addAccountVisible=false
+                            this.getAccountList()
+                        })
+                    }else if(res.data.code==1001){
+                        this.$alert(res.data.message,"信息").then(()=>{
+                            this.addAccountVisible=true
+                        })
+                    }
+                })
+            }
         },
         //查看权限
         seeAuth(guid){
@@ -203,13 +213,14 @@ export default{
         },
         //查看
         modifyPassword(obj){
+            this.addAccountParams.loginPwd=''
             this.accountInfo=obj
             if(obj.accountType=="主账号"){
                 this.updatePwdParams.loginName=obj.loginName
                 this.updatePwdParams.userGuid=obj.userGuid
                 this.updateAccountVisible=true
             }
-            if(obj.accountType=="子账号"){
+            if(obj.accountType=="子账号"&&(!this.flag)){//当前账户管理员
                 this.addAccountParams.accountName=obj.accountName
                 this.addAccountParams.loginName=obj.loginName
                 this.isShowAdd=false
@@ -217,32 +228,21 @@ export default{
                 this.addAccountVisible=true
                 this.getAuthList()
                 this.seeAuth(obj.userGuid)
+            }else{//当前账户普通用户
+                this.updateAccountVisible=true
             }
-        },
-        //修改子账号密码
-        saveSubAccountPwd(){
-            this.$axios.post(root+"account/updateSubPwd",{
-                userGuid:this.accountInfo.userGuid,
-                loginName:this.accountInfo.loginName,
-                pwd:this.addAccountParams.loginPwd
-            }).then(res=>{
-                if(res.data.code==1000){
-                    this.$alert(res.data.message,"信息").then(()=>{
-                        this.addAccountVisible=false
-                        this.getAccountList()
-                    })
-                }
-                if(res.data.code==1001){
-                    this.$alert(res.data.message,"信息")
-                }
-            })
         },
         //修改主账号密码
         updatePwdSubmit(){
             if(this.updatePwdParams.loginPwd_new!=this.againPassword){
                 this.$alert("新密码不一致","信息")
             }else{
-                this.$axios.post(root+"account/updatePwd",this.updatePwdParams).then(res=>{
+                this.$axios.post(root+"account/updatePwd",{
+                    loginName:this.accountInfo.loginName,
+                    loginPwd_new:this.updatePwdParams.loginPwd_new,
+                    loginPwd_old:this.updatePwdParams.loginPwd_old,
+                    userGuid:this.accountInfo.userGuid
+                }).then(res=>{
                     if(res.data.code==1000){
                         this.$alert(res.data.message,"信息").then(()=>{
                             this.$router.push("/")
@@ -256,6 +256,60 @@ export default{
                     }
                 })
             }
+        },
+        //修改子账号信息
+        saveSubAccountPwd(){
+            if(this.addAccountParams.accountName.trim()==''){
+                this.$alert('账户名称不能为空','信息')
+            }else{
+                if(this.addAccountParams.loginPwd.trim()==''&&this.addAccountParams.accountName!=''){
+                    //修改权限
+                    this.updateSubAccountAuth()
+                }else if(this.addAccountParams.loginPwd!=''&&this.addAccountParams.accountName!=''){
+                    //账号密码一起修改
+                    this.updateSubAccountPwdAuth()
+                }
+            }     
+        },
+        updateSubAccountPwdAuth(){
+            this.$axios.post(root+"account/updateSubPwd",{
+                userGuid:this.accountInfo.userGuid,
+                loginName:this.accountInfo.loginName,
+                pwd:this.addAccountParams.loginPwd
+            }).then(res=>{
+                if(res.data.code==1000){
+                    this.$axios.post(root+"account/updateAccount",{
+                        accountName:this.accountInfo.accountName,
+                        authority:this.tags,
+                        loginName:this.accountInfo.loginName,
+                        userGuid:this.accountInfo.userGuid
+                    }).then(res=>{
+                        if(res.data.code==1000){
+                            this.addAccountVisible=false
+                            this.getAccountList()
+                        }else if(res.data.code==1001){
+                            this.$alert(res.data.message,"信息")
+                        }
+                    })
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
+            })
+        },
+        updateSubAccountAuth(){
+            this.$axios.post(root+"account/updateAccount",{
+                accountName:this.accountInfo.accountName,
+                authority:this.tags,
+                loginName:this.accountInfo.loginName,
+                userGuid:this.accountInfo.userGuid
+            }).then(res=>{
+                if(res.data.code==1000){
+                    this.addAccountVisible=false
+                    this.getAccountList()
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
+            })
         },
          //冻结账号
         frozenAccount(guid){
@@ -276,8 +330,10 @@ export default{
         this.getAccountList()
         const loginName=localStorage.getItem('loginName')
         if(loginName.indexOf('-')>0){
+            this.flag=true
             this.isShowAddAccountBtn=false
         }else{
+            this.flag=false
             this.isShowAddAccountBtn=true
         }
     },

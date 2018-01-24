@@ -162,6 +162,9 @@ export default{
                 this.isShowNoticeList=false
                 this.isShow_extend=true
                 this.isShow_success=false
+                for(var k in this.addNoticeParams){
+                    this.addNoticeParams[k]=''
+                }
                 this.showDepartmentList()
             }else if(tab.name=="second"){
                 this.isShowExtendNotice=false
@@ -255,6 +258,8 @@ export default{
             }else{
                 this.activeName="first"
             }
+            this.getNoticeList()
+            this.showDepartmentList()
         },
         //查看详情
         seeNoticeDetail(id){

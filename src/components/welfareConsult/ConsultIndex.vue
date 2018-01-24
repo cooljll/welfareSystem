@@ -1,6 +1,6 @@
 <template>
-    <div class="main">
-        <div class="page-box">
+    <div class="consult_main">
+        <div class="page-box" v-show="isShowConsultIndex">
             <div class="search-box">
                 <div class="search-logo">
                     <img src="../../assets/img/fulizix.png">
@@ -26,6 +26,19 @@
                             </div>
                         </el-carousel-item>
                     </el-carousel>
+                    <!-- <ul id="leftbannerlist">
+                        <li v-for="(item,index) in bannerList1" :key="index">
+                            <img :src="item.bannerLogoUrl">
+                            <div class="info">
+                                <div class="info-label">
+                                    <span class="z">资讯</span>
+                                </div>
+                                <p class="thide">{{item.title}}</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="left btn"><img src="../../assets/img/left.png"></div>
+                    <div class="right btn"><img src="../../assets/img/right.png"></div> -->
                 </div>
                 <!-- 右banner -->
                 <div class="information-right">
@@ -44,10 +57,14 @@
                 </div>
             </div>
             <div class="information-class">
-                <div class="information-title">
-                    <span>{{categoryTitle}}</span>
-                </div>
-                <div class="information-contant">
+                <ul class="information-title">
+                    <li v-for="(item,index) in categoryTitle" :key="index"
+                        :class="{'active':proIndex==index}"
+                        @click="selectCategoryType(item.id,index)">
+                        <a>{{item.displayName}}</a>
+                    </li>
+                </ul>
+                <div class="information-contant" v-loading="loading">
                     <div class="information-item" v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.id)">
                         <a>
                             <img :src="item.coverUrl">
@@ -66,6 +83,58 @@
                 </div>
             </div>
         </div>
+        <!-- 资讯列表 -->
+        <div class="consult-box" v-show="isShowConsultItem">
+            <div class="details-box">
+                <div class="details-info">
+                    <div class="main">
+                        <div class="bread">
+                            <el-breadcrumb separator-class="el-icon-arrow-right" v-show="isShowConsultList">
+                                <el-breadcrumb-item :to="{ path: '/ConsultIndex/2' }">福利资讯</el-breadcrumb-item>
+                                <el-breadcrumb-item>福利资讯</el-breadcrumb-item>
+                            </el-breadcrumb>
+                            <el-breadcrumb separator-class="el-icon-arrow-right" v-show="isShowConsultResult">
+                                <el-breadcrumb-item @click.native="gobackConsultIndex">福利资讯</el-breadcrumb-item>
+                                <el-breadcrumb-item>搜索结果</el-breadcrumb-item>
+                            </el-breadcrumb>
+                        </div>
+                        <div class="info-list">
+                            <ul>
+                                <li v-for="(item,index) in newsPageList" :key="index" @click="newsDetails(item.id)">
+                                    <div class="news-wrapper">
+                                        <div class="img">
+                                            <img :src="item.coverUrl">
+                                        </div>
+                                        <div class="info">
+                                            <h3 class="thide">{{item.title}}</h3>
+                                            <span>{{item.startDate.split(" ")[0]}}</span>
+                                            <!-- 去掉所有的HTML标记 -->
+                                            <p v-html="item.contents.replace(/<[^>]+>/g,'')"></p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="details-right">
+                    <div class="title">
+                        <span>热门收藏</span>
+                    </div>
+                    <div class="hot-collection">
+                        <div class="hot_item" v-for="(item,index) in hotNewsList" :key="index" @click="newsDetails(item.id)">
+                            <div class="imgbox">
+                                <img :src="item.coverUrl" alt="">
+                            </div>
+                            <div class="item_info">
+                                <p class="thide">{{item.title}}</p>
+                                <div class="time"><span>{{item.startDate.split(" ")[0]}}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -75,16 +144,21 @@ var root = process.env.API_ROOT
 export default{
     data(){
         return{
+            isShowConsultIndex:true,
+            isShowConsultItem:false,
             filter:"",
             bannerList1:[],
             bannerList2:[],
-            categoryTitle:"",//福利咨询标题
+            categoryTitle:[],//福利咨询标题
             newsPageList:[],
-            consultParams:{
-                pageNum:1,
-                pageSize:6
-            },
-            isShowMore:true
+            isShowMore:true,
+            loading:false,
+            proIndex:1,
+            //资讯列表
+            isShowConsultList:true,
+            isShowConsultResult:false,
+            hotNewsList:[],
+            catalogId:[]
         }
     },
     methods:{
@@ -107,26 +181,44 @@ export default{
         getTitle(){
             this.$axios.get(root+"welfareNews/title").then(res=>{
                 if(res.data.code==1000){
-                    this.categoryTitle=res.data.data[0].categoryname
+                    this.categoryTitle=res.data.data
                 }
             })
         },
         //分页咨询
-        getNewsPageInfo(){
-            this.$axios.post(root+"welfareNews/newsPageInfo",this.consultParams).then(res=>{
+        getNewsPageInfo(pageIndex,pageSize){
+            this.loading=true
+            this.$axios.post(root+"welfareNews/newsPageInfo",{
+                catalogIds:this.catalogId,
+                pageNum:pageIndex,
+                pageSize:pageSize
+            }).then(res=>{
+                this.loading=false
                 if(res.data.code==1000){
-                    if(res.data.data.length==0){
+                    let data=res.data.data.content
+                    if(data.length==0||data.length<6){
                         this.isShowMore=false
                     }else{
                         this.isShowMore=true
                     }
-                    this.newsPageList=res.data.data.content
+                    this.newsPageList=data
                 }
             })
         },
+        selectCategoryType(id,index){
+            this.proIndex=index
+            this.catalogId=[]
+            this.catalogId.push(Number(id))
+            this.getNewsPageInfo(1,6)
+        },
         //查看更多
         getMoreNews(){
-            this.$router.push("/Consult_List")
+            this.isShowConsultIndex=false
+            this.isShowConsultItem=true
+            this.isShowConsultList=true
+            this.isShowConsultResult=false
+            this.getNewsPageInfo(1,10)
+            this.getHotCollection()
         },
         bannerDetail(id){
             this.$router.push('/Consult_Detail/'+id)
@@ -139,18 +231,73 @@ export default{
             if(this.filter==""){
                 return false
             }
-            this.$router.push("/Consult_List/"+encodeURI(this.filter))
+            this.isShowConsultIndex=false
+            this.isShowConsultItem=true
+            this.isShowConsultList=false
+            this.isShowConsultResult=true
+            this.searchResult()
+        },
+        //查询结果
+        searchResult(){
+            this.$axios.post(root+"welfareNews/search",qs.stringify({filter:this.filter})).then(res=>{
+                if(res.data.code==1000){
+                    this.newsPageList=res.data.data.content
+                }
+            })
+            this.getHotCollection()
+        },
+        // 热门收藏
+        getHotCollection(){
+            this.$axios.post(root+"welfareNews/newsPageInfo",{
+                pageNum:1,
+                pageSize:3
+            }).then(res=>{
+                if(res.data.code==1000){
+                    this.hotNewsList=res.data.data.content
+                }else if(res.data.code==1001){
+                    this.$alert(res.data.message,"信息")
+                }
+            })
+        },
+        gobackConsultIndex(){
+            this.$router.push('/Empty')
+            this.$router.go(-1)
         }
     },
     mounted(){
-        this.getBannerNews()
-        this.getTitle()
-        this.getNewsPageInfo()
+        if(this.$route.params.flag=="1"){
+            this.isShowConsultIndex=false
+            this.isShowConsultItem=true
+            this.getHotCollection()
+            this.getNewsPageInfo(1,10)
+        }else if(this.$route.params.flag=="2"||this.$route.params.flag==undefined){
+            this.isShowConsultIndex=true
+            this.isShowConsultItem=false
+            this.getBannerNews()
+            this.getTitle()
+            this.getNewsPageInfo(1,6)
+        }
+    },
+    watch:{
+        '$route' (to, from) {
+            if(to.params.flag=="1"){
+                this.isShowConsultIndex=false
+                this.isShowConsultItem=true
+                this.getHotCollection()
+                this.getNewsPageInfo(1,10)
+            }else if(this.$route.params.flag=="2"||this.$route.params.flag==undefined){
+                this.isShowConsultIndex=true
+                this.isShowConsultItem=false
+                this.getBannerNews()
+                this.getTitle()
+                this.getNewsPageInfo(1,6)
+            }
+        }
     }
 }
 </script>
 <style lang="scss" scoped>
-    .main{
+    .consult_main{
         height: 924px;
         .page-box{
             width: 1200px;
@@ -185,11 +332,55 @@ export default{
                     float: left;
                     position: relative;
                     cursor: pointer;
-                    // img{
-                    //     &:hover{
-                    //         transform: scale(2)
-                    //     }
-                    // }
+                    &:hover{
+                        .btn{
+                            display: block;
+                        }
+                    }
+                    ul{
+                        display: block;
+                        li{
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            height: 660px;
+                            cursor: pointer;
+                            img{
+                                transition: all .3s;
+                                -moz-transition: all .3s;
+                                -webkit-transition: all .3s;
+                                -o-transition: all .3s;
+                                &:hover{
+                                    transform: scale(1.1)
+                                }
+                            }
+                        }
+                    }
+                    .btn{
+                        position: absolute;
+                        top: 50%;
+                        margin-top: -41px;
+                        width: 72px;
+                        height: 72px;
+                        text-align: center;
+                        background-color: rgba(0, 0, 0, 0.5);
+                        display: none;
+                        cursor: pointer;
+                        img{
+                            width: 32px;
+                            height: 18px;
+                            display: block;
+                            margin: 28px auto 0;
+                            cursor: pointer;
+                            border: 0;
+                        }
+                    }
+                    .left{
+                        left: 0;
+                    }
+                    .right{
+                        right: 0;
+                    }
                 }
                 .information-right{
                     width: 380px;
@@ -201,6 +392,18 @@ export default{
                             position: relative;
                             width: 100%;
                             height: 330px;
+                            overflow: hidden;
+                            img{
+                                height: 100%;
+                                width: 100%;
+                                transition: all .3s;
+                                -moz-transition: all .3s;
+                                -webkit-transition: all .3s;
+                                -o-transition: all .3s;
+                                &:hover{
+                                    transform: scale(1.1)
+                                }
+                            }
                         }
                     }
                 }
@@ -216,6 +419,7 @@ export default{
                         margin-bottom: 15px;
                         cursor: pointer;
                         span.z{
+                            font-size: 14px;
                             display: inline-block;
                             margin-right: 15px;
                             background: #3082DF;
@@ -243,12 +447,24 @@ export default{
                 margin-top: 50px;
                 .information-title{
                     margin-bottom:30px;
-                    span{
+                    padding-left:0;
+                    li{
+                        font-size: 14px;
+                        margin-right: 15px;
+                        padding: 2px 10px;
+                        display: inline-block;
+                        cursor: pointer;
+                        border: 1px solid #7B7D7F;
+                        a{
+                            color: #7B7D7F;
+                        }
+                    }
+                    li.active{
+                        border: 1px solid #3082DF;
                         background: #3082DF;
-                        color:#fff;
-                        font-size:12px;
-                        display:inline-block;
-                        padding:2px 10px;
+                        a{
+                            color: #fff;
+                        }
                     }
                 }
                 .information-contant{
@@ -300,7 +516,62 @@ export default{
                     }
                 }
             }
-            
+        }
+    }
+    //列表
+    .info-list{
+        padding: 75px 0;
+        ul{
+            padding:0;
+            li{
+                margin-bottom:30px;
+                .news-wrapper{
+                    overflow: hidden;
+                    .img{
+                        float: left;
+                        width: 250px;
+                        height: 164px;
+                        cursor: pointer;
+                        img{
+                            display: block;
+                            max-width: 250px;
+                            max-height: 164px;
+                            margin: 0px auto;
+                            cursor: pointer;
+                        }
+                    }
+                    .info{
+                        float: right;
+                        width: 560px;
+                        h3{
+                            font-weight: normal;
+                            font-size: 18px;
+                            color: #2B2D2F;
+                            line-height: 18px;
+                            cursor: pointer;
+                        }
+                        span{
+                            display: block;
+                            font-size: 14px;
+                            color: #999EA1;
+                            line-height: 14px;
+                            margin: 14px 0 20px;
+                        }
+                        p{
+                            font-size: 14px;
+                            color: #64676A;
+                            line-height: 20px;
+                            overflow: hidden;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 3;
+                            -webkit-box-orient: vertical;
+                            text-overflow: ellipsis;
+                            height: 60px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
         }
     }
 </style>

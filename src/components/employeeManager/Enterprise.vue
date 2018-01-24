@@ -789,7 +789,7 @@ export default{
                 if(res.data.code==1000){
                     this.$alert(res.data.message,"信息").then(()=>{
                         this.handleDepartmentVisible=false
-                        this.$router.go(0)
+                        this.$store.commit('reLoad')
                     })   
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")

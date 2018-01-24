@@ -20,7 +20,7 @@
                         <el-form-item label="密码：">
                             <el-input type="password" v-model="userInfo.password"></el-input>
                         </el-form-item>
-                        <el-button type="info" @click="loginin">登陆</el-button>
+                        <el-button type="info" @click="loginin" :loading="loading">登陆</el-button>
                         <el-button @click="handleReset">重置</el-button>
                     </el-form>
                 </div>
@@ -41,7 +41,8 @@ export default{
             userInfo:{
                 username:"jinhs-1",
                 password:"123456"
-            }
+            },
+            loading:false
         }
     },
     methods:{
@@ -51,11 +52,14 @@ export default{
             }else if(this.userInfo.password==""){
                 this.$alert("密码不能为空","信息")
             }else{
+                this.loading=true
                 this.$axios.post(root+"auth",this.userInfo).then(res=>{
+                    this.loading=false
                     if(res.data.code==1000){
                         authUnils.setToken(res.data.data.token,res.data.data.expiration)
+                        this.$store.commit('setToken',authUnils.getToken())//将token保存到vuex中
                         localStorage.setItem("loginName",this.userInfo.username)//保存当前的登陆信息
-                        this.$router.push("/EnterpriseOverview")
+                        this.$router.push("/ConsultIndex")
                     }else if(res.data.code==2001){
                         this.$alert(res.data.message,"信息")
                     }

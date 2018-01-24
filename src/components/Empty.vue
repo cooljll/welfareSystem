@@ -11,9 +11,10 @@
 			<el-col :lg="8" :md="8" :sm="18" :xs="12" class="header-links">
 				<div class="nav_router">
 					<el-menu :router="true" class="el-menu-demo" mode="horizontal" :default-active="$route.path">
-						<el-menu-item index="/WelfareOverview" @click="refresh">福利管理</el-menu-item>
-						<el-menu-item index="/EnterpriseOverview" @click="refresh">员工管理</el-menu-item>
-						<el-menu-item index="/ConsultIndex" @click="refresh">福利咨询</el-menu-item>
+						<el-menu-item v-for="(item,index) in menus" :key="index"
+						:index="item.url" @click="refresh">{{item.name}}</el-menu-item>
+						<!-- <el-menu-item index="/EnterpriseOverview" @click="refresh">员工管理</el-menu-item>
+						<el-menu-item index="/ConsultIndex" @click="refresh">福利资讯</el-menu-item> -->
 					</el-menu>
 				</div>
 			</el-col>
@@ -103,7 +104,6 @@
     </div>
 </template>
 <script>
-// import 'http://www.sobot.com/chat/pc/pc.min.js?sysNum=467fbd68a94142e2a6c147a012b74aea'
 import authUnils from '../common/authUnils'
 var root = process.env.API_ROOT
 export default {
@@ -119,7 +119,8 @@ export default {
 		},
 		loginName:"",
 		enterpriseLogoUrl:"",
-		inlineService:''
+		inlineService:'',
+		menus:[]
     }
   },
   methods:{
@@ -151,9 +152,10 @@ export default {
 		inlineKefu(){
 			$('#zhichiIframe').attr('src','http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345')
 			document.getElementById("zhichiIframeBox").style.bottom="0px"
-			setTimeout(function() {
-				document.getElementById("zhichiIframeBox").style.bottom="-500px"
-			}, 5000)
+			// setTimeout(function() {
+			// 	document.getElementById("zhichiIframeBox").style.bottom="-500px"
+			// }, 5000)
+			$('#zhichiIframe').content().find('.surEndBtn').click()
 		},
 		endOver(){
 			document.querySelector(".surEndBtn").addEventListener('click',function(){
@@ -166,6 +168,22 @@ export default {
 	},
 	mounted(){
 		this.getEnterpriseInfo()
+		this.$axios.get(root+"menu").then(res=>{
+			if(res.data.code==1000){
+				res.data.data.forEach(item=>{
+					let obj={}
+					if(item=="福利管理"){
+						obj['url']='/WelfareOverview'
+					}else if(item=='员工管理'){
+						obj['url']='/EnterpriseOverview'
+					}else{
+						obj['url']='/ConsultIndex'
+					}
+					obj['name']=item
+					this.menus.push(obj)
+				})
+			}
+		})
 	},
 	computed: {
 		getFlag() {
@@ -176,7 +194,7 @@ export default {
 		getFlag(val,oldVal){
 			if(val){
 				this.getEnterpriseInfo()
-				this.$store.commit("notReLoad")
+				// this.$store.commit("notReLoad")
 			}
 		}
 	}
