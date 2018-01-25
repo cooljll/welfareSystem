@@ -266,7 +266,7 @@ export default{
                     //修改权限
                     this.updateSubAccountAuth()
                 }else if(this.addAccountParams.loginPwd!=''&&this.addAccountParams.accountName!=''){
-                    //账号密码一起修改
+                    //账户密码修改
                     this.updateSubAccountPwdAuth()
                 }
             }     
@@ -285,8 +285,10 @@ export default{
                         userGuid:this.accountInfo.userGuid
                     }).then(res=>{
                         if(res.data.code==1000){
-                            this.addAccountVisible=false
-                            this.getAccountList()
+                            this.$alert(res.data.message,"信息").then(()=>{
+                                this.addAccountVisible=false
+                                this.getAccountList()
+                            })
                         }else if(res.data.code==1001){
                             this.$alert(res.data.message,"信息")
                         }
@@ -304,8 +306,10 @@ export default{
                 userGuid:this.accountInfo.userGuid
             }).then(res=>{
                 if(res.data.code==1000){
-                    this.addAccountVisible=false
-                    this.getAccountList()
+                    this.$alert(res.data.message,"信息").then(()=>{
+                        this.addAccountVisible=false
+                        this.getAccountList()
+                    })
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }

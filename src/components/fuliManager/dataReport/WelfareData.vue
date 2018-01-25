@@ -3,7 +3,7 @@
         <div class="page-title">{{$route.name}}</div>
         <el-row class="page-center">
             <el-col class="echart" :md="24" :lg="12">
-                <div class="left">
+                <div class="left" v-loading='loading'>
                 </div>
                 <div class="selectBox">
                     <el-select v-model="shopParams.text" @change="handleEmpShopData">
@@ -43,7 +43,8 @@ export default{
                 type:"1"
             },
             consumeData:[],
-            rechargeData:[]
+            rechargeData:[],
+            loading:false
         }
     },
     methods:{
@@ -133,7 +134,9 @@ export default{
         },
         //员工购买商品数据
         getEmpShoppingData(){
+            this.loading=true
             this.$axios.post(root+"enterprise/getEmpShoppingData",this.shopParams).then(res=>{
+                this.loading=false
                 if(res.data.code==1000){
                     if(res.data.data.length==0){
                         this.shoppingData=[{name: "暂无数据", value: 0}]
