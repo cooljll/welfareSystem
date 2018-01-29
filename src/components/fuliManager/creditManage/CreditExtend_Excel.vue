@@ -137,7 +137,7 @@
                     </el-table-column>
                     <el-table-column prop="shopScore" label="发放积分" align="center">
                         <template slot-scope="scope">
-                            <el-input v-show="scope.row.edit" size="small" v-model.number="scope.row.shopScore" 
+                            <el-input v-show="scope.row.edit" size="small" v-model.number="scope.row.shopScore" :maxlength="inputLength"
                             @keyup.native="!(/^[1-9][0-9]*$/.test(scope.row.shopScore))?scope.row.shopScore='0':scope.row.shopScore">
                             </el-input>
                             <span v-show="!scope.row.edit">{{ scope.row.shopScore }}</span>
@@ -185,6 +185,14 @@
                                 <span>积分</span>
                             </div>
                         </div>
+                        <!-- 企业余额不足提示 -->
+                        <div class="centerrow" v-show="isShowErrorMsg">
+                            <div class="title scoretitle" style="color:#fff;">提示</div>
+                            <div class="center">
+                                <span class="error" style="color:#FF5656;margin-right:10px;font-size:14px;">企业余额不足</span>
+                                <el-button type="primary" size="small" @click="$router.push('/CreditRecharge')">前去充值</el-button>
+                            </div>
+                        </div>
                         <div class="centerrow">
                             <div class="title">福利类型</div>
                             <div class="center">{{selectedType}}</div>
@@ -211,8 +219,11 @@
                     </div>
                 </div>
                 <div class="information-btn">
-                    <el-button type="primary" @click="payOrder">支付订单</el-button>
+                    <el-button type="primary" @click="paymentOrder" :disabled="payOrder">支付订单</el-button>
                     <el-button @click="handleGoBack2">上一步</el-button>
+                </div>
+                <div class="information-error" v-show="isShowErrorMsg">
+                    企业余额不足
                 </div>
             </div>
             <div class="layer-center4" v-show="step4">
@@ -327,7 +338,10 @@ export default{
             uploadExcelVisible:false,
             enterpriseName:"",
             extendEmpTags:[],//发放对象
-            selectedExcelEmp:[]
+            selectedExcelEmp:[],
+            isShowErrorMsg:false,
+            payOrder:false,
+            inputLength:10
         }
     },
     methods:{
@@ -363,7 +377,20 @@ export default{
                 tempStr=item.name+"("+item.shopScore+"积分)"
                 this.extendEmpTags.push(tempStr)
             })
-            this.getEnterpriseBalance()
+            //企业余额
+            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
+                if(res.data.code==1000){
+                    this.enterpriseBalance=res.data.data
+                }
+                //判断企业余额是否充足
+                if(this.totalScores>parseFloat(this.enterpriseBalance)){
+                    this.isShowErrorMsg=true
+                    this.payOrder=true
+                }else{
+                    this.isShowErrorMsg=false
+                    this.payOrder=false 
+                }
+            })
             this.step1=false
             this.step2=false
             this.step3=true
@@ -508,14 +535,6 @@ export default{
                 })
             }
         },
-        //企业余额
-        getEnterpriseBalance(){
-            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
-                if(res.data.code==1000){
-                    this.enterpriseBalance=res.data.data
-                }
-            })
-        },
         //标签删除
         handleClose(tag){
             this.selectedEmpTags.splice(this.selectedEmpTags.indexOf(tag), 1)
@@ -565,7 +584,7 @@ export default{
             }
         },
         //支付订单
-        payOrder(){
+        paymentOrder(){
             this.$alert("确定要支付订单？","信息").then(()=>{
                 this.$axios.post(root+"integral/postIntegralByExcel",{
                     blessMsg:this.messageTemplate,
@@ -906,7 +925,13 @@ export default{
             }
             .information-btn{
                 margin-top: 20px;
-                margin-bottom:30px;
+                margin-bottom: 12px;
+                text-align: center;
+            }
+            .information-error{
+                margin-bottom: 20px;
+                font-size: 14px;
+                color: #FF5656;
                 text-align: center;
             }
         }

@@ -24,6 +24,9 @@
                 <el-table-column prop="accountName" label="账号名称" align="center" width="150">
                 </el-table-column>
                 <el-table-column prop="userName" label="登录名" align="center" width="150">
+                    <template slot-scope="scope">
+                        <el-button type="text" style="color:#606266;">{{scope.row.userName}}</el-button>
+                    </template>
                 </el-table-column>
                 <el-table-column prop="createTime" label="操作时间" align="center" width="200">
                 </el-table-column>
@@ -32,7 +35,7 @@
             </el-table>
             <div class="toolbar">
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-                    :page-sizes="[10, 20, 40, 80]" :page-size="10"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
+                    :page-sizes="[15, 30, 45, 60]" :page-size="15"  layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                 </el-pagination>
             </div>
         </div>
@@ -51,7 +54,7 @@ export default{
                 name:"",
                 startTime:"",
                 endTime:"",
-                pageSize:10,
+                pageSize:15,
                 pageNum:1
             },
             value:[],//发布时间

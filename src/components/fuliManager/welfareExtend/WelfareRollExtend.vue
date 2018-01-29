@@ -129,7 +129,11 @@
                                 <el-table style="width:660px;margin-top:20px;" :data="creditExtendData" @selection-change="handleSelectionChange">
                                     <el-table-column type="selection" align="center" class-name="reset"></el-table-column>
                                     <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
-                                    <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
+                                    <el-table-column prop="memberCount" label="部门人数" align="center">
+                                        <template slot-scope="scope">
+                                            <el-button type="text" style="color:#606266;">{{scope.row.memberCount}}</el-button>
+                                        </template>
+                                    </el-table-column>
                                 </el-table>
                             </div>
                         </div>
@@ -185,6 +189,14 @@
                                     <span>积分</span>
                                 </div>
                             </div>
+                            <!-- 企业余额不足提示 -->
+                            <div class="centerrow" v-show="isShowErrorMsg">
+                                <div class="title scoretitle" style="color:#fff;">提示</div>
+                                <div class="center">
+                                    <span class="error" style="color:#FF5656;margin-right:10px;font-size:14px;">企业余额不足</span>
+                                    <el-button type="primary" size="small" @click="$router.push('/CreditRecharge')">前去充值</el-button>
+                                </div>
+                            </div>
                             <div class="centerrow">
                                 <div class="title">福利类型</div>
                                 <div class="center">{{selectedType}}</div>
@@ -218,8 +230,11 @@
                         </div>
                     </div>
                     <div class="information-btn">
-                        <el-button type="primary" @click="paymentOrder">支付订单</el-button>
+                        <el-button type="primary" @click="paymentOrder" :disabled="payOrder">支付订单</el-button>
                         <el-button @click="handleStep2">上一步</el-button>
+                    </div>
+                    <div class="information-error" v-show="isShowErrorMsg">
+                        企业余额不足
                     </div>
                 </div>
                 <div class="layer-center4" v-show="step4">
@@ -402,7 +417,9 @@ export default{
             },
             isShowWelfareRoll:true,
             isShowNotData:false,
-            loading:false
+            loading:false,
+            isShowErrorMsg:false,
+            payOrder:false
         }
     },
     methods:{
@@ -471,7 +488,6 @@ export default{
             }else{
                 this.getNormalEmps()//计算消费总积分
                 this.getFrozenEmps()
-                this.getEnterpriseBalance()
                 this.step=false
                 this.step1=false
                 this.step2=false
@@ -583,6 +599,22 @@ export default{
                             this.totalScores+=item.memberCount*this.rollScores
                         })
                     }
+                    //企业余额
+                    this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
+                        if(res.data.code==1000){
+                            this.enterpriseBalance=res.data.data
+                        }else if(res.data.code==1001){
+                            this.$alert(res.data.message,"信息")
+                        }
+                        //判断企业余额是否充足
+                        if(this.totalScores>parseFloat(this.enterpriseBalance)){
+                            this.isShowErrorMsg=true
+                            this.payOrder=true
+                        }else{
+                            this.isShowErrorMsg=false
+                            this.payOrder=false 
+                        }
+                    })
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
                 }
@@ -595,14 +627,6 @@ export default{
                     this.frozenEmpCount=res.data.data
                 }else if(res.data.code==1001){
                     this.$alert(res.data.message,"信息")
-                }
-            })
-        },
-        //企业余额
-        getEnterpriseBalance(){
-            this.$axios.post(root+"enterprise/getPoint",{}).then(res=>{
-                if(res.data.code==1000){
-                    this.enterpriseBalance=res.data.data
                 }
             })
         },
@@ -1192,7 +1216,13 @@ export default{
             }
             .information-btn{
                 margin-top: 20px;
-                margin-bottom:30px;
+                margin-bottom: 12px;
+                text-align: center;
+            }
+            .information-error{
+                margin-bottom: 20px;
+                font-size: 14px;
+                color: #FF5656;
                 text-align: center;
             }
         }

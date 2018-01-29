@@ -16,8 +16,8 @@
                         </div>
                     </div>
                 </el-col>
-                <el-col class="uploadInfo">
-                    <div class="get-excel-info" v-show="isShowUpload">
+                <el-col class="uploadInfo" v-show="isShowUpload">
+                    <div class="get-excel-info">
                         <img src="../../../assets/img/excel.png" alt="">
                         <p class="excel-name">{{fileName}}</p>
                         <el-button type="primary" size="large" @click="uploadFile">开始上传</el-button>
@@ -42,7 +42,7 @@
              <!-- 上传成功之后的页面 -->
             <el-row class="main" v-show="isShowList">
                 <el-col>
-                    <el-table :data="excelTable" border resizable highlight-current-row style="width: 100%;">
+                    <el-table :data="excelTable" border stripe resizable highlight-current-row style="width: 100%;">
                         <el-table-column label="序号" type="index" align="center" width="80">
                         </el-table-column>
                         <el-table-column prop="cardNo" label="卡号" align="center" min-width="165">
@@ -50,10 +50,13 @@
                         <el-table-column prop="cardName" label="姓名" align="center">
                         </el-table-column>
                         <el-table-column prop="money" label="金额" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text" style="color:#606266;">{{ scope.row.money }}</el-button>
+                            </template>
                         </el-table-column>
                         <el-table-column label="信息" align="center" min-width="80">
                             <template slot-scope="scope">
-                                <span style="color:red;">{{ scope.row.message }}</span>
+                                <el-button type="text" style="color:#eb661c;">{{ scope.row.message }}</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -159,7 +162,7 @@ export default{
         },
         //重新上传
         reUpload(){
-            // this.file=false
+            this.isShowUpload=false
             this.isShowIndex=true
             this.isShowList=false
         },
@@ -186,6 +189,8 @@ export default{
                             if(res.data.code==1000){
                                 this.$alert("提交还款成功!","信息提示")
                                 this.$router.push("/CreditcardpayRecord")
+                            }else if(res.data.code==1001){
+                                this.$alert(res.data.message,"信息")
                             }
                         })
                     })

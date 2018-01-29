@@ -136,6 +136,9 @@
                     <el-table-column prop="email" label="邮箱" align="center">
                     </el-table-column>
                     <el-table-column prop="jobNumber" label="工号" align="center" width="80">
+                        <template slot-scope="scope">
+                            <el-button type="text" style="color:#606266;">{{ scope.row.jobNumber }}</el-button>
+                        </template>
                     </el-table-column>
                     <el-table-column label="错误信息" align="center">
                         <template slot-scope="scope">

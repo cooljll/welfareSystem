@@ -15,8 +15,8 @@
                         <div class="recharge-countbox">
                             <span class="countxt">充值数量:</span>
                             <div class="countinput">
-                                <el-input :maxlength="inputLength" v-model="score" 
-                                    @keyup.native="countkeyup" @keydown.native="countkeydown" @change="countchange">
+                                <el-input :maxlength="inputLength" v-model="score" @change="countchange" 
+                                    @keyup.native="countkeyup" @keydown.native="countkeydown">
                                 </el-input>
                             </div>
                         </div>
