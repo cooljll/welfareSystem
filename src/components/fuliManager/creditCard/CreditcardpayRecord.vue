@@ -64,6 +64,9 @@
                 <el-table-column prop="cardNo" label="信用卡号" align="center" min-width="165">
                 </el-table-column>
                 <el-table-column prop="cardName" label="户名" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" style="color:#606266;">{{scope.row.cardName}}</el-button>
+                    </template>
                 </el-table-column>
                 <el-table-column prop="cardBank" label="银行" align="center">
                 </el-table-column>
@@ -192,14 +195,29 @@ export default{
         },
         detailSizeChange(val){
             this.sendRecordParams.pageSize=val
+            this.getcreditMsg()
         },
         detailCurrentChange(val){
             this.sendRecordParams.pageNum=val
+            this.getcreditMsg()
         },
         //返回
         goBack(){
-            this.$router.push("/WelfareIndex")
-            this.$router.go(-1)
+            let userAgent = window.navigator.userAgent
+            if (userAgent.indexOf("Firefox") > -1) {
+                this.isShowList=true
+                this.isShowDetail=false
+                this.sendRecordParams.cardNo=''
+                this.sendRecordParams.cardName=''
+                this.filters.orderNo=''
+                this.filters.startTime=''
+                this.filters.endTime=''
+                this.value=null
+                this.getcreditCardList()
+            }else{
+                this.$router.push("/WelfareIndex")
+                this.$router.go(-1)
+            }
         },
         //查看详情
         seeDetail(id){

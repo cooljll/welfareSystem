@@ -138,6 +138,9 @@
                 <el-table-column prop="departmentName" label="部门名称" align="center" min-width="162">
                 </el-table-column>
                 <el-table-column prop="point" label="获得积分" align="center" min-width="162">
+                    <template slot-scope="scope">
+                        <el-button type="text" style="color:#606266;">{{scope.row.point}}</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">

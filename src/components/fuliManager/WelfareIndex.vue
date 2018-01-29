@@ -86,8 +86,13 @@ export default{
     },
     methods:{
         refresh(){
-			this.$router.push("/WelfareIndex")
-			this.$router.go(-1)
+            let userAgent = window.navigator.userAgent
+			if (userAgent.indexOf("Firefox") > -1) {
+				// window.location.reload()
+            }else{
+                this.$router.push("/WelfareIndex")
+                this.$router.go(-1)
+            }
 		}
     },
     mounted(){

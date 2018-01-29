@@ -15,12 +15,14 @@
                         <div class="recharge-countbox">
                             <span class="countxt">充值数量:</span>
                             <div class="countinput">
-                                <el-input v-model.number="invoiceInfo.point" @keyup.native="countkeyup"></el-input>
+                                <el-input :maxlength="inputLength" v-model="score" 
+                                    @keyup.native="countkeyup" @keydown.native="countkeydown" @change="countchange">
+                                </el-input>
                             </div>
                         </div>
                         <div class="recharge-moneybox">
                             <div class="countxt">应付金额:</div>
-                            <div class="money">¥ {{invoiceInfo.point}}</div>
+                            <div class="money" id="money"></div>
                         </div>
                         <div class="information-txt">温馨提示: 1积分等于1元<br><br>财务审核完成后，将会用短信通知到账情况</div>
                     </div>
@@ -173,7 +175,9 @@ export default{
             isShow:true,
             isShowRechargeCenter:true,
             isShowWechatPay:false,
-            WechatImg:""
+            WechatImg:"",
+            inputLength:13,
+            score:'0'
         }
     },
     methods:{
@@ -194,14 +198,39 @@ export default{
             }
             this.invoiceInfo.payType=i
         },
+        //格式化金额
+        formatMoney(Number, places, symbol, thousand, decimal) {
+            places = !isNaN(places = Math.abs(places)) ? places : 2
+            symbol = symbol !== undefined ? symbol : "$"
+            thousand = thousand || ","
+            decimal = decimal || "."
+            var number = Number;
+            var negative = number < 0 ? "-" : ""
+            var i = parseInt(number = Math.abs(+number || 0).toFixed(places), 10) + ""
+            var j = (j = i.length) > 3 ? j % 3 : 0
+            return symbol + negative + (j ? i.substr(0, j) + thousand : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousand) + (places ? decimal + Math.abs(number - i).toFixed(places).slice(2) : "")
+        },
+        //清除逗号
+        clearComma(str) { 
+            str = str.replace(/[,]*/g, '')
+            return str 
+        },
         //键盘事件
-        countkeyup(){
-            var reg=/^[1-9][0-9]*$/
-            if(!reg.test(this.invoiceInfo.point)){
-               this.invoiceInfo.point="0" 
-            }else{
-                this.invoiceInfo.point=this.invoiceInfo.point
+        countkeydown(e){
+            let keyCode=e.keyCode
+            if ((keyCode >= 48 && keyCode <= 57) || keyCode == 8 || (keyCode >= 96 && keyCode <= 105)) {
+                event.returnValue = true
+            } else {
+                event.returnValue = false
             }
+        },
+        countkeyup(){
+            var numm = this.score.replace(/[,]*/g, '')
+            this.score=this.formatMoney(numm, 0, "", ",", ".")
+            $("#money").html(this.formatMoney(numm, 0, "¥ ", ",", "."))
+        },
+        countchange(){
+            this.score=this.score.replace(/[^0-9,]*/g, '')
         },
         //支付订单
         buildPayOrder(){
@@ -210,8 +239,9 @@ export default{
 				text: '正在创建订单。。。',
 				spinner: 'el-icon-loading',
 				background: 'rgba(0, 0, 0, 0.7)'
-			})
-            this.invoiceInfo.amount_payable=this.invoiceInfo.point
+            })
+            this.invoiceInfo.point=Number(this.clearComma(this.score))
+            this.invoiceInfo.amount_payable=Number(this.clearComma(this.score))
             this.$axios.post(root+"recharge/pay",this.invoiceInfo).then(res=>{
                 loading.close()
                 if(res.data.code==1000){
@@ -281,7 +311,7 @@ export default{
         },
         //立即充值
         immediateRechange(){
-            if(this.invoiceInfo.point=="0"){
+            if(this.score=="0"){
                 this.$alert("积分数量不能为0或负数","信息")
             }else if(this.invoiceInfo.invoice_title==""){
                 this.$alert("发票抬头不能为空","信息")
@@ -312,6 +342,13 @@ export default{
         }
     },
     mounted(){
+        if (this.score == "0") {
+            $("#money").html("¥ 0")
+            this.score=this.formatMoney(this.score, 0, "", ",", ".")
+        } else {
+            $("#money").html(this.formatMoney(this.score, 0, "¥ ", ",", "."))
+            this.score=this.formatMoney(this.score, 0, "", ",", ".")
+        }
         const that = this
         window.onresize = () => {
             return (() => {
@@ -364,6 +401,7 @@ export default{
                 margin-top: 20px;
                 padding: 20px 12px;
                 float: left;
+                overflow: hidden;
                 .title{
                     font-size: 14px;
                     color: #2D2E2E;

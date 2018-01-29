@@ -145,17 +145,21 @@ export default {
 			})
 		},
 		refresh(){
-			this.$router.push("/Empty")
-			this.$router.go(-1)
+			let userAgent = window.navigator.userAgent
+			if (userAgent.indexOf("Firefox") > -1) {
+				
+            }else{
+                this.$router.push("/Empty")
+                this.$router.go(-1)
+            }
 		},
 		//在线客服
 		inlineKefu(){
 			$('#zhichiIframe').attr('src','http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345')
 			document.getElementById("zhichiIframeBox").style.bottom="0px"
-			// setTimeout(function() {
-			// 	document.getElementById("zhichiIframeBox").style.bottom="-500px"
-			// }, 5000)
-			$('#zhichiIframe').content().find('.surEndBtn').click()
+			setTimeout(function() {
+				document.getElementById("zhichiIframeBox").style.bottom="-500px"
+			}, 8000)
 		},
 		endOver(){
 			document.querySelector(".surEndBtn").addEventListener('click',function(){

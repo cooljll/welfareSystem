@@ -73,6 +73,9 @@
                 <el-table-column prop="phone" label="手机号" align="center">
                 </el-table-column>
                 <el-table-column prop="welType" label="福利类型" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" style="color:#606266;">{{scope.row.welType}}</el-button>
+                    </template>
                 </el-table-column>
             </el-table>
             <el-col :span="24" class="toolbar">
