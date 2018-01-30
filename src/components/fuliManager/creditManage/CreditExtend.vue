@@ -183,7 +183,7 @@
                         <div class="centerrow">
                             <div class="title scoretitle">企业余额</div>
                             <div class="center">
-                                <span class="score">{{Math.floor(enterpriseBalance)}}</span>
+                                <span class="score">{{enterpriseBalance}}</span>
                                 <span>积分</span>
                             </div>
                         </div>
@@ -516,18 +516,24 @@ export default{
                     }
                     if(this.specialEmp){
                         if(this.specialEmpFlag=="1"){
+                            this.totalEmployee=0
                             this.extendWelfareRollType="按特定人员发放"
                             this.totalEmployee=this.extendEmpArr.length
                         }else{
+                            this.totalEmployee=0
                             this.extendWelfareRollType="按特定人员不发放"
                             this.totalEmployee=res.data.data-this.extendEmpArr.length
                         }
+                        this.totalScores=0
                         this.totalScores=this.totalEmployee*this.specialScores
                     }
                     if(this.deportExtend){
                         this.getDepartmentList()
                         this.creditExtendData.forEach(item=>{
                             if(item.scores){
+                                this.extendScoresData=[]
+                                this.totalScores=0
+                                this.totalEmployee=0
                                 this.totalEmployee+=item.memberCount
                                 this.totalScores+=item.memberCount*item.scores
                                 this.extendScoresData.push(item)

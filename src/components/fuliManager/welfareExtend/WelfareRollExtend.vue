@@ -580,21 +580,28 @@ export default{
             }).then(res=>{
                 if(res.data.code==1000){
                     if(this.allEmp){
+                        this.totalScores=0
+                        this.totalEmployee=0
                         this.totalEmployee=res.data.data
                         this.totalScores=this.totalEmployee*this.rollScores
                     }
                     if(this.specialEmp){
                         if(this.specialEmpFlag=="1"){
+                            this.totalEmployee=0
                             this.extendWelfareRollType="按特定人员发放"
                             this.totalEmployee=this.extendEmpArr.length
                         }else{
+                            this.totalEmployee=0
                             this.extendWelfareRollType="按特定人员不发放"
                             this.totalEmployee=res.data.data-this.extendEmpArr.length
                         }
+                        this.totalScores=0
                         this.totalScores=this.totalEmployee*this.rollScores
                     }
                     if(this.deportExtend){
                         this.selectedDepArr.forEach(item=>{
+                            this.totalScores=0
+                            this.totalEmployee=0
                             this.totalEmployee+=item.memberCount
                             this.totalScores+=item.memberCount*this.rollScores
                         })
