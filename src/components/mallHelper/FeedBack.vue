@@ -29,15 +29,9 @@
                                 </div>
                             </div>
                         </el-form-item>
-                        <!-- <el-form-item label="联系人">
-                            <el-input placeholder="请输入联系人" v-model="feedbackUser"></el-input>
-                        </el-form-item> -->
                         <el-form-item label="手机号">
                             <el-input placeholder="请输入手机号" v-model="feedbackPhone"></el-input>
                         </el-form-item>
-                        <!-- <el-form-item label="邮箱">
-                            <el-input placeholder="请输入邮箱" v-model="feedbackEmail"></el-input>
-                        </el-form-item> -->
                     </el-form>
                     <el-row class="submitBtn">
                         <el-button type="primary" @click="feedbackSubmit">提交申请</el-button>

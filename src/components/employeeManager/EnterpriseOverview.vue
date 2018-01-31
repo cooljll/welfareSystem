@@ -32,7 +32,7 @@
             </el-row>
         </div>
 		<!-- 生成二维码弹窗 -->
-		<el-dialog title="入职二维码" :visible.sync="qrcodeVisible" :close-on-click-modal="false" style="top:10%" ref="qrcode" class="erweima">
+		<el-dialog title="入职二维码" :visible.sync="qrcodeVisible" :close-on-click-modal="false" style="top:10%" class="erweima">
             <div class="qrcode">
 				<img :src="qrcodeImg" alt="">
 			</div>
@@ -233,12 +233,11 @@ export default {
 			})
 			this.$axios.post(root+"service/qrcode",{}).then(res=>{
 				loading.close()
+				this.qrcodeVisible=true
 				if(res.data.code==1000){
 					this.qrcodeImg=res.data.data
-					this.qrcodeVisible=true
 				}else if(res.data.code==1001){
-					this.$alert(res.data.message,"信息")
-					this.qrcodeVisible=false
+					this.qrcodeImg=''
 				}
 			})
 		},
@@ -250,7 +249,14 @@ export default {
 		},
 		//打印
 		QRprint(){
-
+			let subOutputRankPrint = document.querySelector('.qrcode') 
+			let newContent =subOutputRankPrint.innerHTML  
+			let oldContent = document.body.innerHTML  
+			document.body.innerHTML = newContent  
+			window.print()  
+			window.location.reload()
+			document.body.innerHTML = oldContent 
+			return false
 		},
 		//系统公告
 		getSystemNotice(){

@@ -124,28 +124,29 @@
         </el-dialog>
         <!-- 批量导入员工提示框 -->
         <el-dialog title="选择员工" :visible.sync="messageTipVisible" :close-on-click-modal="false" style="top:10%" class="messageTipDialog">
-            <el-table :data="batchExportEmpData" resizable highlight-current-row style="width: 100%;">
-                    <el-table-column prop="name" label="姓名" align="center" width="60">
-                    </el-table-column>
-                    <el-table-column prop="sex" label="性别" align="center" width="50">
-                    </el-table-column>
-                    <el-table-column prop="identifyNo" label="身份证" align="center" width="180">
-                    </el-table-column>
-                    <el-table-column prop="phone" label="手机号" align="center" width="120">
-                    </el-table-column>
-                    <el-table-column prop="email" label="邮箱" align="center">
-                    </el-table-column>
-                    <el-table-column prop="jobNumber" label="工号" align="center" width="80">
-                        <template slot-scope="scope">
-                            <el-button type="text" style="color:#606266;">{{ scope.row.jobNumber }}</el-button>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="错误信息" align="center">
-                        <template slot-scope="scope">
-                            <span style="color:red;">{{ scope.row.error }}</span>
-                        </template>
-                    </el-table-column>
-                </el-table>
+            <el-table :data="batchExportEmpData" resizable highlight-current-row style="width: 100%;" 
+            :header-row-style="headerStyle">
+                <el-table-column prop="name" label="姓名" align="center" width="80">
+                </el-table-column>
+                <el-table-column prop="sex" label="性别" align="center" width="50">
+                </el-table-column>
+                <el-table-column prop="identifyNo" label="身份证" align="center" width="180">
+                </el-table-column>
+                <el-table-column prop="phone" label="手机号" align="center" width="112">
+                </el-table-column>
+                <el-table-column prop="email" label="邮箱" align="center">
+                </el-table-column>
+                <el-table-column prop="jobNumber" label="工号" align="center" width="80">
+                    <template slot-scope="scope">
+                        <el-button type="text" style="color:#606266;">{{ scope.row.jobNumber }}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column label="错误信息" align="center">
+                    <template slot-scope="scope">
+                        <span style="color:red;">{{ scope.row.error }}</span>
+                    </template>
+                </el-table-column>
+            </el-table>
            <div class="message">{{messageTips}}</div>
         </el-dialog>
 	</div>
@@ -210,6 +211,9 @@ export default {
             }
         }
     	return {
+            headerStyle:{
+                color:"#000"
+            },
             value:"",
 			isShowHandle:false,
 			isShowSubdep:true,
@@ -442,8 +446,9 @@ export default {
 			})
             this.$axios.post(root+"employee/uploadCheckEmps",formData,config).then(res=>{
                 loading.close()
-                if(res.data.code==1000){
+                if(res.data.data!=null){
                     this.messageTips=res.data.message
+                    this.batchExportEmpData=[]
                     res.data.data.forEach(item=>{
                         item.emp.error=item.error
                         this.batchExportEmpData.push(item.emp)
@@ -451,7 +456,7 @@ export default {
                     this.exportEmployeeVisible=false
                     this.messageTipVisible=true
                     this.$store.commit('reLoad')
-                }else if(res.data.code==1001){
+                }else{
                     this.$alert(res.data.message,'信息')
                 }
             })
@@ -470,7 +475,7 @@ export default {
         getFlag(val){
             if(val){
                 this.getTreeDep()
-                // this.$store.commit("notReLoad")
+                this.$store.commit("notReLoad")
             }
         }
     }

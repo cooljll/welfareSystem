@@ -93,13 +93,10 @@
 				</el-dropdown>
 			</el-col>
 		</el-row>
+		<!-- 在线客服 -->
 		<div id="zhichiIframeBox" style="width: 320px; height: 480px; position: fixed; bottom: -500px;
 			border-radius: 5px 5px 0px 0px; overflow: hidden; z-index: 2147483583; box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 2px; 
-			right: 30px; transition: all 0.3s ease-in-out 0.1s;">
-			<iframe id="zhichiIframe" 
-				name="zhichiIframe" frameborder="no" scrolling="no" style="width: 100%; height: 100%; border: 0;">
-			</iframe>
-		</div>
+			right: 30px; transition: all 0.3s ease-in-out 0.1s;"></div>
         <router-view></router-view>
     </div>
 </template>
@@ -147,7 +144,7 @@ export default {
 		refresh(){
 			let userAgent = window.navigator.userAgent
 			if (userAgent.indexOf("Firefox") > -1) {
-				
+				// this.$router.go(0)
             }else{
                 this.$router.push("/Empty")
                 this.$router.go(-1)
@@ -155,16 +152,15 @@ export default {
 		},
 		//在线客服
 		inlineKefu(){
-			$('#zhichiIframe').attr('src','http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345')
+			$("#zhichiIframeBox").html(`
+				<iframe id="zhichiIframe" src="http://www.sobot.com/chat/oldpc/index.html?sysNum=467fbd68a94142e2a6c147a012b74aea&amp;from=iframe&amp;r=0.7758282746747345"
+					name="zhichiIframe" frameborder="no" scrolling="no" style="width: 100%; height: 100%; border: 0;">
+				</iframe>
+			`)
 			document.getElementById("zhichiIframeBox").style.bottom="0px"
 			setTimeout(function() {
 				document.getElementById("zhichiIframeBox").style.bottom="-500px"
-			}, 8000)
-		},
-		endOver(){
-			document.querySelector(".surEndBtn").addEventListener('click',function(){
-				document.getElementById("zhichiIframeBox").style.bottom="-500px"
-			})
+			}, 10000)
 		}
 	},
 	created(){

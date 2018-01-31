@@ -11,6 +11,7 @@ import router from './router'
 import store from './vuex/store'
 import echarts from 'echarts/dist/echarts.min'
 import $ from 'jquery'
+import './assets/script/jquery.jqprint-0.3'
 
 Vue.prototype.$echarts=echarts      
 import axios from 'axios' 

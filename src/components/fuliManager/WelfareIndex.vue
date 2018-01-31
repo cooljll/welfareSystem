@@ -97,7 +97,12 @@ export default{
     },
     mounted(){
         this.activeName=this.$route.path.substr(1)
-    }
+    },
+    watch:{
+		'$route'(to, from) {
+            // this.activeName=to.path
+		}
+	}
 }
 </script>
 <style lang="scss" scoped>

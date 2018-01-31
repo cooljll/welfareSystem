@@ -23,7 +23,11 @@
                         <el-form-item label="接收部门">
                             <el-table style="width:660px;margin-top:20px;" :data="tableData" @selection-change="handleSelectionChange">
                                 <el-table-column type="selection" align="center"></el-table-column>
-                                <el-table-column prop="displayName" label="部门名称" align="center"></el-table-column>
+                                <el-table-column prop="displayName" label="部门名称" align="center">
+                                    <template slot-scope="scope">
+                                        <el-button type="text" style="color:#606266;">{{scope.row.displayName}}</el-button>
+                                    </template>
+                                </el-table-column>
                                 <el-table-column prop="memberCount" label="部门人数" align="center"></el-table-column>
                             </el-table>
                         </el-form-item>

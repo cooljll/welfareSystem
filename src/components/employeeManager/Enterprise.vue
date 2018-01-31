@@ -412,7 +412,7 @@
             </div>
         </el-dialog>
         <!-- 生成二维码弹窗 -->
-		<el-dialog title="入职二维码" :visible.sync="qrcodeVisible" :close-on-click-modal="false" style="top:10%" ref="qrcode" class="erweima">
+		<el-dialog title="入职二维码" :visible.sync="qrcodeVisible" :close-on-click-modal="false" style="top:10%" class="erweima">
             <div class="qrcode">
                 <img :src="qrcodeImg" alt="">
 			</div>
@@ -875,8 +875,9 @@ export default{
 			})
             this.$axios.post(root+"employee/uploadCheckEmps",formData,config).then(res=>{
                 loading.close()
-                if(res.data.code==1000){
+                if(res.data.data!=null){
                     this.messageTips=res.data.message
+                    this.batchExportEmpData=[]
                     res.data.data.forEach(item=>{
                         item.emp.error=item.error
                         this.batchExportEmpData.push(item.emp)
@@ -884,7 +885,7 @@ export default{
                     this.exportEmployeeVisible=false
                     this.messageTipVisible=true
                     this.$store.commit('reLoad')
-                }else if(res.data.code==1001){
+                }else{
                     this.$alert(res.data.message,'信息')
                 }
             })
@@ -899,12 +900,11 @@ export default{
 			})
             this.$axios.post(root+"service/qrcode",{}).then(res=>{
                 loading.close()
+                this.qrcodeVisible=true
                 if(res.data.code==1000){
                     this.qrcodeImg=res.data.data
-                    this.qrcodeVisible=true
                 }else if(res.data.code==1001){
-                    this.$alert(res.data.message,"信息")
-                    this.qrcodeVisible=false
+                    this.qrcodeImg=''
                 }
             })
         },
@@ -916,7 +916,14 @@ export default{
 		},
 		//打印
 		QRprint(){
-
+            let subOutputRankPrint = document.querySelector('.qrcode') 
+			let newContent =subOutputRankPrint.innerHTML  
+			let oldContent = document.body.innerHTML  
+			document.body.innerHTML = newContent  
+            window.print()  
+            window.location.reload()
+			document.body.innerHTML = oldContent 
+			return false 
 		},
         //移至部门
         batchmMoveToDepartment(){
