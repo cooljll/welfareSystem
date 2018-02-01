@@ -79,11 +79,6 @@
 </template>
 <script>
 export default{
-    data(){
-        return{
-            activeName:""
-        }
-    },
     methods:{
         refresh(){
             let userAgent = window.navigator.userAgent
@@ -95,14 +90,11 @@ export default{
             }
 		}
     },
-    mounted(){
-        this.activeName=this.$route.path.substr(1)
-    },
-    watch:{
-		'$route'(to, from) {
-            // this.activeName=to.path
-		}
-	}
+    computed: {
+        activeName: function(){
+            return this.$route.path.replace('/', '')
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

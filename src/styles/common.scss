@@ -761,6 +761,9 @@
 
 //更改表格默认间距
 .el-table{
+    th{
+        padding: 8px 0 !important;
+    }
     td{
         padding:0 !important;
     }

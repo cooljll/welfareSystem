@@ -20,7 +20,9 @@
                     </el-form-item>
                 </el-form>
             </div>
-            <el-table :data="tableData" v-loading="loading" resizable highlight-current-row style="width: 100%;" stripe :header-row-style="headerStyle">
+            <el-table :data="tableData" v-loading="loading" resizable highlight-current-row style="width: 100%;" stripe 
+                
+                :header-row-style="headerStyle">
                 <el-table-column prop="accountName" label="账号名称" align="center" width="150">
                 </el-table-column>
                 <el-table-column prop="userName" label="登录名" align="center" width="150">

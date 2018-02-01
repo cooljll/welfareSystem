@@ -404,7 +404,7 @@
         <el-dialog title="批量导入员工" :visible.sync="exportEmployeeVisible" :close-on-click-modal="false" style="top:15%" class="batchExportEmpDialog">
             <div class="tishititle"> 请上传编辑好的员工个人信息EXCEL格式请按模板，顶行内容勿修改！</div>
             <div class="fileUpload footer-center">
-                <input type="file" @change="getFile($event)" id="fileToUpload">
+                <input type="file" @change="getFile($event)" id="fileToUpload" v-if="clearShow">
                 <div class="replaceComp">
                     <el-button type="primary" @click="selectExcelFile">上传</el-button>
                     <el-button @click="downloadTemplate">下载excel模板</el-button>
@@ -582,6 +582,7 @@ export default{
             }
         }
         return {
+            clearShow:true,
             headerStyle:{
                 color:"#000"
             },
@@ -859,6 +860,7 @@ export default{
         },
         //上传
         getFile(event) {
+            this.clearShow=false
             this.file = event.target.files[0]
             let formData = new FormData()
             formData.append('uploadexcel', this.file)
@@ -874,6 +876,7 @@ export default{
 				background: 'rgba(0, 0, 0, 0.7)'
 			})
             this.$axios.post(root+"employee/uploadCheckEmps",formData,config).then(res=>{
+                this.clearShow=true
                 loading.close()
                 if(res.data.data!=null){
                     this.messageTips=res.data.message
