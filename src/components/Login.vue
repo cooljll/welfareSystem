@@ -39,8 +39,8 @@ export default{
     data(){
         return{
             userInfo:{
-                username:"jinhs",
-                password:"jhs123456"
+                username:"",
+                password:""
             },
             loading:false
         }
